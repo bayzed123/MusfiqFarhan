@@ -64,7 +64,7 @@
         }
 
         nav .logo {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: var(--gold);
             cursor: pointer;
@@ -73,7 +73,8 @@
         nav ul {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
         nav a {
@@ -81,6 +82,7 @@
             text-decoration: none;
             transition: color 0.3s;
             cursor: pointer;
+            font-size: 0.95rem;
         }
 
         nav a:hover, nav a.active {
@@ -116,7 +118,7 @@
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(45, 45, 45, 0.5) 100%);
-            padding: 4rem 0;
+            padding: 3rem 0;
             border-bottom: 2px solid var(--gold);
             margin-bottom: 3rem;
         }
@@ -129,16 +131,16 @@
         }
 
         .hero-text h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 1rem;
             color: var(--gold);
             font-weight: 700;
         }
 
         .hero-text p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--text-muted);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             line-height: 1.8;
         }
 
@@ -148,7 +150,7 @@
 
         .hero-image img {
             width: 100%;
-            max-width: 400px;
+            max-width: 300px;
             border-radius: 10px;
             border: 2px solid var(--gold);
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
@@ -157,8 +159,8 @@
         /* Gallery */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
             margin: 2rem 0;
         }
 
@@ -179,51 +181,31 @@
 
         .gallery-item img {
             width: 100%;
-            height: 250px;
+            height: 200px;
             object-fit: cover;
         }
 
         .gallery-item-info {
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
         .gallery-item-info h3 {
             color: var(--gold);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
         }
 
         .gallery-item-info p {
             color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Video Embed */
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            margin: 2rem 0;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+            font-size: 0.85rem;
         }
 
         /* Blog Posts */
         .blog-post {
             background: var(--secondary-dark);
             border-left: 4px solid var(--gold);
-            padding: 2rem;
-            margin: 2rem 0;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
             border-radius: 4px;
             transition: transform 0.3s;
             cursor: pointer;
@@ -236,89 +218,141 @@
         .blog-post h3 {
             color: var(--gold);
             margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .blog-post-meta {
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
         }
 
         .blog-post p {
             color: var(--text-light);
+            font-size: 0.95rem;
         }
 
-        /* Updates Timeline */
+        /* Reviews */
+        .review-item {
+            background: var(--secondary-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--gold);
+            margin-bottom: 1.5rem;
+        }
+
+        .review-item h4 {
+            color: var(--gold);
+            margin-bottom: 0.3rem;
+        }
+
+        .review-item .date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-item p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Form */
+        .review-form {
+            background: var(--secondary-dark);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            color: var(--gold);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn-submit {
+            background: var(--gold);
+            color: var(--primary-dark);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+
+        /* Timeline */
         .timeline {
             position: relative;
             padding: 2rem 0;
         }
 
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 100%;
-            background: var(--gold);
-        }
-
         .timeline-item {
-            margin-bottom: 3rem;
-            width: 45%;
-        }
-
-        .timeline-item:nth-child(odd) {
-            margin-left: 0;
-            text-align: right;
-        }
-
-        .timeline-item:nth-child(even) {
-            margin-left: 55%;
-        }
-
-        .timeline-content {
             background: var(--secondary-dark);
             padding: 1.5rem;
             border-radius: 8px;
-            border: 1px solid var(--border-color);
-            position: relative;
+            border-left: 4px solid var(--gold);
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s;
         }
 
-        .timeline-content::after {
-            content: '';
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: var(--gold);
-            border-radius: 50%;
-            top: 1.5rem;
+        .timeline-item:hover {
+            transform: translateX(10px);
         }
 
-        .timeline-item:nth-child(odd) .timeline-content::after {
-            right: -30px;
-        }
-
-        .timeline-item:nth-child(even) .timeline-content::after {
-            left: -30px;
-        }
-
-        .timeline-content h3 {
+        .timeline-item h3 {
             color: var(--gold);
             margin-bottom: 0.5rem;
         }
 
-        .timeline-content .date {
+        .timeline-item .date {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         /* Social Links */
         .social-links {
             display: flex;
             gap: 1rem;
-            margin: 2rem 0;
+            margin: 1.5rem 0;
             flex-wrap: wrap;
         }
 
@@ -326,13 +360,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             background: var(--secondary-dark);
             border: 1px solid var(--gold);
             color: var(--gold);
             text-decoration: none;
             border-radius: 4px;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
         .social-link:hover {
@@ -340,85 +375,13 @@
             color: var(--primary-dark);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            nav ul {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-
-            .hero-content {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-text h1 {
-                font-size: 2rem;
-            }
-
-            .timeline::before {
-                left: 0;
-            }
-
-            .timeline-item {
-                width: 100%;
-                margin-left: 0 !important;
-                text-align: left;
-                padding-left: 40px;
-            }
-
-            .timeline-content::after {
-                left: -30px !important;
-            }
-
-            .gallery {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90vh;
-            overflow: auto;
-        }
-
-        .modal-content img {
-            width: 100%;
-            height: auto;
-        }
-
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            color: var(--gold);
+        /* Section Title */
+        .section-title {
             font-size: 2rem;
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 0 10px;
-            border-radius: 50%;
-        }
-
-        .close:hover {
-            color: var(--gold-light);
+            color: var(--gold);
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 1rem;
         }
 
         /* Footer */
@@ -431,12 +394,92 @@
             color: var(--text-muted);
         }
 
-        .section-title {
-            font-size: 2.5rem;
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        footer a {
             color: var(--gold);
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--gold);
-            padding-bottom: 1rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--gold-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav .logo {
+                font-size: 1rem;
+            }
+
+            nav ul {
+                gap: 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .gallery-item img {
+                height: 150px;
+            }
+
+            .review-form {
+                padding: 1.5rem;
+            }
+
+            .social-links {
+                gap: 0.75rem;
+            }
+
+            .social-link {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                gap: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .hero-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-text p {
+                font-size: 0.9rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
+
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .gallery-item img {
+                height: 120px;
+            }
         }
     </style>
 </head>
@@ -444,7 +487,7 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <div class="logo" onclick="showSection('home')">Musfiq R. Farhan</div>
+            <div class="logo" onclick="showSection('home')">MRF</div>
             <ul>
                 <li><a onclick="showSection('home')" class="nav-link active">Home</a></li>
                 <li><a onclick="showSection('about')" class="nav-link">About</a></li>
@@ -466,7 +509,7 @@
                     <div class="hero-content">
                         <div class="hero-text">
                             <h1>Musfiq R. Farhan</h1>
-                            <p>Multi-Talented Entertainer</p>
+                            <p><strong>Multi-Talented Entertainer</strong></p>
                             <p>RJ | Actor | Content Creator | Digital Media Pioneer</p>
                             <p>Bridging the worlds of radio, television, and digital media with storytelling that connects with millions across Bangladesh.</p>
                             <div class="social-links">
@@ -482,13 +525,33 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Reviews on Home -->
+            <div class="container">
+                <h2 class="section-title">Audience Reviews</h2>
+                <div class="review-form">
+                    <h3 style="color: var(--gold); margin-bottom: 1.5rem;">Share Your Review</h3>
+                    <form id="reviewForm">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" id="reviewName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Review</label>
+                            <textarea id="reviewText" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Submit Review</button>
+                    </form>
+                </div>
+                <div id="home-reviews-container"></div>
+            </div>
         </section>
 
         <!-- About Section -->
         <section id="about">
             <div class="container">
                 <h2 class="section-title">About Me</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
                     <div>
                         <img src="profile_2.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 10px; border: 2px solid var(--gold);">
                     </div>
@@ -496,13 +559,13 @@
                         <h3 style="color: var(--gold); margin-bottom: 1rem;">Career Highlights</h3>
                         <p style="margin-bottom: 1rem;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms.</p>
                         
-                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Television</h4>
+                        <h4 style="color: var(--gold); margin-top: 1.5rem; margin-bottom: 0.75rem;">Television</h4>
                         <p style="margin-bottom: 1rem;">Starred in numerous acclaimed drama series and television productions.</p>
                         
-                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Radio</h4>
+                        <h4 style="color: var(--gold); margin-top: 1.5rem; margin-bottom: 0.75rem;">Radio</h4>
                         <p style="margin-bottom: 1rem;">Hosted popular radio shows reaching millions of listeners.</p>
                         
-                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Digital Media</h4>
+                        <h4 style="color: var(--gold); margin-top: 1.5rem; margin-bottom: 0.75rem;">Digital Media</h4>
                         <p>Created engaging content across social media platforms with a massive following.</p>
                     </div>
                 </div>
@@ -544,66 +607,44 @@
         <!-- Reviews Section -->
         <section id="reviews">
             <div class="container">
-                <h2 class="section-title">Audience Reviews</h2>
-                <div style="margin-bottom: 3rem;">
-                    <h3 style="color: var(--gold); margin-bottom: 1rem;">Share Your Review</h3>
-                    <form id="reviewForm" style="background: var(--secondary-dark); padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="color: var(--gold); display: block; margin-bottom: 0.5rem;">Your Name</label>
-                            <input type="text" id="reviewName" required style="width: 100%; padding: 0.75rem; background: var(--primary-dark); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px;">
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="color: var(--gold); display: block; margin-bottom: 0.5rem;">Your Review</label>
-                            <textarea id="reviewText" required rows="4" style="width: 100%; padding: 0.75rem; background: var(--primary-dark); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; font-family: inherit;"></textarea>
-                        </div>
-                        <button type="submit" style="background: var(--gold); color: var(--primary-dark); border: none; padding: 0.75rem 2rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.3s;" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">Submit Review</button>
-                    </form>
-                </div>
+                <h2 class="section-title">All Reviews</h2>
                 <div id="reviews-container"></div>
             </div>
         </section>
     </main>
 
-    <!-- Modal for images -->
-    <div id="imageModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <img id="modalImage" src="" alt="">
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2026 Musfiq R. Farhan. All rights reserved.</p>
-            <p>Official Portfolio | <a href="https://bayzed123.github.io/MusfiqFarhan/" style="color: var(--gold);">Visit Repository</a></p>
-            <p style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank" style="color: var(--gold); text-decoration: none;">Sayad Md Bayezid Hosan</a></p>
+            <p><a href="https://www.musfiqrfarhan.blog" target="_blank">www.MusfiqrFarhan.blog</a></p>
+            <p style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
         </div>
     </footer>
 
     <script>
+        // Initialize reviews from localStorage
+        function initializeReviews() {
+            if (!localStorage.getItem('reviews')) {
+                localStorage.setItem('reviews', JSON.stringify([]));
+            }
+        }
+
         // Navigation
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('section').forEach(section => {
                 section.classList.remove('active');
             });
 
-            // Remove active class from all nav links
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
 
-            // Show selected section
             document.getElementById(sectionId).classList.add('active');
-
-            // Add active class to clicked nav link
             event.target.classList.add('active');
 
-            // Update URL
             window.history.pushState({}, '', `#${sectionId}`);
 
-            // Load content if needed
             if (sectionId === 'blog') loadBlog();
             if (sectionId === 'pictures') loadPictures();
             if (sectionId === 'videos') loadVideos();
@@ -632,8 +673,9 @@
                 for (const link of links) {
                     const filename = link.textContent;
                     const url = `blog-posts/${filename}`;
+                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
                     html += `<div class="blog-post" onclick="window.open('${url}', '_blank')">
-                        <h3>${filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '')}</h3>
+                        <h3>${title}</h3>
                         <p class="blog-post-meta">${filename.substring(0, 10)}</p>
                         <p>Click to read full post...</p>
                     </div>`;
@@ -666,8 +708,8 @@
                     const filename = link.textContent;
                     const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
                     html += `<div class="gallery-item" onclick="window.open('pictures/${filename}', '_blank')">
-                        <div style="background: var(--secondary-dark); height: 250px; display: flex; align-items: center; justify-content: center;">
-                            <span style="color: var(--gold);">📸 ${title}</span>
+                        <div style="background: var(--secondary-dark); height: 200px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                            📸
                         </div>
                         <div class="gallery-item-info">
                             <h3>${title}</h3>
@@ -737,11 +779,9 @@
                     const filename = link.textContent;
                     const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
                     html += `<div class="timeline-item" onclick="window.open('latest-updates/${filename}', '_blank')">
-                        <div class="timeline-content">
-                            <h3>${title}</h3>
-                            <div class="date">${filename.substring(0, 10)}</div>
-                            <p>Click to view full update...</p>
-                        </div>
+                        <h3>${title}</h3>
+                        <div class="date">${filename.substring(0, 10)}</div>
+                        <p>Click to view full update...</p>
                     </div>`;
                 }
                 container.innerHTML = html;
@@ -751,7 +791,7 @@
         }
 
         // Load reviews
-        async function loadReviews() {
+        function loadReviews() {
             const container = document.getElementById('reviews-container');
             const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
             
@@ -760,20 +800,42 @@
                 return;
             }
 
-            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">';
-            for (const review of reviews.reverse()) {
-                html += `<div style="background: var(--secondary-dark); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--gold);">
-                    <h4 style="color: var(--gold); margin-bottom: 0.5rem;">${review.name}</h4>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">${review.date}</p>
+            let html = '';
+            for (let i = reviews.length - 1; i >= 0; i--) {
+                const review = reviews[i];
+                html += `<div class="review-item">
+                    <h4>${review.name}</h4>
+                    <div class="date">${review.date}</div>
                     <p>${review.text}</p>
                 </div>`;
             }
-            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Load home reviews
+        function loadHomeReviews() {
+            const container = document.getElementById('home-reviews-container');
+            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No reviews yet. Be the first to share your thoughts!</p>';
+                return;
+            }
+
+            let html = '';
+            const recentReviews = reviews.slice(-3).reverse();
+            for (const review of recentReviews) {
+                html += `<div class="review-item">
+                    <h4>${review.name}</h4>
+                    <div class="date">${review.date}</div>
+                    <p>${review.text}</p>
+                </div>`;
+            }
             container.innerHTML = html;
         }
 
         // Handle review form submission
-        document.addEventListener('DOMContentLoaded', function() {
+        function setupReviewForm() {
             const form = document.getElementById('reviewForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -785,35 +847,31 @@
                     reviews.push({
                         name: name,
                         text: text,
-                        date: new Date().toLocaleDateString()
+                        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
                     });
                     localStorage.setItem('reviews', JSON.stringify(reviews));
                     
                     form.reset();
-                    loadReviews();
+                    loadHomeReviews();
                     alert('Thank you for your review!');
                 });
             }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            initializeReviews();
+            setupReviewForm();
+            loadHomeReviews();
+            
+            const hash = window.location.hash.substring(1) || 'home';
+            if (hash !== 'home') {
+                showSection(hash);
+            }
         });
-
-        // Modal functions
-        function openModal(img) {
-            document.getElementById('imageModal').classList.add('active');
-            document.getElementById('modalImage').src = img.src;
-        }
-
-        function closeModal() {
-            document.getElementById('imageModal').classList.remove('active');
-        }
 
         // Handle browser back/forward
         window.addEventListener('popstate', function() {
-            const hash = window.location.hash.substring(1) || 'home';
-            showSection(hash);
-        });
-
-        // Load initial section from URL
-        window.addEventListener('load', function() {
             const hash = window.location.hash.substring(1) || 'home';
             showSection(hash);
         });
