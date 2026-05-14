@@ -654,9 +654,9 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2026 Musfiq R. Farhan. All rights reserved.</p>
-            <p><a href="https://www.musfiqrfarhan.blog" target="_blank">www.MusfiqrFarhan.blog</a></p>
-            <p style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
+            <p style="font-size: 0.9rem;">All rights reserved &copy; 2026 | Official website <strong>Musfiq R Farhan</strong></p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;"><a href="https://www.musfiqrfarhan.blog" target="_blank" style="color: var(--gold);">www.MusfiqrFarhan.blog</a></p>
+            <p style="margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; font-size: 0.85rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank" style="color: var(--gold);">Sayad Md Bayezid Hosan</a></p>
         </div>
     </footer>
 
@@ -703,7 +703,7 @@
                 const links = doc.querySelectorAll('a[href$=".md"]');
                 
                 if (links.length === 0) {
-                    container.innerHTML = '<p>No blog posts yet.</p>';
+                    container.innerHTML = '<p>No blog posts yet. Upload markdown files to blog-posts/ folder.</p>';
                     return;
                 }
 
@@ -712,7 +712,7 @@
                     const filename = link.textContent;
                     const url = `blog-posts/${filename}`;
                     const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    html += `<div class="blog-post" onclick="window.open('${url}', '_blank')">
+                    html += `<div class="blog-post" onclick="viewBlogPost('${url}')" style="cursor: pointer;">
                         <h3>${title}</h3>
                         <p class="blog-post-meta">${filename.substring(0, 10)}</p>
                         <p>Click to read full post...</p>
@@ -722,6 +722,11 @@
             } catch (e) {
                 container.innerHTML = '<p>Error loading blog posts.</p>';
             }
+        }
+        
+        // View blog post
+        function viewBlogPost(url) {
+            window.open(url, '_blank');
         }
 
         // Load pictures
@@ -737,7 +742,7 @@
                 const links = doc.querySelectorAll('a[href$=".md"]');
                 
                 if (links.length === 0) {
-                    container.innerHTML = '<p>No pictures yet.</p>';
+                    container.innerHTML = '<p>No pictures yet. Upload markdown files to pictures/ folder.</p>';
                     return;
                 }
 
@@ -745,7 +750,8 @@
                 for (const link of links) {
                     const filename = link.textContent;
                     const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    html += `<div class="gallery-item" onclick="window.open('pictures/${filename}', '_blank')">
+                    const fileUrl = `pictures/${filename}`;
+                    html += `<div class="gallery-item" onclick="viewPictureFile('${fileUrl}')" style="cursor: pointer;">
                         <div style="background: var(--secondary-dark); height: 200px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
                             📸
                         </div>
@@ -761,6 +767,11 @@
                 container.innerHTML = '<p>Error loading pictures.</p>';
             }
         }
+        
+        // View picture file
+        function viewPictureFile(url) {
+            window.open(url, '_blank');
+        }
 
         // Load videos
         async function loadVideos() {
@@ -775,7 +786,7 @@
                 const links = doc.querySelectorAll('a[href$=".md"]');
                 
                 if (links.length === 0) {
-                    container.innerHTML = '<p>No videos yet.</p>';
+                    container.innerHTML = '<p>No videos yet. Upload markdown files to videos/ folder.</p>';
                     return;
                 }
 
@@ -783,7 +794,8 @@
                 for (const link of links) {
                     const filename = link.textContent;
                     const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    html += `<div class="blog-post" onclick="window.open('videos/${filename}', '_blank')">
+                    const fileUrl = `videos/${filename}`;
+                    html += `<div class="blog-post" onclick="viewVideoFile('${fileUrl}')" style="cursor: pointer;">
                         <h3>🎥 ${title}</h3>
                         <p class="blog-post-meta">${filename.substring(0, 10)}</p>
                         <p>Click to view video details...</p>
@@ -793,6 +805,11 @@
             } catch (e) {
                 container.innerHTML = '<p>Error loading videos.</p>';
             }
+        }
+        
+        // View video file
+        function viewVideoFile(url) {
+            window.open(url, '_blank');
         }
 
         // Load updates
