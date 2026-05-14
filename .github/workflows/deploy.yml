@@ -1,0 +1,122 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Build Site
+        run: |
+          echo "Building website..."
+          mkdir -p _site
+          
+          # Copy main index.html
+          if [ -f "index.html" ]; then
+            cp index.html _site/index.html
+            echo "✓ index.html copied"
+          fi
+          
+          # Copy blog posts
+          mkdir -p _site/blog
+          if [ -d "blog-posts" ] && [ "$(ls -A blog-posts/*.md 2>/dev/null)" ]; then
+            for file in blog-posts/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/blog/<LaTex>$filename"
+                echo "✓ Blog: $</LaTex>filename"
+              fi
+            done
+          fi
+          
+          # Copy pictures
+          mkdir -p _site/pictures
+          if [ -d "pictures" ] && [ "<LaTex>$(ls -A pictures/*.md 2>/dev/null)" ]; then
+            for file in pictures/*.md; do
+              if [ -f "$</LaTex>file" ]; then
+                filename=<LaTex>$(basename "$</LaTex>file")
+                cp "<LaTex>$file" "_site/pictures/$</LaTex>filename"
+                echo "✓ Picture: <LaTex>$filename"
+              fi
+            done
+          fi
+          
+          # Copy videos
+          mkdir -p _site/videos
+          if [ -d "videos" ] && [ "$</LaTex>(ls -A videos/*.md 2>/dev/null)" ]; then
+            for file in videos/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/videos/<LaTex>$filename"
+                echo "✓ Video: $</LaTex>filename"
+              fi
+            done
+          fi
+          
+          # Copy latest updates
+          mkdir -p _site/latest-updates
+          if [ -d "latest-updates" ] && [ "<LaTex>$(ls -A latest-updates/*.md 2>/dev/null)" ]; then
+            for file in latest-updates/*.md; do
+              if [ -f "$</LaTex>file" ]; then
+                filename=<LaTex>$(basename "$</LaTex>file")
+                cp "<LaTex>$file" "_site/latest-updates/$</LaTex>filename"
+                echo "✓ Update: $filename"
+              fi
+            done
+          fi
+          
+          # Copy assets if they exist
+          if [ -d "assets" ]; then
+            cp -r assets _site/
+            echo "✓ Assets copied"
+          fi
+          
+          echo "✅ Website built successfully"
+          ls -la _site/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Deployment Summary
+        run: |
+          echo "## ✅ Website Deployed Successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> <LaTex>$GITHUB_STEP_SUMMARY
+          echo "📍 **Site URL:** https://bayzed123.github.io/MusfiqFarhan/" >> $</LaTex>GITHUB_STEP_SUMMARY
+          echo "" >> <LaTex>$GITHUB_STEP_SUMMARY
+          echo "### 📁 Deployed Content:" >> $</LaTex>GITHUB_STEP_SUMMARY
+          echo "- ✅ Main Website (index.html)" >> <LaTex>$GITHUB_STEP_SUMMARY
+          echo "- 📝 Blog Posts" >> $</LaTex>GITHUB_STEP_SUMMARY
+          echo "- 📸 Pictures" >> <LaTex>$GITHUB_STEP_SUMMARY
+          echo "- 🎥 Videos" >> $</LaTex>GITHUB_STEP_SUMMARY
+          echo "- 📢 Latest Updates" >> $GITHUB_STEP_SUMMARY
