@@ -142,6 +142,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 5%;
         }
 
         .logo {
@@ -179,14 +180,27 @@
             display: none;
             cursor: pointer;
             z-index: 1001;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .hamburger div {
             width: 25px;
             height: 2px;
             background-color: #fff;
-            margin: 6px 0;
             transition: 0.4s;
+        }
+
+        .hamburger.active div:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 10px);
+        }
+
+        .hamburger.active div:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active div:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
         }
 
         /* --- Hero Section --- */
@@ -197,6 +211,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            margin-top: 70px;
         }
 
         .hero-bg {
@@ -252,6 +267,7 @@
             opacity: 0;
             transform: translateY(20px);
             animation: fadeInUp 1s forwards 1.1s;
+            flex-wrap: wrap;
         }
 
         /* --- Bio & Milestones --- */
@@ -488,25 +504,160 @@
             object-fit: cover;
         }
 
-        /* --- Fan Page --- */
-        .fan-slider {
-            max-width: 800px;
-            margin: 0 auto;
+        /* --- Love Notes Hub --- */
+        .love-notes-hub {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .love-notes-header {
             text-align: center;
+            margin-bottom: 60px;
         }
 
-        .fan-note {
-            font-size: 24px;
-            font-style: italic;
-            margin-bottom: 30px;
+        .love-notes-header h2 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .love-notes-header p {
             color: var(--text-dim);
+            font-size: 16px;
         }
 
-        .fan-name {
+        .love-notes-form-container {
+            max-width: 600px;
+            margin: 0 auto 80px;
+        }
+
+        .love-notes-form {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition-smooth);
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .love-notes-form .btn-primary {
+            width: 100%;
+            padding: 16px;
+            font-size: 14px;
+        }
+
+        /* --- Love Notes Marquee Display --- */
+        .love-notes-marquee-section {
+            margin-top: 60px;
+        }
+
+        .marquee-display {
+            overflow: hidden;
+            background: rgba(16, 185, 129, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 30px;
+            animation: marqueeScroll 40s linear infinite;
+            padding: 0 30px;
+        }
+
+        .marquee-track:hover {
+            animation-play-state: paused;
+        }
+
+        .love-note-card {
+            flex: 0 0 auto;
+            min-width: 350px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            transition: var(--transition-smooth);
+        }
+
+        .love-note-card:hover {
+            border-color: var(--emerald);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .love-note-message {
+            font-size: 15px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .love-note-author {
             color: var(--emerald);
             font-weight: 700;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+        }
+
+        .marquee-placeholder {
+            text-align: center;
+            color: var(--text-dim);
+            font-style: italic;
+            width: 100%;
+            padding: 40px;
+        }
+
+        @keyframes marqueeScroll {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-50%);
+            }
         }
 
         /* --- Newsroom --- */
@@ -602,6 +753,22 @@
         .social-links a:hover { color: var(--emerald); transform: translateY(-5px); }
         .copyright { color: var(--text-dim); font-size: 14px; }
 
+        .footer-credit {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .footer-credit a {
+            color: var(--emerald);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-credit a:hover {
+            color: #fff;
+        }
+
         /* --- Animations --- */
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
@@ -629,21 +796,26 @@
             .nav-links {
                 position: fixed;
                 right: -100%;
-                top: 0;
-                height: 100vh;
-                width: 80%;
+                top: 70px;
+                height: calc(100vh - 70px);
+                width: 100%;
                 background: var(--midnight);
                 flex-direction: column;
-                justify-content: center;
+                justify-content: flex-start;
                 align-items: center;
                 transition: 0.5s;
-                z-index: 1000;
+                z-index: 999;
+                padding-top: 40px;
+                gap: 20px;
             }
             .nav-links.active { right: 0; }
-            .hamburger { display: block; }
+            .hamburger { display: flex; }
             .news-grid { grid-template-columns: 1fr; }
             .project-card { min-width: 300px; height: 450px; }
             .hero-title { font-size: 3rem; }
+            .love-note-card { min-width: 280px; }
+            .bio-grid { grid-template-columns: 1fr; }
+            .hero { margin-top: 0; }
         }
     </style>
 </head>
@@ -651,12 +823,13 @@
 
     <!-- Navigation -->
     <header id="header">
-        <div class="container nav-container">
+        <div class="nav-container">
             <a href="#" class="logo cinematic-font">MUSFIQ<span>.</span></a>
             <nav class="nav-links" id="nav-links">
                 <a href="#home" class="active">Home</a>
                 <a href="#filmography">Filmography</a>
                 <a href="#about">About</a>
+                <a href="#love-notes">Love Notes</a>
                 <a href="#news">News</a>
                 <a href="#contact">Contact</a>
             </nav>
@@ -813,19 +986,35 @@
         </div>
     </section>
 
-    <!-- 7. Fan Page & Love Notes -->
-    <section class="section-padding" style="background: rgba(16, 185, 129, 0.02);">
+    <!-- 7. THE LOVE NOTE HUB (FAN ENGAGEMENT) -->
+    <section class="section-padding love-notes-hub" id="love-notes">
         <div class="container">
-            <div class="fan-slider reveal">
-                <i class="fas fa-quote-left" style="color: var(--emerald); font-size: 40px; margin-bottom: 30px;"></i>
-                <div id="fan-note-container">
-                    <p class="fan-note">"Absolutely amazing performance! You are a true artist who brings magic to every role."</p>
-                    <p class="fan-name">- Sarah Ahmed</p>
-                </div>
-                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 10px;">
-                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
-                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--glass-border);"></span>
-                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--glass-border);"></span>
+            <div class="love-notes-header reveal">
+                <h2 class="luxury-font">Love Notes from Fans</h2>
+                <p>Share your thoughts and become part of the Musfiq R. Farhan community</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="love-notes-form-container reveal">
+                <form class="love-notes-form" id="love-notes-form">
+                    <div class="form-group">
+                        <label for="fan-name">Your Name</label>
+                        <input type="text" id="fan-name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fan-message">Your Message</label>
+                        <textarea id="fan-message" placeholder="Share your love and support..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Love</button>
+                </form>
+            </div>
+
+            <!-- Visual Display - Infinite Marquee -->
+            <div class="love-notes-marquee-section reveal">
+                <div class="marquee-display">
+                    <div class="marquee-track" id="marquee-track">
+                        <div class="marquee-placeholder">Be the first to leave a message! 💚</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -913,14 +1102,92 @@
                 <a href="https://youtube.com/musfiqfarhan" target="_blank"><i class="fab fa-youtube"></i></a>
                 <a href="https://twitter.com/musfiqfarhan" target="_blank"><i class="fab fa-twitter"></i></a>
             </div>
-            <p class="copyright">Developed & Managed by <strong>Sayad Md Bayezid Hosan</strong></p>
+            <p class="copyright">All rights reserved | <a href="https://www.musfiqrfarhan.blog" target="_blank">Musfiq R. Farhan</a></p>
+            <p class="footer-credit">Developed & Managed by <a href="https://sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
             <p style="font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 10px;">&copy; 2026 Musfiq R. Farhan. All Rights Reserved.</p>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script>
-        // Sticky Header
+        // ===== LOVE NOTES SYSTEM =====
+        const STORAGE_KEY = 'mrf_love_notes';
+
+        // Load love notes from LocalStorage
+        function loadLoveNotes() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        // Save love notes to LocalStorage
+        function saveLoveNotes(notes) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+        }
+
+        // Render marquee with love notes
+        function renderMarquee() {
+            const notes = loadLoveNotes();
+            const marqueeTrack = document.getElementById('marquee-track');
+            
+            if (notes.length === 0) {
+                marqueeTrack.innerHTML = '<div class="marquee-placeholder">Be the first to leave a message! 💚</div>';
+                return;
+            }
+
+            let html = '';
+            // Create cards and duplicate for infinite loop
+            notes.forEach(note => {
+                html += `
+                    <div class="love-note-card">
+                        <div class="love-note-message">"${note.message}"</div>
+                        <div class="love-note-author">- ${note.name}</div>
+                    </div>
+                `;
+            });
+            // Duplicate for seamless loop
+            html += html;
+            
+            marqueeTrack.innerHTML = html;
+        }
+
+        // Handle form submission
+        document.getElementById('love-notes-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('fan-name').value.trim();
+            const message = document.getElementById('fan-message').value.trim();
+            
+            if (!name || !message) return;
+            
+            // Get existing notes
+            let notes = loadLoveNotes();
+            
+            // Add new note
+            notes.push({
+                name: name,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Save to LocalStorage
+            saveLoveNotes(notes);
+            
+            // Re-render marquee
+            renderMarquee();
+            
+            // Clear form
+            this.reset();
+            
+            // Show success feedback
+            const btn = this.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'Love Sent! 💚';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+
+        // ===== STICKY HEADER =====
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
             if (window.scrollY > 50) {
@@ -930,23 +1197,24 @@
             }
         });
 
-        // Mobile Menu
+        // ===== MOBILE MENU =====
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('nav-links');
         
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
-            hamburger.classList.toggle('toggle');
+            hamburger.classList.toggle('active');
         });
 
         // Close menu on link click
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
                 navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
             });
         });
 
-        // Reveal on Scroll
+        // ===== REVEAL ON SCROLL =====
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
@@ -965,7 +1233,7 @@
         }
         window.addEventListener("scroll", reveal);
 
-        // Counter Animation
+        // ===== COUNTER ANIMATION =====
         function startCounters() {
             const counters = document.querySelectorAll('.milestone-number');
             counters.forEach(counter => {
@@ -986,66 +1254,43 @@
             });
         }
 
-        // Fan Note Interaction (LocalStorage)
-        const fanNotes = [
-            { note: "Absolutely amazing performance! You are a true artist who brings magic to every role.", name: "Sarah Ahmed" },
-            { note: "Your dedication to your craft is inspiring. One of the best in the industry!", name: "Tanvir Hasan" },
-            { note: "Every project you do is a masterpiece. Thank you for the entertainment!", name: "Mila Islam" }
-        ];
-        
-        let currentNote = 0;
-        const noteEl = document.querySelector('.fan-note');
-        const nameEl = document.querySelector('.fan-name');
-        
-        function rotateNotes() {
-            currentNote = (currentNote + 1) % fanNotes.length;
-            noteEl.style.opacity = 0;
-            setTimeout(() => {
-                noteEl.innerText = `"${fanNotes[currentNote].note}"`;
-                nameEl.innerText = `- ${fanNotes[currentNote].name}`;
-                noteEl.style.opacity = 1;
-            }, 500);
-        }
-        setInterval(rotateNotes, 5000);
-
-        // Form Handling
+        // ===== FORM HANDLING =====
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = this.querySelector('button');
             btn.innerText = 'Sending...';
-            
-            // Simulate storage
-            const data = {
-                name: this.querySelector('input[type="text"]').value,
-                email: this.querySelector('input[type="email"]').value,
-                msg: this.querySelector('textarea').value,
-                date: new Date().toISOString()
-            };
-            
-            let inquiries = JSON.parse(localStorage.getItem('mrf_inquiries') || '[]');
-            inquiries.push(data);
-            localStorage.setItem('mrf_inquiries', JSON.stringify(inquiries));
             
             setTimeout(() => {
                 btn.innerText = 'Inquiry Sent!';
                 btn.style.background = '#fff';
                 btn.style.color = '#000';
                 this.reset();
+                setTimeout(() => {
+                    btn.innerText = 'Send Inquiry';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
             }, 1500);
         });
 
-        // Smooth Scrolling
+        // ===== SMOOTH SCROLLING =====
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
             });
         });
 
-        // Initial reveal call
-        reveal();
+        // ===== INITIALIZE =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMarquee();
+            reveal();
+        });
     </script>
 </body>
 </html>
