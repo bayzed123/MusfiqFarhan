@@ -102,6 +102,7 @@
             font-weight: 500;
             transition: var(--transition);
             position: relative;
+            cursor: pointer;
         }
 
         nav a:hover {
@@ -120,6 +121,14 @@
         }
 
         nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a.active {
+            color: var(--accent-green);
+        }
+
+        nav a.active::after {
             width: 100%;
         }
 
@@ -846,12 +855,15 @@
             <span></span>
         </div>
         <nav id="nav">
-            <a href="#home" onclick="closeMenu()">Home</a>
-            <a href="#projects" onclick="closeMenu()">Projects</a>
-            <a href="#contact" onclick="closeMenu()">Contact</a>
+            <a href="#/" onclick="navigatePage('home'); closeMenu()">Home</a>
+            <a href="#/portfolio" onclick="navigatePage('portfolio'); closeMenu()">Portfolio</a>
+            <a href="#/about" onclick="navigatePage('about'); closeMenu()">About</a>
+            <a href="#/love-notes" onclick="navigatePage('love-notes'); closeMenu()">Love Notes</a>
         </nav>
     </header>
 
+    <!-- Home Page -->
+    <div id="page-home" class="page-content active">
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-bg"></div>
@@ -1019,6 +1031,62 @@
         </div>
     </section>
 
+    </div>
+
+    <!-- Portfolio Page -->
+    <div id="page-portfolio" class="page-content">
+        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
+            <div class="container">
+                <h1 class="section-title">Portfolio</h1>
+                <div class="blog-grid" id="portfolio-grid" style="margin-top: 3rem;">
+                    <!-- Portfolio items will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- About Page -->
+    <div id="page-about" class="page-content">
+        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
+            <div class="container">
+                <h1 class="section-title">About Me</h1>
+                <div style="max-width: 900px; margin: 3rem auto;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+                        <div>
+                            <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 12px; border: 2px solid var(--accent-green);" loading="lazy">
+                        </div>
+                        <div>
+                            <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent-green);">Multi-Talented Entertainer</h2>
+                            <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator.</p>
+                            <h3 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Career Highlights</h3>
+                            <ul style="list-style: none; color: var(--text-secondary);">
+                                <li style="margin-bottom: 0.75rem;">✓ 100+ Television Dramas</li>
+                                <li style="margin-bottom: 0.75rem;">✓ Radio Hosting Pioneer</li>
+                                <li style="margin-bottom: 0.75rem;">✓ Digital Media Innovator</li>
+                                <li style="margin-bottom: 0.75rem;">✓ 7M+ Social Media Followers</li>
+                                <li style="margin-bottom: 0.75rem;">✓ Multiple National Awards</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Love Notes Page -->
+    <div id="page-love-notes" class="page-content">
+        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
+            <div class="container">
+                <h1 class="section-title">Love Notes - Fan Reviews</h1>
+                <div style="max-width: 1000px; margin: 3rem auto;">
+                    <div id="love-notes-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                        <!-- Full love notes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
     <!-- Footer -->
     <footer>
         <p>&copy; 2026 Musfiq R. Farhan. All rights reserved.</p>
@@ -1026,6 +1094,42 @@
     </footer>
 
     <script>
+        // Page Navigation
+        function navigatePage(page) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            // Show selected page
+            const pageElement = document.getElementById(`page-${page}`);
+            if (pageElement) {
+                pageElement.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+            // Update URL
+            if (page === 'home') {
+                window.history.pushState(null, null, '#/');
+            } else {
+                window.history.pushState(null, null, `#/${page}`);
+            }
+            updateActiveNav();
+        }
+
+        function updateActiveNav() {
+            const currentPage = window.location.hash.slice(2) || '';
+            document.querySelectorAll('nav a').forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if ((currentPage === '' && href === '#/') || href === `#/${currentPage}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('hashchange', () => {
+            const page = window.location.hash.slice(2) || 'home';
+            navigatePage(page);
+        });
+
         // Hamburger Menu
         const hamburger = document.getElementById('hamburger');
         const nav = document.getElementById('nav');
@@ -1052,6 +1156,18 @@
                 closeMenu();
             }
         }
+
+        // Add page visibility styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .page-content {
+                display: none;
+            }
+            .page-content.active {
+                display: block;
+            }
+        `;
+        document.head.appendChild(style);
 
         // Load Carousels
         function loadCarousels() {
@@ -1149,6 +1265,61 @@
             });
         }
 
+        // Load Portfolio
+        function loadPortfolio() {
+            const portfolioItems = [
+                { title: 'Drama Series 1', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', year: '2025' },
+                { title: 'Drama Series 2', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg', year: '2025' },
+                { title: 'TVC Campaign', image: 'https://i.postimg.cc/XZh004Yd/image.jpg', year: '2024' },
+                { title: 'Radio Show', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg', year: '2024' },
+                { title: 'Digital Content', image: 'https://i.postimg.cc/p9336Cs1/image.jpg', year: '2024' },
+                { title: 'Film Project', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', year: '2023' },
+            ];
+
+            const portfolioGrid = document.getElementById('portfolio-grid');
+            portfolioItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'blog-card fade-in';
+                div.innerHTML = `
+                    <div class="blog-card-image">
+                        <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-date">${item.year}</div>
+                        <div class="blog-card-title">${item.title}</div>
+                        <div class="blog-card-excerpt">Professional work showcasing talent and dedication.</div>
+                    </div>
+                `;
+                portfolioGrid.appendChild(div);
+            });
+        }
+
+        // Load Full Love Notes
+        function loadFullLoveNotes() {
+            const loveNotesItems = [
+                { name: 'Fan 1', message: 'Absolutely amazing performance! You are a true artist.' },
+                { name: 'Fan 2', message: 'Your dedication to your craft is inspiring. Keep shining!' },
+                { name: 'Fan 3', message: 'One of the best actors in the industry. Love your work!' },
+                { name: 'Fan 4', message: 'Your talent is unmatched. Proud to be your fan!' },
+                { name: 'Fan 5', message: 'Every project you do is a masterpiece. Thank you!' },
+                { name: 'Fan 6', message: 'You bring magic to every role. Incredible talent!' },
+                { name: 'Fan 7', message: 'Your work touches hearts. Thank you for everything!' },
+                { name: 'Fan 8', message: 'A true legend in the entertainment industry!' },
+            ];
+
+            const loveNotesGrid = document.getElementById('love-notes-full');
+            loveNotesItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'blog-card fade-in';
+                div.style.cssText = 'display: flex; flex-direction: column; justify-content: center; padding: 2rem; background: var(--secondary-dark); border: 2px solid var(--accent-green);';
+                div.innerHTML = `
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-style: italic; line-height: 1.6;">${item.message}</p>
+                    <p style="color: var(--accent-green); font-weight: 600;">- ${item.name}</p>
+                `;
+                loveNotesGrid.appendChild(div);
+            });
+        }
+
         // Load Brands
         function loadBrands() {
             const brands = ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E', 'Brand F'];
@@ -1216,12 +1387,19 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadCarousels();
             loadBlog();
+            loadPortfolio();
+            loadFullLoveNotes();
             loadBrands();
 
             // Observe all fade-in elements
             document.querySelectorAll('.fade-in').forEach(el => {
                 observer.observe(el);
             });
+
+            // Initialize page based on URL
+            const page = window.location.hash.slice(2) || 'home';
+            navigatePage(page);
+            updateActiveNav();
         });
     </script>
 </body>
