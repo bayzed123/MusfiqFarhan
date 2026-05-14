@@ -1,0 +1,55 @@
+name: Auto-Publish Blog Posts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'blog-posts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish-blog:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Process Blog Posts
+        run: |
+          echo "Processing blog posts..."
+          mkdir -p _site/blog
+          
+          if [ -d "blog-posts" ] && [ "$(ls -A blog-posts/*.md 2>/dev/null)" ]; then
+            for file in blog-posts/*.md; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                cp "$file" "_site/blog/$filename"
+                echo "✓ Blog post: $filename"
+              fi
+            done
+          fi
+          
+          echo "✅ Blog posts processed"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## 📝 Blog Posts Published" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Blog posts have been automatically published!" >> $GITHUB_STEP_SUMMARY
