@@ -3,175 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musfiq R. Farhan - Professional Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Musfiq R. Farhan | Official Premium Portfolio</title>
+    <meta name="description" content="Official portfolio of Musfiq R. Farhan - Renowned Bangladeshi Actor, RJ, and Content Creator.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Cinzel:wght@400..900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --midnight: #05070a;
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.3);
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        :root {
-            --primary-dark: #0a0e27;
-            --secondary-dark: #111827;
-            --tertiary-dark: #1f2937;
-            --accent-green: #10b981;
-            --accent-green-light: #34d399;
-            --text-primary: #f3f4f6;
-            --text-secondary: #d1d5db;
-            --text-muted: #9ca3af;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        html {
-            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
+            background-color: var(--midnight);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            background: var(--primary-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* ============ HEADER & NAVIGATION ============ */
+        h1, h2, h3, .luxury-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .cinematic-font {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 4px;
+        }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--midnight);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--emerald);
+            border-radius: 10px;
+        }
+
+        /* --- Global Elements --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        .section-padding {
+            padding: 120px 0;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            transition: var(--transition-smooth);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--emerald);
+            color: var(--midnight);
+            box-shadow: 0 10px 20px var(--emerald-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px var(--emerald-glow);
+            background: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-outline:hover {
+            background: var(--glass);
+            border-color: #fff;
+        }
+
+        /* --- Navigation --- */
         header {
             position: fixed;
             top: 0;
-            left: 0;
-            right: 0;
+            width: 100%;
             z-index: 1000;
-            background: rgba(10, 14, 39, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 2rem;
+            padding: 25px 0;
+            transition: var(--transition-smooth);
+        }
+
+        header.scrolled {
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: 24px;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            cursor: pointer;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--emerald);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--emerald);
         }
 
         .hamburger {
             display: none;
-            flex-direction: column;
             cursor: pointer;
-            gap: 6px;
+            z-index: 1001;
         }
 
-        .hamburger span {
+        .hamburger div {
             width: 25px;
-            height: 3px;
-            background: var(--accent-green);
-            border-radius: 2px;
-            transition: var(--transition);
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(10px, 10px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
-        }
-
-        nav {
-            display: flex;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-            position: relative;
-            cursor: pointer;
-        }
-
-        nav a:hover {
-            color: var(--accent-green);
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
             height: 2px;
-            background: var(--accent-green);
-            transition: var(--transition);
+            background-color: #fff;
+            margin: 6px 0;
+            transition: 0.4s;
         }
 
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        nav a.active {
-            color: var(--accent-green);
-        }
-
-        nav a.active::after {
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
-            }
-
-            nav {
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background: var(--primary-dark);
-                flex-direction: column;
-                gap: 0;
-                padding: 2rem;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.3s ease;
-                border-bottom: 1px solid var(--border-color);
-            }
-
-            nav.active {
-                max-height: 500px;
-            }
-
-            nav a {
-                padding: 1rem 0;
-                border-bottom: 1px solid var(--border-color);
-            }
-        }
-
-        /* ============ HERO SECTION ============ */
+        /* --- Hero Section --- */
         .hero {
-            position: relative;
             height: 100vh;
+            position: relative;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
             overflow: hidden;
-            padding-bottom: 5rem;
-            margin-top: 70px;
         }
 
         .hero-bg {
@@ -180,1227 +205,847 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(10, 14, 39, 0.3) 0%, rgba(10, 14, 39, 0.5) 50%, rgba(10, 14, 39, 0.95) 100%), url('https://i.postimg.cc/G9Cg6WhZ/image.jpg');
+            background: linear-gradient(to bottom, rgba(5, 7, 10, 0.2) 0%, rgba(5, 7, 10, 0.8) 100%), 
+                        url('https://i.postimg.cc/G9Cg6WhZ/image.jpg');
             background-size: cover;
-            background-position: center;
-            z-index: 1;
+            background-position: center 20%;
+            z-index: -1;
+            transform: scale(1.1);
+            transition: transform 10s ease-out;
+        }
+
+        .hero:hover .hero-bg {
+            transform: scale(1);
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
             text-align: center;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .hero-content h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 900;
-            margin-bottom: 2rem;
-            letter-spacing: -1px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 1rem 2.5rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: var(--accent-green);
-            color: var(--primary-dark);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-green-light);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--accent-green);
-            border: 2px solid var(--accent-green);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(16, 185, 129, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            animation: pulse 2s infinite;
-        }
-
-        .scroll-indicator svg {
-            width: 30px;
-            height: 30px;
-            stroke: var(--accent-green);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                opacity: 0.5;
-                transform: translateX(-50%) translateY(10px);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ============ CONTAINER ============ */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* ============ SECTION TITLE ============ */
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            margin-bottom: 3rem;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* ============ BIOGRAPHY & MILESTONES ============ */
-        .biography-section {
-            padding: 6rem 2rem;
-            background: var(--primary-dark);
-            text-align: center;
-        }
-
-        .biography-content {
             max-width: 900px;
-            margin: 0 auto 4rem;
-            animation: fadeInUp 1s ease-out;
         }
 
-        .biography-content p {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+        .hero-subtitle {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: var(--emerald);
+            margin-bottom: 20px;
+            display: block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards 0.5s;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 30px;
+            line-height: 1.1;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards 0.8s;
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards 1.1s;
+        }
+
+        /* --- Bio & Milestones --- */
+        .bio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .bio-text h2 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: var(--gold);
+        }
+
+        .bio-text p {
+            font-size: 18px;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-weight: 300;
         }
 
         .milestones {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
         }
 
-        .milestone {
-            padding: 2rem;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: var(--transition);
-        }
-
-        .milestone:hover {
-            background: rgba(16, 185, 129, 0.2);
-            transform: translateY(-5px);
+        .milestone-item {
+            text-align: center;
+            padding: 30px;
         }
 
         .milestone-number {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            color: var(--accent-green);
-            font-weight: 900;
-            margin-bottom: 0.5rem;
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--emerald);
+            display: block;
+            margin-bottom: 10px;
         }
 
         .milestone-label {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
         }
 
-        /* ============ COMING SOON BANNER ============ */
+        .awards-badges {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .award-badge {
+            background: var(--glass);
+            border: 1px solid var(--gold);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 12px;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- Coming Soon Banner --- */
         .coming-soon {
-            padding: 3rem 2rem;
-            background: var(--primary-dark);
+            height: 60vh;
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.2), rgba(212, 175, 55, 0.1)), 
+                        url('https://i.postimg.cc/ftGZYD4h/image.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 30px;
+            margin: 0 5%;
         }
 
-        .coming-soon-banner {
+        .coming-soon::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 7, 10, 0.4);
+        }
+
+        .cs-content {
             position: relative;
-            height: 400px;
-            border-radius: 16px;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .cs-tag {
+            color: var(--emerald);
+            letter-spacing: 5px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .cs-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            margin-bottom: 30px;
+        }
+
+        /* --- The Hub (Carousel) --- */
+        .hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+        }
+
+        .hub-title h2 { font-size: 42px; }
+        .hub-title p { color: var(--emerald); letter-spacing: 2px; text-transform: uppercase; font-size: 12px; margin-bottom: 10px; }
+
+        .carousel-wrapper {
+            position: relative;
+            margin: 0 -5%;
+            padding: 0 5%;
+            overflow-x: auto;
+            display: flex;
+            gap: 30px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 40px;
+        }
+
+        .carousel-wrapper::-webkit-scrollbar { display: none; }
+
+        .project-card {
+            min-width: 400px;
+            height: 550px;
+            position: relative;
+            border-radius: 20px;
             overflow: hidden;
-            border: 2px solid var(--accent-green);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%), url('https://i.postimg.cc/ftGZYD4h/image.jpg');
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-smooth);
+        }
+
+        .project-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .project-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px;
+            background: linear-gradient(to top, rgba(5, 7, 10, 0.9), transparent);
+            transform: translateY(20px);
+            transition: var(--transition-smooth);
+        }
+
+        .project-card:hover .project-info {
+            transform: translateY(0);
+        }
+
+        .project-info h3 { font-size: 24px; margin-bottom: 10px; }
+        .project-info span { color: var(--emerald); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- Featured Spotlight --- */
+        .spotlight-container {
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            background: #000;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+        }
+
+        .video-facade {
+            width: 100%;
+            aspect-ratio: 16/9;
             background-size: cover;
             background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition);
         }
 
-        .coming-soon-banner:hover {
-            transform: scale(1.02);
-        }
-
-        .coming-soon-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 14, 39, 0.5);
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2rem;
+            font-size: 30px;
+            transition: var(--transition-smooth);
         }
 
-        .coming-soon-text {
+        .video-facade:hover .play-btn {
+            background: var(--emerald);
+            color: var(--midnight);
+            transform: scale(1.1);
+        }
+
+        /* --- Behind The Scenes --- */
+        .bts-slider {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .bts-item {
+            min-width: 300px;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .bts-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* --- Fan Page --- */
+        .fan-slider {
+            max-width: 800px;
+            margin: 0 auto;
             text-align: center;
         }
 
-        .coming-soon-text h3 {
-            font-size: 1.5rem;
-            color: var(--accent-green);
-            margin-bottom: 0.5rem;
+        .fan-note {
+            font-size: 24px;
+            font-style: italic;
+            margin-bottom: 30px;
+            color: var(--text-dim);
         }
 
-        .coming-soon-text h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--text-primary);
+        .fan-name {
+            color: var(--emerald);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .play-button-large {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-dark);
-            font-size: 2rem;
-            transition: var(--transition);
-        }
-
-        .coming-soon-banner:hover .play-button-large {
-            transform: scale(1.1);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
-        }
-
-        /* ============ CAROUSEL SECTION ============ */
-        .carousel-section {
-            padding: 5rem 2rem;
-            background: var(--primary-dark);
-        }
-
-        .carousel-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 12px;
-        }
-
-        .carousel {
-            display: flex;
-            gap: 2rem;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 1rem;
-            scroll-snap-type: x mandatory;
-        }
-
-        .carousel::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .carousel::-webkit-scrollbar-track {
-            background: var(--secondary-dark);
-            border-radius: 10px;
-        }
-
-        .carousel::-webkit-scrollbar-thumb {
-            background: var(--accent-green);
-            border-radius: 10px;
-        }
-
-        .carousel-item {
-            flex: 0 0 350px;
-            height: 300px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid var(--accent-green);
-            cursor: pointer;
-            position: relative;
-            transition: var(--transition);
-            scroll-snap-align: start;
-            background: var(--secondary-dark);
-        }
-
-        .carousel-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .carousel-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
-        }
-
-        .carousel-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .carousel-item-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .carousel-item:hover .carousel-item-overlay {
-            opacity: 1;
-        }
-
-        .play-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-        }
-
-        /* ============ FEATURED VIDEO ============ */
-        .featured-video-section {
-            padding: 5rem 2rem;
-            background: var(--primary-dark);
-        }
-
-        .featured-video-container {
-            position: relative;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid var(--accent-green);
-            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
-        }
-
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* ============ BLOG & NEWS SECTION ============ */
-        .blog-section {
-            padding: 5rem 2rem;
-            background: var(--primary-dark);
-        }
-
-        .blog-grid {
+        /* --- Newsroom --- */
+        .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
         }
 
-        .blog-card {
-            background: var(--secondary-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: var(--transition);
+        .news-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 20px;
+            transition: var(--transition-smooth);
         }
 
-        .blog-card:hover {
+        .news-card:hover {
+            border-color: var(--emerald);
             transform: translateY(-10px);
-            border-color: var(--accent-green);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
         }
 
-        .blog-card-image {
-            width: 100%;
-            height: 200px;
-            background: var(--tertiary-dark);
-            overflow: hidden;
-        }
+        .news-date { color: var(--emerald); font-size: 12px; margin-bottom: 15px; display: block; }
+        .news-card h3 { font-size: 20px; margin-bottom: 20px; }
 
-        .blog-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .blog-card:hover .blog-card-image img {
-            transform: scale(1.05);
-        }
-
-        .blog-card-content {
-            padding: 1.5rem;
-        }
-
-        .blog-card-date {
-            color: var(--accent-green);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .blog-card-title {
-            color: var(--text-primary);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        .blog-card-excerpt {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* ============ BRAND COLLABORATIONS (MARQUEE) ============ */
-        .brands-section {
-            padding: 5rem 2rem;
-            background: var(--primary-dark);
-            overflow: hidden;
-        }
-
-        .marquee-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            padding: 2rem 0;
-        }
-
+        /* --- Brand Marquee --- */
         .marquee {
-            display: flex;
-            gap: 3rem;
-            animation: marquee 20s linear infinite;
-            width: fit-content;
-        }
-
-        .marquee-item {
-            flex: 0 0 auto;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 2rem;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--accent-green);
-            font-weight: 600;
+            overflow: hidden;
             white-space: nowrap;
-            transition: var(--transition);
+            padding: 40px 0;
+            background: var(--glass);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        .marquee-item:hover {
-            background: rgba(16, 185, 129, 0.2);
-            transform: scale(1.05);
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 30s linear infinite;
+        }
+
+        .marquee-content span {
+            font-size: 32px;
+            font-weight: 900;
+            margin: 0 60px;
+            color: rgba(255,255,255,0.1);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            transition: var(--transition-smooth);
+        }
+
+        .marquee-content span:hover {
+            color: var(--emerald);
         }
 
         @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-50%);
-            }
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
         }
 
-        /* ============ CONTACT SECTION ============ */
-        .contact-section {
-            padding: 5rem 2rem;
-            background: var(--primary-dark);
+        /* --- Contact & Footer --- */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
         }
 
-        .contact-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .contact-form {
-            background: var(--secondary-dark);
-            padding: 3rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
+        .contact-form input, .contact-form textarea {
             width: 100%;
-            padding: 1rem;
-            background: var(--tertiary-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            transition: var(--transition);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 10px;
+            color: #fff;
+            margin-bottom: 20px;
             outline: none;
-            border-color: var(--accent-green);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+            transition: var(--transition-smooth);
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
+        .contact-form input:focus, .contact-form textarea:focus {
+            border-color: var(--emerald);
+            background: rgba(255,255,255,0.05);
         }
 
-        .submit-btn {
-            width: 100%;
-            padding: 1rem;
-            background: var(--accent-green);
-            color: var(--primary-dark);
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 1rem;
-        }
-
-        .submit-btn:hover {
-            background: var(--accent-green-light);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-
-        /* ============ SOCIAL LINKS ============ */
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-green);
-            text-decoration: none;
-            transition: var(--transition);
-            font-size: 1.2rem;
-        }
-
-        .social-link:hover {
-            background: var(--accent-green);
-            color: var(--primary-dark);
-            transform: translateY(-5px);
-        }
-
-        /* ============ FOOTER ============ */
         footer {
-            background: var(--secondary-dark);
-            padding: 3rem 2rem;
+            padding: 60px 0;
+            border-top: 1px solid var(--glass-border);
             text-align: center;
-            border-top: 1px solid var(--border-color);
         }
 
-        footer p {
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+        .footer-logo { font-size: 32px; margin-bottom: 30px; display: block; }
+        .social-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; }
+        .social-links a { color: var(--text-dim); font-size: 20px; transition: var(--transition-smooth); }
+        .social-links a:hover { color: var(--emerald); transform: translateY(-5px); }
+        .copyright { color: var(--text-dim); font-size: 14px; }
+
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        footer a {
-            color: var(--accent-green);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        footer a:hover {
-            color: var(--accent-green-light);
-        }
-
-        /* ============ SCROLL ANIMATIONS ============ */
-        .fade-in {
+        .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: var(--transition);
+            transform: translateY(50px);
+            transition: all 1s ease-out;
         }
 
-        .fade-in.visible {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        /* ============ RESPONSIVE ============ */
+        /* --- Mobile Responsive --- */
+        @media (max-width: 992px) {
+            .bio-grid, .contact-grid { grid-template-columns: 1fr; gap: 50px; }
+            .news-grid { grid-template-columns: 1fr 1fr; }
+            .hero-title { font-size: 4rem; }
+        }
+
         @media (max-width: 768px) {
-            .carousel-item {
-                flex: 0 0 280px;
-                height: 250px;
-            }
-
-            .hero-buttons {
+            .nav-links {
+                position: fixed;
+                right: -100%;
+                top: 0;
+                height: 100vh;
+                width: 80%;
+                background: var(--midnight);
                 flex-direction: column;
-                gap: 1rem;
+                justify-content: center;
+                align-items: center;
+                transition: 0.5s;
+                z-index: 1000;
             }
-
-            .btn {
-                width: 100%;
-            }
-
-            .coming-soon-banner {
-                height: 300px;
-            }
-
-            .coming-soon-text h2 {
-                font-size: 2rem;
-            }
-
-            .contact-form {
-                padding: 2rem;
-            }
-
-            .milestones {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .nav-links.active { right: 0; }
+            .hamburger { display: block; }
+            .news-grid { grid-template-columns: 1fr; }
+            .project-card { min-width: 300px; height: 450px; }
+            .hero-title { font-size: 3rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo" onclick="scrollToTop()">MRF</div>
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
+
+    <!-- Navigation -->
+    <header id="header">
+        <div class="container nav-container">
+            <a href="#" class="logo cinematic-font">MUSFIQ<span>.</span></a>
+            <nav class="nav-links" id="nav-links">
+                <a href="#home" class="active">Home</a>
+                <a href="#filmography">Filmography</a>
+                <a href="#about">About</a>
+                <a href="#news">News</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div class="hamburger" id="hamburger">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
         </div>
-        <nav id="nav">
-            <a href="#/" onclick="navigatePage('home'); closeMenu()">Home</a>
-            <a href="#/portfolio" onclick="navigatePage('portfolio'); closeMenu()">Portfolio</a>
-            <a href="#/about" onclick="navigatePage('about'); closeMenu()">About</a>
-            <a href="#/love-notes" onclick="navigatePage('love-notes'); closeMenu()">Love Notes</a>
-        </nav>
     </header>
 
-    <!-- Home Page -->
-    <div id="page-home" class="page-content active">
-    <!-- Hero Section -->
+    <!-- 1. Immersive Hero Poster -->
     <section class="hero" id="home">
         <div class="hero-bg"></div>
         <div class="hero-content">
-            <h1>Hello, I'm Musfiq R. Farhan</h1>
-            <div class="hero-buttons">
-                <button class="btn btn-primary" onclick="scrollToSection('projects')">Explore Works</button>
-                <button class="btn btn-secondary" onclick="scrollToSection('contact')">Business Inquiry</button>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-        </div>
-    </section>
-
-    <!-- Biography & Milestones -->
-    <section class="biography-section fade-in">
-        <div class="container">
-            <div class="biography-content">
-                <p>Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator.</p>
-                <p>As an accomplished actor, radio jockey, and digital media pioneer, Musfiq brings authenticity and passion to every project. His work has resonated with millions across Bangladesh and beyond, making him a household name in the entertainment industry.</p>
-            </div>
-            <div class="milestones">
-                <div class="milestone fade-in">
-                    <div class="milestone-number" data-target="100">0</div>
-                    <div class="milestone-label">+ Dramas</div>
-                </div>
-                <div class="milestone fade-in">
-                    <div class="milestone-number" data-target="7">0</div>
-                    <div class="milestone-label">M+ Followers</div>
-                </div>
-                <div class="milestone fade-in">
-                    <div class="milestone-number" data-target="50">0</div>
-                    <div class="milestone-label">+ Awards</div>
-                </div>
-                <div class="milestone fade-in">
-                    <div class="milestone-number" data-target="15">0</div>
-                    <div class="milestone-label">+ Years Experience</div>
-                </div>
+            <span class="hero-subtitle cinematic-font">Award Winning Actor</span>
+            <h1 class="hero-title luxury-font">Hello, I'm Musfiq R. Farhan</h1>
+            <div class="hero-btns">
+                <a href="#filmography" class="btn btn-primary">Explore Filmography</a>
+                <a href="#contact" class="btn btn-outline">Inquiry</a>
             </div>
         </div>
     </section>
 
-    <!-- Coming Soon Banner -->
-    <section class="coming-soon fade-in">
+    <!-- 2. Luxury Editorial Bio & Milestones -->
+    <section class="section-padding" id="about">
         <div class="container">
-            <div class="coming-soon-banner">
-                <div class="coming-soon-overlay">
-                    <div class="coming-soon-text">
-                        <h3>COMING SOON</h3>
-                        <h2>Upcoming Drama</h2>
+            <div class="bio-grid">
+                <div class="bio-text reveal">
+                    <p class="cinematic-font" style="color: var(--emerald); font-size: 12px; margin-bottom: 15px;">The Journey</p>
+                    <h2 class="luxury-font">A Legacy in the Making</h2>
+                    <p>A prominent Bangladeshi actor, RJ, and content creator known for his versatility and independent success in the industry. Successfully transitioned from radio to television and OTT, building a massive audience through sheer talent and self-produced content.</p>
+                    <div class="awards-badges">
+                        <div class="award-badge"><i class="fas fa-trophy"></i> Game Changer of The Year 2025</div>
+                        <div class="award-badge"><i class="fas fa-medal"></i> 4th BIFA Best Actor - OTT</div>
+                        <div class="award-badge"><i class="fas fa-award"></i> 5th BIFA Nominee 2026</div>
                     </div>
-                    <div class="play-button-large">▶</div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Latest Projects & Dramas -->
-    <section class="carousel-section fade-in" id="projects">
-        <div class="container">
-            <h2 class="section-title">Latest Dramas & Projects</h2>
-            <div class="carousel-container">
-                <div class="carousel" id="dramas-carousel">
-                    <!-- Items will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Video -->
-    <section class="featured-video-section fade-in">
-        <div class="container">
-            <h2 class="section-title">Featured Video</h2>
-            <div class="featured-video-container">
-                <div class="video-wrapper">
-                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Behind The Scenes -->
-    <section class="carousel-section fade-in">
-        <div class="container">
-            <h2 class="section-title">Behind The Scenes</h2>
-            <div class="carousel-container">
-                <div class="carousel" id="bts-carousel">
-                    <!-- Items will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Love Notes -->
-    <section class="carousel-section fade-in">
-        <div class="container">
-            <h2 class="section-title">Love Notes - Fan Reviews</h2>
-            <div class="carousel-container">
-                <div class="carousel" id="love-notes-carousel">
-                    <!-- Items will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog & News -->
-    <section class="blog-section fade-in">
-        <div class="container">
-            <h2 class="section-title">Blog, PR & Latest News</h2>
-            <div class="blog-grid" id="blog-grid">
-                <!-- Items will be loaded here -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Brand Collaborations -->
-    <section class="brands-section fade-in">
-        <div class="container">
-            <h2 class="section-title">Brand Collaborations</h2>
-            <div class="marquee-container">
-                <div class="marquee" id="marquee">
-                    <!-- Items will be loaded here -->
-                </div>
-                <div class="marquee" id="marquee-clone" aria-hidden="true">
-                    <!-- Clone for infinite scroll -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact-section fade-in" id="contact">
-        <div class="container">
-            <h2 class="section-title">Get in Touch</h2>
-            <div class="contact-container">
-                <form class="contact-form" id="contact-form">
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required>
+                <div class="milestones reveal">
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="120">0</span>
+                        <span class="milestone-label">Productions</span>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="8">0</span>
+                        <span class="milestone-label">Million Fans</span>
                     </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="15">0</span>
+                        <span class="milestone-label">Awards Won</span>
                     </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
-
-                <div class="social-links">
-                    <a href="https://www.facebook.com/share/1cQdw7JcMs/" target="_blank" class="social-link" title="Facebook">f</a>
-                    <a href="https://www.instagram.com/musfiqfarhan" target="_blank" class="social-link" title="Instagram">📷</a>
-                    <a href="https://www.youtube.com/@musfiqrfarhan" target="_blank" class="social-link" title="YouTube">▶</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    </div>
-
-    <!-- Portfolio Page -->
-    <div id="page-portfolio" class="page-content">
-        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
-            <div class="container">
-                <h1 class="section-title">Portfolio</h1>
-                <div class="blog-grid" id="portfolio-grid" style="margin-top: 3rem;">
-                    <!-- Portfolio items will be loaded here -->
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- About Page -->
-    <div id="page-about" class="page-content">
-        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
-            <div class="container">
-                <h1 class="section-title">About Me</h1>
-                <div style="max-width: 900px; margin: 3rem auto;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
-                        <div>
-                            <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 12px; border: 2px solid var(--accent-green);" loading="lazy">
-                        </div>
-                        <div>
-                            <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent-green);">Multi-Talented Entertainer</h2>
-                            <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator.</p>
-                            <h3 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Career Highlights</h3>
-                            <ul style="list-style: none; color: var(--text-secondary);">
-                                <li style="margin-bottom: 0.75rem;">✓ 100+ Television Dramas</li>
-                                <li style="margin-bottom: 0.75rem;">✓ Radio Hosting Pioneer</li>
-                                <li style="margin-bottom: 0.75rem;">✓ Digital Media Innovator</li>
-                                <li style="margin-bottom: 0.75rem;">✓ 7M+ Social Media Followers</li>
-                                <li style="margin-bottom: 0.75rem;">✓ Multiple National Awards</li>
-                            </ul>
-                        </div>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="10">0</span>
+                        <span class="milestone-label">Years of Magic</span>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- Love Notes Page -->
-    <div id="page-love-notes" class="page-content">
-        <section style="padding-top: 150px; padding-bottom: 5rem; background: var(--primary-dark);">
-            <div class="container">
-                <h1 class="section-title">Love Notes - Fan Reviews</h1>
-                <div style="max-width: 1000px; margin: 3rem auto;">
-                    <div id="love-notes-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                        <!-- Full love notes will be loaded here -->
+    <!-- 3. Coming Soon Mega Banner -->
+    <section class="reveal">
+        <div class="coming-soon">
+            <div class="cs-content">
+                <span class="cs-tag cinematic-font">PREMIERING 2026</span>
+                <h2 class="cs-title luxury-font">Poran Pakhi</h2>
+                <a href="#" class="btn btn-primary">Watch Trailer</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Latest Dramas & TVCs (The Hub) -->
+    <section class="section-padding" id="filmography">
+        <div class="container">
+            <div class="hub-header reveal">
+                <div class="hub-title">
+                    <p>Selected Works</p>
+                    <h2 class="luxury-font">The Hub</h2>
+                </div>
+                <div class="carousel-nav">
+                    <a href="#filmography" class="btn btn-outline" style="padding: 10px 20px;"><i class="fas fa-arrow-left"></i></a>
+                    <a href="#filmography" class="btn btn-outline" style="padding: 10px 20px;"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            <div class="carousel-wrapper reveal">
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Sheshta Tumi">
+                    <div class="project-info">
+                        <span>Drama / 2025</span>
+                        <h3 class="luxury-font">Sheshta Tumi</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Stupids">
+                    <div class="project-info">
+                        <span>Drama / 2024</span>
+                        <h3 class="luxury-font">Stupids</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Plural No. 3rd Person">
+                    <div class="project-info">
+                        <span>Drama / 2024</span>
+                        <h3 class="luxury-font">Plural No. 3rd Person</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="Sweeper Man">
+                    <div class="project-info">
+                        <span>Drama / 2023</span>
+                        <h3 class="luxury-font">Sweeper Man</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="Visa in Life">
+                    <div class="project-info">
+                        <span>Drama / 2023</span>
+                        <h3 class="luxury-font">Visa in Life</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/p9336Cs1/image.jpg" alt="Hangor">
+                    <div class="project-info">
+                        <span>Film / 2022</span>
+                        <h3 class="luxury-font">Hangor</h3>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- Footer -->
+    <!-- 5. Featured Spotlight (Big Screen) -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="spotlight-container reveal">
+                <div class="video-facade" style="background-image: url('https://i.ytimg.com/vi/UT0a504rXqU/maxresdefault.jpg');" onclick="this.innerHTML='<iframe width=\'100%\' height=\'100%\' src=\'https://www.youtube.com/embed/UT0a504rXqU?autoplay=1\' frameborder=\'0\' allow=\'autoplay; encrypted-media\' allowfullscreen></iframe>'">
+                    <div class="play-btn"><i class="fas fa-play"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Behind The Scenes -->
+    <section class="section-padding">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Behind The Scenes</h2>
+            <div class="bts-slider reveal">
+                <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 1"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="BTS 2"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/p9336Cs1/image.jpg" alt="BTS 3"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 4"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="BTS 5"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Fan Page & Love Notes -->
+    <section class="section-padding" style="background: rgba(16, 185, 129, 0.02);">
+        <div class="container">
+            <div class="fan-slider reveal">
+                <i class="fas fa-quote-left" style="color: var(--emerald); font-size: 40px; margin-bottom: 30px;"></i>
+                <div id="fan-note-container">
+                    <p class="fan-note">"Absolutely amazing performance! You are a true artist who brings magic to every role."</p>
+                    <p class="fan-name">- Sarah Ahmed</p>
+                </div>
+                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 10px;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--emerald);"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--glass-border);"></span>
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--glass-border);"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Newsroom & PR -->
+    <section class="section-padding" id="news">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
+            <div class="news-grid reveal">
+                <div class="news-card">
+                    <span class="news-date">May 14, 2026</span>
+                    <h3 class="luxury-font">Musfiq R. Farhan Shines in 'Poran Pakhi' Premiere</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The latest Eid special drama breaks viewership records within 24 hours of release...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">April 20, 2026</span>
+                    <h3 class="luxury-font">BIFA Awards 2026: Musfiq Nominated for Best Actor</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Celebrating excellence in OTT content, Farhan secures his third consecutive nomination...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">March 05, 2026</span>
+                    <h3 class="luxury-font">New Brand Partnership Announced with Luxury Timepieces</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Musfiq R. Farhan becomes the new face of global premium watch brand...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. Brand Partnerships -->
+    <section class="marquee">
+        <div class="marquee-content">
+            <span>SAMSUNG</span>
+            <span>COCA COLA</span>
+            <span>ROBI</span>
+            <span>GRAMEENPHONE</span>
+            <span>UNILEVER</span>
+            <span>PEPSI</span>
+            <span>SAMSUNG</span>
+            <span>COCA COLA</span>
+            <span>ROBI</span>
+            <span>GRAMEENPHONE</span>
+            <span>UNILEVER</span>
+            <span>PEPSI</span>
+        </div>
+    </section>
+
+    <!-- 10. Premium Contact & Footer -->
+    <section class="section-padding" id="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="reveal">
+                    <h2 class="luxury-font" style="font-size: 48px; margin-bottom: 30px;">Let's Create Something <span style="color: var(--emerald);">Iconic</span></h2>
+                    <p style="color: var(--text-dim); margin-bottom: 40px;">For business inquiries, collaborations, and media requests, please use the form or reach out directly via social channels.</p>
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--emerald);">Email</p>
+                        <p style="font-size: 18px;">hello@musfiqfarhan.com</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--emerald);">Location</p>
+                        <p style="font-size: 18px;">Dhaka, Bangladesh</p>
+                    </div>
+                </div>
+                <div class="glass-card contact-form reveal">
+                    <form id="contact-form">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="email" placeholder="Your Email" required>
+                        <textarea rows="5" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Inquiry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer>
-        <p>&copy; 2026 Musfiq R. Farhan. All rights reserved.</p>
-        <p>Developed & Managed by <a href="https://www.sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
+        <div class="container">
+            <a href="#" class="footer-logo cinematic-font luxury-font">MUSFIQ<span>.</span></a>
+            <div class="social-links">
+                <a href="https://facebook.com/musfiqfarhan" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com/musfiqfarhan" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com/musfiqfarhan" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="https://twitter.com/musfiqfarhan" target="_blank"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p class="copyright">Developed & Managed by <strong>Sayad Md Bayezid Hosan</strong></p>
+            <p style="font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 10px;">&copy; 2026 Musfiq R. Farhan. All Rights Reserved.</p>
+        </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
-        // Page Navigation
-        function navigatePage(page) {
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            // Show selected page
-            const pageElement = document.getElementById(`page-${page}`);
-            if (pageElement) {
-                pageElement.classList.add('active');
-                window.scrollTo(0, 0);
-            }
-            // Update URL
-            if (page === 'home') {
-                window.history.pushState(null, null, '#/');
+        // Sticky Header
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
             } else {
-                window.history.pushState(null, null, `#/${page}`);
+                header.classList.remove('scrolled');
             }
-            updateActiveNav();
-        }
-
-        function updateActiveNav() {
-            const currentPage = window.location.hash.slice(2) || '';
-            document.querySelectorAll('nav a').forEach(link => {
-                link.classList.remove('active');
-                const href = link.getAttribute('href');
-                if ((currentPage === '' && href === '#/') || href === `#/${currentPage}`) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        // Handle browser back/forward
-        window.addEventListener('hashchange', () => {
-            const page = window.location.hash.slice(2) || 'home';
-            navigatePage(page);
         });
 
-        // Hamburger Menu
+        // Mobile Menu
         const hamburger = document.getElementById('hamburger');
-        const nav = document.getElementById('nav');
-
+        const navLinks = document.getElementById('nav-links');
+        
         hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            nav.classList.toggle('active');
+            navLinks.classList.toggle('active');
+            hamburger.classList.toggle('toggle');
         });
 
-        function closeMenu() {
-            hamburger.classList.remove('active');
-            nav.classList.remove('active');
-        }
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            closeMenu();
-        }
-
-        function scrollToSection(id) {
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-                closeMenu();
+        // Reveal on Scroll
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                    
+                    // Trigger counter if milestone
+                    if(reveals[i].classList.contains('milestones')) {
+                        startCounters();
+                    }
+                }
             }
         }
-
-        // Add page visibility styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .page-content {
-                display: none;
-            }
-            .page-content.active {
-                display: block;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Load Carousels
-        function loadCarousels() {
-            const dramaItems = [
-                { title: 'Drama 1', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
-                { title: 'Drama 2', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
-                { title: 'Drama 3', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
-                { title: 'Drama 4', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
-                { title: 'Drama 5', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
-            ];
-
-            const btsItems = [
-                { title: 'BTS 1', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
-                { title: 'BTS 2', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
-                { title: 'BTS 3', image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
-                { title: 'BTS 4', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
-                { title: 'BTS 5', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
-            ];
-
-            const loveNotesItems = [
-                { name: 'Fan 1', message: 'Absolutely amazing performance! You are a true artist.' },
-                { name: 'Fan 2', message: 'Your dedication to your craft is inspiring. Keep shining!' },
-                { name: 'Fan 3', message: 'One of the best actors in the industry. Love your work!' },
-                { name: 'Fan 4', message: 'Your talent is unmatched. Proud to be your fan!' },
-                { name: 'Fan 5', message: 'Every project you do is a masterpiece. Thank you!' },
-            ];
-
-            // Load Dramas
-            const dramasCarousel = document.getElementById('dramas-carousel');
-            dramaItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'carousel-item fade-in';
-                div.innerHTML = `
-                    <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="carousel-item-overlay">
-                        <div class="play-button">▶</div>
-                    </div>
-                `;
-                dramasCarousel.appendChild(div);
-            });
-
-            // Load BTS
-            const btsCarousel = document.getElementById('bts-carousel');
-            btsItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'carousel-item fade-in';
-                div.innerHTML = `
-                    <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="carousel-item-overlay">
-                        <div class="play-button">▶</div>
-                    </div>
-                `;
-                btsCarousel.appendChild(div);
-            });
-
-            // Load Love Notes
-            const loveNotesCarousel = document.getElementById('love-notes-carousel');
-            loveNotesItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'carousel-item fade-in';
-                div.style.cssText = 'display: flex; align-items: center; justify-content: center; padding: 2rem; background: var(--secondary-dark); border: 2px solid var(--accent-green);';
-                div.innerHTML = `
-                    <div style="text-align: center;">
-                        <p style="color: var(--text-secondary); margin-bottom: 1rem; font-style: italic;">"${item.message}"</p>
-                        <p style="color: var(--accent-green); font-weight: 600;">- ${item.name}</p>
-                    </div>
-                `;
-                loveNotesCarousel.appendChild(div);
-            });
-        }
-
-        // Load Blog
-        function loadBlog() {
-            const blogItems = [
-                { date: '2026-05-14', title: 'Latest Drama Success', excerpt: 'Breaking records with the latest drama release...' },
-                { date: '2026-05-10', title: 'Radio Hosting Milestone', excerpt: 'Celebrating 10 years of radio excellence...' },
-                { date: '2026-05-05', title: 'Digital Media Pioneer', excerpt: 'Expanding presence across digital platforms...' },
-            ];
-
-            const blogGrid = document.getElementById('blog-grid');
-            blogItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'blog-card fade-in';
-                div.innerHTML = `
-                    <div class="blog-card-image">
-                        <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="${item.title}" loading="lazy">
-                    </div>
-                    <div class="blog-card-content">
-                        <div class="blog-card-date">${item.date}</div>
-                        <div class="blog-card-title">${item.title}</div>
-                        <div class="blog-card-excerpt">${item.excerpt}</div>
-                    </div>
-                `;
-                blogGrid.appendChild(div);
-            });
-        }
-
-        // Load Portfolio
-        function loadPortfolio() {
-            const portfolioItems = [
-                { title: 'Drama Series 1', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', year: '2025' },
-                { title: 'Drama Series 2', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg', year: '2025' },
-                { title: 'TVC Campaign', image: 'https://i.postimg.cc/XZh004Yd/image.jpg', year: '2024' },
-                { title: 'Radio Show', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg', year: '2024' },
-                { title: 'Digital Content', image: 'https://i.postimg.cc/p9336Cs1/image.jpg', year: '2024' },
-                { title: 'Film Project', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', year: '2023' },
-            ];
-
-            const portfolioGrid = document.getElementById('portfolio-grid');
-            portfolioItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'blog-card fade-in';
-                div.innerHTML = `
-                    <div class="blog-card-image">
-                        <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    </div>
-                    <div class="blog-card-content">
-                        <div class="blog-card-date">${item.year}</div>
-                        <div class="blog-card-title">${item.title}</div>
-                        <div class="blog-card-excerpt">Professional work showcasing talent and dedication.</div>
-                    </div>
-                `;
-                portfolioGrid.appendChild(div);
-            });
-        }
-
-        // Load Full Love Notes
-        function loadFullLoveNotes() {
-            const loveNotesItems = [
-                { name: 'Fan 1', message: 'Absolutely amazing performance! You are a true artist.' },
-                { name: 'Fan 2', message: 'Your dedication to your craft is inspiring. Keep shining!' },
-                { name: 'Fan 3', message: 'One of the best actors in the industry. Love your work!' },
-                { name: 'Fan 4', message: 'Your talent is unmatched. Proud to be your fan!' },
-                { name: 'Fan 5', message: 'Every project you do is a masterpiece. Thank you!' },
-                { name: 'Fan 6', message: 'You bring magic to every role. Incredible talent!' },
-                { name: 'Fan 7', message: 'Your work touches hearts. Thank you for everything!' },
-                { name: 'Fan 8', message: 'A true legend in the entertainment industry!' },
-            ];
-
-            const loveNotesGrid = document.getElementById('love-notes-full');
-            loveNotesItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'blog-card fade-in';
-                div.style.cssText = 'display: flex; flex-direction: column; justify-content: center; padding: 2rem; background: var(--secondary-dark); border: 2px solid var(--accent-green);';
-                div.innerHTML = `
-                    <p style="color: var(--text-secondary); margin-bottom: 1rem; font-style: italic; line-height: 1.6;">${item.message}</p>
-                    <p style="color: var(--accent-green); font-weight: 600;">- ${item.name}</p>
-                `;
-                loveNotesGrid.appendChild(div);
-            });
-        }
-
-        // Load Brands
-        function loadBrands() {
-            const brands = ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E', 'Brand F'];
-            const marquee = document.getElementById('marquee');
-            const marqueeClone = document.getElementById('marquee-clone');
-
-            brands.forEach(brand => {
-                const item = document.createElement('div');
-                item.className = 'marquee-item';
-                item.textContent = brand;
-                marquee.appendChild(item);
-            });
-
-            // Clone for infinite scroll
-            marquee.querySelectorAll('.marquee-item').forEach(item => {
-                marqueeClone.appendChild(item.cloneNode(true));
-            });
-        }
+        window.addEventListener("scroll", reveal);
 
         // Counter Animation
-        function animateCounters() {
-            const counters = document.querySelectorAll('[data-target]');
+        function startCounters() {
+            const counters = document.querySelectorAll('.milestone-number');
             counters.forEach(counter => {
-                const target = parseInt(counter.dataset.target);
-                let current = 0;
-                const increment = target / 50;
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        counter.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.floor(current);
-                    }
-                }, 30);
+                if(counter.innerText === '0') {
+                    const target = +counter.getAttribute('data-target');
+                    const updateCount = () => {
+                        const count = +counter.innerText;
+                        const inc = target / 100;
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + inc);
+                            setTimeout(updateCount, 20);
+                        } else {
+                            counter.innerText = target + '+';
+                        }
+                    };
+                    updateCount();
+                }
             });
         }
 
-        // Scroll Animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+        // Fan Note Interaction (LocalStorage)
+        const fanNotes = [
+            { note: "Absolutely amazing performance! You are a true artist who brings magic to every role.", name: "Sarah Ahmed" },
+            { note: "Your dedication to your craft is inspiring. One of the best in the industry!", name: "Tanvir Hasan" },
+            { note: "Every project you do is a masterpiece. Thank you for the entertainment!", name: "Mila Islam" }
+        ];
+        
+        let currentNote = 0;
+        const noteEl = document.querySelector('.fan-note');
+        const nameEl = document.querySelector('.fan-name');
+        
+        function rotateNotes() {
+            currentNote = (currentNote + 1) % fanNotes.length;
+            noteEl.style.opacity = 0;
+            setTimeout(() => {
+                noteEl.innerText = `"${fanNotes[currentNote].note}"`;
+                nameEl.innerText = `- ${fanNotes[currentNote].name}`;
+                noteEl.style.opacity = 1;
+            }, 500);
+        }
+        setInterval(rotateNotes, 5000);
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    if (entry.target.classList.contains('milestone-number')) {
-                        animateCounters();
-                    }
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        // Contact Form
-        document.getElementById('contact-form').addEventListener('submit', (e) => {
+        // Form Handling
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-            document.getElementById('contact-form').reset();
+            const btn = this.querySelector('button');
+            btn.innerText = 'Sending...';
+            
+            // Simulate storage
+            const data = {
+                name: this.querySelector('input[type="text"]').value,
+                email: this.querySelector('input[type="email"]').value,
+                msg: this.querySelector('textarea').value,
+                date: new Date().toISOString()
+            };
+            
+            let inquiries = JSON.parse(localStorage.getItem('mrf_inquiries') || '[]');
+            inquiries.push(data);
+            localStorage.setItem('mrf_inquiries', JSON.stringify(inquiries));
+            
+            setTimeout(() => {
+                btn.innerText = 'Inquiry Sent!';
+                btn.style.background = '#fff';
+                btn.style.color = '#000';
+                this.reset();
+            }, 1500);
         });
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCarousels();
-            loadBlog();
-            loadPortfolio();
-            loadFullLoveNotes();
-            loadBrands();
-
-            // Observe all fade-in elements
-            document.querySelectorAll('.fade-in').forEach(el => {
-                observer.observe(el);
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
             });
-
-            // Initialize page based on URL
-            const page = window.location.hash.slice(2) || 'home';
-            navigatePage(page);
-            updateActiveNav();
         });
+
+        // Initial reveal call
+        reveal();
     </script>
 </body>
 </html>
