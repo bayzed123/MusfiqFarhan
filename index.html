@@ -22,6 +22,7 @@
             --text-secondary: #d1d5db;
             --text-muted: #9ca3af;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-color: rgba(16, 185, 129, 0.2);
         }
 
         html {
@@ -43,12 +44,13 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(10, 14, 39, 0.9);
+            background: rgba(10, 14, 39, 0.95);
             backdrop-filter: blur(10px);
             padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
@@ -138,6 +140,7 @@
                 max-height: 0;
                 overflow: hidden;
                 transition: max-height 0.3s ease;
+                border-bottom: 1px solid var(--border-color);
             }
 
             nav.active {
@@ -159,6 +162,7 @@
             justify-content: center;
             overflow: hidden;
             padding-bottom: 5rem;
+            margin-top: 70px;
         }
 
         .hero-bg {
@@ -228,7 +232,6 @@
             transform: translateY(-3px);
         }
 
-        /* Scroll Indicator */
         .scroll-indicator {
             position: absolute;
             bottom: 2rem;
@@ -268,27 +271,37 @@
             }
         }
 
-        /* ============ BIOGRAPHY SECTION ============ */
-        .biography {
+        /* ============ CONTAINER ============ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* ============ SECTION TITLE ============ */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============ BIOGRAPHY & MILESTONES ============ */
+        .biography-section {
             padding: 6rem 2rem;
             background: var(--primary-dark);
             text-align: center;
         }
 
         .biography-content {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 0 auto 4rem;
             animation: fadeInUp 1s ease-out;
-        }
-
-        .biography-content h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .biography-content p {
@@ -298,21 +311,117 @@
             margin-bottom: 1.5rem;
         }
 
-        /* ============ MEDIA CAROUSEL ============ */
-        .carousel-section {
-            padding: 5rem 2rem;
+        .milestones {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .milestone {
+            padding: 2rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .milestone:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .milestone-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--accent-green);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .milestone-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ============ COMING SOON BANNER ============ */
+        .coming-soon {
+            padding: 3rem 2rem;
             background: var(--primary-dark);
         }
 
-        .carousel-section h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
+        .coming-soon-banner {
+            position: relative;
+            height: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--accent-green);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%), url('https://i.postimg.cc/ftGZYD4h/image.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .coming-soon-banner:hover {
+            transform: scale(1.02);
+        }
+
+        .coming-soon-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .coming-soon-text {
             text-align: center;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        }
+
+        .coming-soon-text h3 {
+            font-size: 1.5rem;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .coming-soon-text h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--text-primary);
+        }
+
+        .play-button-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 2rem;
+            transition: var(--transition);
+        }
+
+        .coming-soon-banner:hover .play-button-large {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        /* ============ CAROUSEL SECTION ============ */
+        .carousel-section {
+            padding: 5rem 2rem;
+            background: var(--primary-dark);
         }
 
         .carousel-container {
@@ -357,16 +466,16 @@
             background: var(--secondary-dark);
         }
 
-        .carousel-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
-        }
-
         .carousel-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: var(--transition);
+        }
+
+        .carousel-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
         }
 
         .carousel-item:hover img {
@@ -403,105 +512,176 @@
             font-size: 1.5rem;
         }
 
-        /* ============ GALLERY PAGE ============ */
-        .gallery {
+        /* ============ FEATURED VIDEO ============ */
+        .featured-video-section {
             padding: 5rem 2rem;
             background: var(--primary-dark);
         }
 
-        .gallery h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            margin-bottom: 3rem;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .featured-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--accent-green);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
         }
 
-        .masonry-grid {
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ============ BLOG & NEWS SECTION ============ */
+        .blog-section {
+            padding: 5rem 2rem;
+            background: var(--primary-dark);
+        }
+
+        .blog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+            margin-top: 3rem;
         }
 
-        .masonry-item {
-            position: relative;
+        .blog-card {
+            background: var(--secondary-dark);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
-            border: 2px solid var(--accent-green);
-            cursor: pointer;
             transition: var(--transition);
-            height: 300px;
         }
 
-        .masonry-item:nth-child(3n + 1) {
-            grid-column: span 2;
-            height: 400px;
+        .blog-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
         }
 
-        .masonry-item img {
+        .blog-card-image {
+            width: 100%;
+            height: 200px;
+            background: var(--tertiary-dark);
+            overflow: hidden;
+        }
+
+        .blog-card-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: var(--transition);
         }
 
-        .masonry-item:hover img {
+        .blog-card:hover .blog-card-image img {
             transform: scale(1.05);
         }
 
-        .masonry-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .blog-card-content {
+            padding: 1.5rem;
+        }
+
+        .blog-card-date {
+            color: var(--accent-green);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card-title {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .blog-card-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* ============ BRAND COLLABORATIONS (MARQUEE) ============ */
+        .brands-section {
+            padding: 5rem 2rem;
+            background: var(--primary-dark);
+            overflow: hidden;
+        }
+
+        .marquee-container {
+            position: relative;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 0;
+        }
+
+        .marquee {
+            display: flex;
+            gap: 3rem;
+            animation: marquee 20s linear infinite;
+            width: fit-content;
+        }
+
+        .marquee-item {
+            flex: 0 0 auto;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
+            padding: 0 2rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-green);
+            font-weight: 600;
+            white-space: nowrap;
             transition: var(--transition);
         }
 
-        .masonry-item:hover .masonry-overlay {
-            opacity: 1;
+        .marquee-item:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(1.05);
         }
 
-        /* ============ CONTACT PAGE ============ */
-        .contact {
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* ============ CONTACT SECTION ============ */
+        .contact-section {
             padding: 5rem 2rem;
             background: var(--primary-dark);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .contact-container {
             max-width: 600px;
-            width: 100%;
+            margin: 0 auto;
         }
 
-        .contact h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            text-align: center;
-            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .contact p {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
+        .contact-form {
+            background: var(--secondary-dark);
+            padding: 3rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .form-group {
@@ -519,8 +699,8 @@
         .form-group textarea {
             width: 100%;
             padding: 1rem;
-            background: var(--secondary-dark);
-            border: 1px solid var(--accent-green);
+            background: var(--tertiary-dark);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             color: var(--text-primary);
             font-family: 'Inter', sans-serif;
@@ -530,13 +710,13 @@
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--accent-green-light);
+            border-color: var(--accent-green);
             box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 150px;
+            min-height: 120px;
         }
 
         .submit-btn {
@@ -558,12 +738,41 @@
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
+        /* ============ SOCIAL LINKS ============ */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-green);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+            transform: translateY(-5px);
+        }
+
         /* ============ FOOTER ============ */
         footer {
             background: var(--secondary-dark);
             padding: 3rem 2rem;
             text-align: center;
-            border-top: 1px solid var(--accent-green);
+            border-top: 1px solid var(--border-color);
         }
 
         footer p {
@@ -581,20 +790,23 @@
             color: var(--accent-green-light);
         }
 
+        /* ============ SCROLL ANIMATIONS ============ */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
             .carousel-item {
                 flex: 0 0 280px;
                 height: 250px;
-            }
-
-            .masonry-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .masonry-item:nth-child(3n + 1) {
-                grid-column: span 1;
-                height: 300px;
             }
 
             .hero-buttons {
@@ -605,105 +817,180 @@
             .btn {
                 width: 100%;
             }
-        }
 
-        /* ============ PAGE VISIBILITY ============ */
-        .page {
-            display: none;
-        }
+            .coming-soon-banner {
+                height: 300px;
+            }
 
-        .page.active {
-            display: block;
-        }
+            .coming-soon-text h2 {
+                font-size: 2rem;
+            }
 
-        /* ============ LAZY LOADING ============ */
-        img[loading="lazy"] {
-            background: var(--secondary-dark);
+            .contact-form {
+                padding: 2rem;
+            }
+
+            .milestones {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <div class="logo" onclick="navigateTo('home')">MRF</div>
+        <div class="logo" onclick="scrollToTop()">MRF</div>
         <div class="hamburger" id="hamburger">
             <span></span>
             <span></span>
             <span></span>
         </div>
         <nav id="nav">
-            <a href="#home" onclick="navigateTo('home')">Home</a>
-            <a href="#gallery" onclick="navigateTo('gallery')">Gallery</a>
-            <a href="#contact" onclick="navigateTo('contact')">Contact</a>
+            <a href="#home" onclick="closeMenu()">Home</a>
+            <a href="#projects" onclick="closeMenu()">Projects</a>
+            <a href="#contact" onclick="closeMenu()">Contact</a>
         </nav>
     </header>
 
-    <!-- Home Page -->
-    <div id="home" class="page active">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-bg"></div>
-            <div class="hero-content">
-                <h1>Hello, I'm Musfiq R. Farhan</h1>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="navigateTo('gallery')">Explore Works</button>
-                    <button class="btn btn-secondary" onclick="navigateTo('contact')">Business Inquiry</button>
-                </div>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1>Hello, I'm Musfiq R. Farhan</h1>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('projects')">Explore Works</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('contact')">Business Inquiry</button>
             </div>
-            <div class="scroll-indicator">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-            </div>
-        </section>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
 
-        <!-- Biography Section -->
-        <section class="biography">
+    <!-- Biography & Milestones -->
+    <section class="biography-section fade-in">
+        <div class="container">
             <div class="biography-content">
-                <h2>About Me</h2>
                 <p>Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator.</p>
                 <p>As an accomplished actor, radio jockey, and digital media pioneer, Musfiq brings authenticity and passion to every project. His work has resonated with millions across Bangladesh and beyond, making him a household name in the entertainment industry.</p>
             </div>
-        </section>
+            <div class="milestones">
+                <div class="milestone fade-in">
+                    <div class="milestone-number" data-target="100">0</div>
+                    <div class="milestone-label">+ Dramas</div>
+                </div>
+                <div class="milestone fade-in">
+                    <div class="milestone-number" data-target="7">0</div>
+                    <div class="milestone-label">M+ Followers</div>
+                </div>
+                <div class="milestone fade-in">
+                    <div class="milestone-number" data-target="50">0</div>
+                    <div class="milestone-label">+ Awards</div>
+                </div>
+                <div class="milestone fade-in">
+                    <div class="milestone-number" data-target="15">0</div>
+                    <div class="milestone-label">+ Years Experience</div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <!-- Latest Dramas Carousel -->
-        <section class="carousel-section">
-            <h2>Latest Dramas</h2>
+    <!-- Coming Soon Banner -->
+    <section class="coming-soon fade-in">
+        <div class="container">
+            <div class="coming-soon-banner">
+                <div class="coming-soon-overlay">
+                    <div class="coming-soon-text">
+                        <h3>COMING SOON</h3>
+                        <h2>Upcoming Drama</h2>
+                    </div>
+                    <div class="play-button-large">▶</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Latest Projects & Dramas -->
+    <section class="carousel-section fade-in" id="projects">
+        <div class="container">
+            <h2 class="section-title">Latest Dramas & Projects</h2>
             <div class="carousel-container">
                 <div class="carousel" id="dramas-carousel">
                     <!-- Items will be loaded here -->
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Behind The Scenes Carousel -->
-        <section class="carousel-section">
-            <h2>Behind The Scenes</h2>
+    <!-- Featured Video -->
+    <section class="featured-video-section fade-in">
+        <div class="container">
+            <h2 class="section-title">Featured Video</h2>
+            <div class="featured-video-container">
+                <div class="video-wrapper">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Behind The Scenes -->
+    <section class="carousel-section fade-in">
+        <div class="container">
+            <h2 class="section-title">Behind The Scenes</h2>
             <div class="carousel-container">
                 <div class="carousel" id="bts-carousel">
                     <!-- Items will be loaded here -->
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- Gallery Page -->
-    <div id="gallery" class="page">
-        <section class="gallery">
-            <h1>Gallery</h1>
-            <div class="masonry-grid" id="masonry-grid">
+    <!-- Love Notes -->
+    <section class="carousel-section fade-in">
+        <div class="container">
+            <h2 class="section-title">Love Notes - Fan Reviews</h2>
+            <div class="carousel-container">
+                <div class="carousel" id="love-notes-carousel">
+                    <!-- Items will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog & News -->
+    <section class="blog-section fade-in">
+        <div class="container">
+            <h2 class="section-title">Blog, PR & Latest News</h2>
+            <div class="blog-grid" id="blog-grid">
                 <!-- Items will be loaded here -->
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <!-- Contact Page -->
-    <div id="contact" class="page">
-        <section class="contact">
+    <!-- Brand Collaborations -->
+    <section class="brands-section fade-in">
+        <div class="container">
+            <h2 class="section-title">Brand Collaborations</h2>
+            <div class="marquee-container">
+                <div class="marquee" id="marquee">
+                    <!-- Items will be loaded here -->
+                </div>
+                <div class="marquee" id="marquee-clone" aria-hidden="true">
+                    <!-- Clone for infinite scroll -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section fade-in" id="contact">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
             <div class="contact-container">
-                <h1>Get in Touch</h1>
-                <p>Have a project in mind? Let's collaborate and create something amazing together.</p>
-                <form id="contact-form">
+                <form class="contact-form" id="contact-form">
                     <div class="form-group">
                         <label for="name">Full Name</label>
                         <input type="text" id="name" name="name" required>
@@ -722,9 +1009,15 @@
                     </div>
                     <button type="submit" class="submit-btn">Send Message</button>
                 </form>
+
+                <div class="social-links">
+                    <a href="https://www.facebook.com/share/1cQdw7JcMs/" target="_blank" class="social-link" title="Facebook">f</a>
+                    <a href="https://www.instagram.com/musfiqfarhan" target="_blank" class="social-link" title="Instagram">📷</a>
+                    <a href="https://www.youtube.com/@musfiqrfarhan" target="_blank" class="social-link" title="YouTube">▶</a>
+                </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer>
@@ -733,7 +1026,7 @@
     </footer>
 
     <script>
-        // Navigation
+        // Hamburger Menu
         const hamburger = document.getElementById('hamburger');
         const nav = document.getElementById('nav');
 
@@ -742,38 +1035,55 @@
             nav.classList.toggle('active');
         });
 
-        function navigateTo(page) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            // Show selected page
-            document.getElementById(page).classList.add('active');
-            // Close mobile menu
+        function closeMenu() {
             hamburger.classList.remove('active');
             nav.classList.remove('active');
-            // Scroll to top
-            window.scrollTo(0, 0);
         }
 
-        // Load carousel data
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            closeMenu();
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                closeMenu();
+            }
+        }
+
+        // Load Carousels
         function loadCarousels() {
             const dramaItems = [
                 { title: 'Drama 1', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
                 { title: 'Drama 2', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
                 { title: 'Drama 3', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
                 { title: 'Drama 4', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
+                { title: 'Drama 5', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
             ];
 
             const btsItems = [
-                { title: 'Behind The Scenes 1', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
-                { title: 'Behind The Scenes 2', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
-                { title: 'Behind The Scenes 3', image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
-                { title: 'Behind The Scenes 4', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
+                { title: 'BTS 1', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
+                { title: 'BTS 2', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
+                { title: 'BTS 3', image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
+                { title: 'BTS 4', image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
+                { title: 'BTS 5', image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
             ];
 
+            const loveNotesItems = [
+                { name: 'Fan 1', message: 'Absolutely amazing performance! You are a true artist.' },
+                { name: 'Fan 2', message: 'Your dedication to your craft is inspiring. Keep shining!' },
+                { name: 'Fan 3', message: 'One of the best actors in the industry. Love your work!' },
+                { name: 'Fan 4', message: 'Your talent is unmatched. Proud to be your fan!' },
+                { name: 'Fan 5', message: 'Every project you do is a masterpiece. Thank you!' },
+            ];
+
+            // Load Dramas
             const dramasCarousel = document.getElementById('dramas-carousel');
             dramaItems.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'carousel-item';
+                div.className = 'carousel-item fade-in';
                 div.innerHTML = `
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="carousel-item-overlay">
@@ -783,10 +1093,11 @@
                 dramasCarousel.appendChild(div);
             });
 
+            // Load BTS
             const btsCarousel = document.getElementById('bts-carousel');
             btsItems.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'carousel-item';
+                div.className = 'carousel-item fade-in';
                 div.innerHTML = `
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
                     <div class="carousel-item-overlay">
@@ -795,39 +1106,88 @@
                 `;
                 btsCarousel.appendChild(div);
             });
-        }
 
-        // Load gallery
-        function loadGallery() {
-            const galleryItems = [
-                { image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
-                { image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
-                { image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
-                { image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
-                { image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
-                { image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
-            ];
-
-            const masonryGrid = document.getElementById('masonry-grid');
-            galleryItems.forEach(item => {
+            // Load Love Notes
+            const loveNotesCarousel = document.getElementById('love-notes-carousel');
+            loveNotesItems.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'masonry-item';
+                div.className = 'carousel-item fade-in';
+                div.style.cssText = 'display: flex; align-items: center; justify-content: center; padding: 2rem; background: var(--secondary-dark); border: 2px solid var(--accent-green);';
                 div.innerHTML = `
-                    <img src="${item.image}" alt="Gallery" loading="lazy">
-                    <div class="masonry-overlay"></div>
+                    <div style="text-align: center;">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem; font-style: italic;">"${item.message}"</p>
+                        <p style="color: var(--accent-green); font-weight: 600;">- ${item.name}</p>
+                    </div>
                 `;
-                masonryGrid.appendChild(div);
+                loveNotesCarousel.appendChild(div);
             });
         }
 
-        // Contact form
-        document.getElementById('contact-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Thank you for your message! We will get back to you soon.');
-            document.getElementById('contact-form').reset();
-        });
+        // Load Blog
+        function loadBlog() {
+            const blogItems = [
+                { date: '2026-05-14', title: 'Latest Drama Success', excerpt: 'Breaking records with the latest drama release...' },
+                { date: '2026-05-10', title: 'Radio Hosting Milestone', excerpt: 'Celebrating 10 years of radio excellence...' },
+                { date: '2026-05-05', title: 'Digital Media Pioneer', excerpt: 'Expanding presence across digital platforms...' },
+            ];
 
-        // Scroll animations
+            const blogGrid = document.getElementById('blog-grid');
+            blogItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'blog-card fade-in';
+                div.innerHTML = `
+                    <div class="blog-card-image">
+                        <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="${item.title}" loading="lazy">
+                    </div>
+                    <div class="blog-card-content">
+                        <div class="blog-card-date">${item.date}</div>
+                        <div class="blog-card-title">${item.title}</div>
+                        <div class="blog-card-excerpt">${item.excerpt}</div>
+                    </div>
+                `;
+                blogGrid.appendChild(div);
+            });
+        }
+
+        // Load Brands
+        function loadBrands() {
+            const brands = ['Brand A', 'Brand B', 'Brand C', 'Brand D', 'Brand E', 'Brand F'];
+            const marquee = document.getElementById('marquee');
+            const marqueeClone = document.getElementById('marquee-clone');
+
+            brands.forEach(brand => {
+                const item = document.createElement('div');
+                item.className = 'marquee-item';
+                item.textContent = brand;
+                marquee.appendChild(item);
+            });
+
+            // Clone for infinite scroll
+            marquee.querySelectorAll('.marquee-item').forEach(item => {
+                marqueeClone.appendChild(item.cloneNode(true));
+            });
+        }
+
+        // Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('[data-target]');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                let current = 0;
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        counter.textContent = target;
+                        clearInterval(timer);
+                    } else {
+                        counter.textContent = Math.floor(current);
+                    }
+                }, 30);
+            });
+        }
+
+        // Scroll Animations
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -836,19 +1196,30 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                    entry.target.classList.add('visible');
+                    if (entry.target.classList.contains('milestone-number')) {
+                        animateCounters();
+                    }
                     observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
+        // Contact Form
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            document.getElementById('contact-form').reset();
+        });
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadCarousels();
-            loadGallery();
+            loadBlog();
+            loadBrands();
 
-            // Observe sections for scroll animations
-            document.querySelectorAll('.biography-content, .carousel-section').forEach(el => {
+            // Observe all fade-in elements
+            document.querySelectorAll('.fade-in').forEach(el => {
                 observer.observe(el);
             });
         });
