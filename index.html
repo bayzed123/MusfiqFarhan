@@ -752,9 +752,27 @@
         }
 
         .footer-logo { font-size: 32px; margin-bottom: 30px; display: block; }
-        .social-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 40px; }
-        .social-links a { color: var(--text-dim); font-size: 20px; transition: var(--transition-smooth); }
-        .social-links a:hover { color: var(--emerald); transform: translateY(-5px); }
+        .social-links { display: flex; justify-content: center; gap: 25px; margin-bottom: 40px; flex-wrap: wrap; }
+        .social-links a {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50%;
+            color: var(--emerald);
+            font-size: 20px;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+        }
+        .social-links a:hover {
+            background: var(--emerald);
+            color: var(--midnight);
+            transform: translateY(-8px) scale(1.15);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+        }
         .copyright { color: var(--text-dim); font-size: 14px; }
 
         .footer-credit {
@@ -1102,10 +1120,12 @@
         <div class="container">
             <a href="#" class="footer-logo cinematic-font luxury-font">MUSFIQ<span>.</span></a>
             <div class="social-links">
-                <a href="https://facebook.com/musfiqfarhan" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://instagram.com/musfiqfarhan" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="https://youtube.com/musfiqfarhan" target="_blank"><i class="fab fa-youtube"></i></a>
-                <a href="https://twitter.com/musfiqfarhan" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/1cQdw7JcMs/?mibextid=wwXIfr" target="_blank" title="Facebook Page (8M)"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.facebook.com/share/1Nq9zsuqu3/?mibextid=wwXIfr" target="_blank" title="Facebook Profile"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.imdb.com/name/nm11068428/bio/" target="_blank" title="IMDb"><i class="fab fa-imdb"></i></a>
+                <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X" target="_blank" title="WhatsApp Channel"><i class="fab fa-whatsapp"></i></a>
             </div>
             <p class="copyright">All rights reserved | <a href="https://www.musfiqrfarhan.blog" target="_blank">Musfiq R. Farhan</a></p>
             <p class="footer-credit">Developed & Managed by <a href="https://sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
