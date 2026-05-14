@@ -1,0 +1,55 @@
+name: Auto-Publish Photos
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pictures/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish-photos:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Process Photos
+        run: |
+          echo "Processing photos..."
+          mkdir -p _site/gallery
+          
+          if [ -d "pictures" ] && [ "$(ls -A pictures/*.md 2>/dev/null)" ]; then
+            for file in pictures/*.md; do
+              if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                cp "$file" "_site/gallery/$filename"
+                echo "✓ Photo gallery: $filename"
+              fi
+            done
+          fi
+          
+          echo "✅ Photos processed"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## 📸 Photos Published" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Photo gallery has been automatically updated!" >> $GITHUB_STEP_SUMMARY
