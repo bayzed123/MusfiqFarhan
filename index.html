@@ -8,37 +8,6 @@
     <meta name="keywords" content="Musfiq R. Farhan, actor, RJ, content creator, Bangladesh, entertainment">
     <meta name="author" content="Musfiq R. Farhan">
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://musfiqrfarhan.blog/">
-    <meta property="og:title" content="Musfiq R. Farhan | Official Portfolio">
-    <meta property="og:description" content="Multi-talented Bangladeshi entertainer - Actor, RJ, Content Creator, Digital Media Pioneer">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://musfiqrfarhan.blog/">
-    <meta property="twitter:title" content="Musfiq R. Farhan | Official Portfolio">
-    <meta property="twitter:description" content="Multi-talented Bangladeshi entertainer - Actor, RJ, Content Creator, Digital Media Pioneer">
-    
-    <!-- Schema.org markup for Google -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Musfiq R. Farhan",
-        "url": "https://musfiqrfarhan.blog",
-        "description": "Multi-talented Bangladeshi entertainer - Actor, RJ, Content Creator, Digital Media Pioneer",
-        "sameAs": [
-            "https://www.instagram.com/musfiqfarhan",
-            "https://www.facebook.com/share/1cQdw7JcMs/",
-            "https://www.imdb.com/name/nm11068428/",
-            "https://youtube.com/@musfiqrfarhan"
-        ],
-        "jobTitle": "Actor, RJ, Content Creator",
-        "nationality": "Bangladesh"
-    }
-    </script>
-    
     <style>
         * {
             margin: 0;
@@ -54,8 +23,6 @@
             --text-light: #f5f5f5;
             --text-muted: #b0b0b0;
             --border-color: #3a3a3a;
-            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-            --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
         }
 
         html {
@@ -71,22 +38,7 @@
             background-attachment: fixed;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" seed="1"/></filter><rect width="100" height="100" fill="%23000" filter="url(%23noise)" opacity="0.03"/></svg>');
-            opacity: 0.03;
-            pointer-events: none;
-            z-index: 1;
-        }
-
         .container {
-            position: relative;
-            z-index: 2;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
@@ -102,863 +54,769 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
-            animation: slideDown 0.6s var(--ease-out);
+            padding: 1rem 0;
         }
 
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        nav .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-decoration: none;
-            letter-spacing: 1px;
-            transition: all 0.3s var(--ease-out);
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--gold);
+            cursor: pointer;
         }
 
-        .logo:hover {
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
-        }
-
-        .nav-links {
+        nav ul {
             display: flex;
-            gap: 40px;
             list-style: none;
+            gap: 2rem;
         }
 
-        .nav-links a {
+        nav a {
             color: var(--text-light);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            transition: color 0.3s var(--ease-out);
+            transition: color 0.3s;
+            cursor: pointer;
         }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-            transition: width 0.3s var(--ease-out);
-        }
-
-        .nav-links a:hover {
+        nav a:hover, nav a.active {
             color: var(--gold);
         }
 
-        .nav-links a:hover::after {
-            width: 100%;
+        /* Main Content */
+        main {
+            margin-top: 60px;
         }
 
-        @media (max-width: 768px) {
-            .nav-links {
-                gap: 20px;
+        section {
+            display: none;
+            padding: 3rem 0;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-            .nav-links a {
-                font-size: 12px;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
         /* Hero Section */
         .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 120px 20px 60px;
-            position: relative;
-            overflow: hidden;
-            margin-top: 70px;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
-            opacity: 0.3;
-            z-index: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(45, 45, 45, 0.5) 100%);
+            padding: 4rem 0;
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 3rem;
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 600px;
-            animation: fadeInUp 0.8s var(--ease-out) 0.2s both;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero-content h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 72px;
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            letter-spacing: -2px;
-            color: var(--text-light);
-        }
-
-        .hero-content .subtitle {
-            font-size: 18px;
+        .hero-text h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
             color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .hero-content p {
-            font-size: 16px;
+        .hero-text p {
+            font-size: 1.1rem;
             color: var(--text-muted);
-            margin-bottom: 40px;
+            margin-bottom: 2rem;
             line-height: 1.8;
         }
 
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s var(--ease-out);
-            text-decoration: none;
-            display: inline-block;
-            border-radius: 2px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: #1a1a1a;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--gold);
-            border: 2px solid var(--gold);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(212, 175, 55, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 20px;
-            margin-top: 50px;
-            flex-wrap: wrap;
-        }
-
-        .social-link {
-            width: 50px;
-            height: 50px;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--gold);
-            transition: all 0.3s var(--ease-out);
-            font-size: 20px;
-        }
-
-        .social-link:hover {
-            background: rgba(212, 175, 55, 0.2);
-            transform: rotate(360deg) scale(1.1);
-        }
-
         .hero-image {
-            position: relative;
-            z-index: 2;
-            max-width: 400px;
-            width: 100%;
-            animation: fadeInRight 0.8s var(--ease-out) 0.4s both;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            text-align: center;
         }
 
         .hero-image img {
             width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.2);
+            max-width: 400px;
+            border-radius: 10px;
             border: 2px solid var(--gold);
-            transition: all 0.3s var(--ease-out);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
         }
 
-        .hero-image img:hover {
-            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.4);
-            transform: scale(1.02);
-        }
-
-        /* Sections */
-        section {
-            padding: 80px 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 50px;
-            text-align: center;
-            letter-spacing: -1px;
-            position: relative;
-            padding-bottom: 30px;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-        }
-
-        /* Media Gallery */
-        .media-gallery {
+        /* Gallery */
+        .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
         }
 
-        .media-item {
-            background: linear-gradient(135deg, rgba(45, 45, 45, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+        .gallery-item {
+            background: var(--secondary-dark);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
-            transition: all 0.3s var(--ease-out);
+            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
 
-        .media-item:hover {
-            transform: translateY(-8px);
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
             border-color: var(--gold);
-            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.2);
         }
 
-        .media-image {
+        .gallery-item img {
             width: 100%;
             height: 250px;
-            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--primary-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold);
-            font-size: 48px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .media-image img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
-            transition: transform 0.3s var(--ease-out);
         }
 
-        .media-item:hover .media-image img {
-            transform: scale(1.1);
+        .gallery-item-info {
+            padding: 1.5rem;
         }
 
-        .media-video {
-            width: 100%;
-            height: 250px;
-            background: #000;
+        .gallery-item-info h3 {
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-item-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Video Embed */
+        .video-container {
             position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin: 2rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
-        .media-video iframe {
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* Blog Posts */
+        .blog-post {
+            background: var(--secondary-dark);
+            border-left: 4px solid var(--gold);
+            padding: 2rem;
+            margin: 2rem 0;
             border-radius: 4px;
-        }
-
-        .media-content {
-            padding: 25px;
-        }
-
-        .media-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            margin-bottom: 12px;
-            color: var(--text-light);
-        }
-
-        .media-caption {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .media-date {
-            font-size: 12px;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Blog Section */
-        .blog {
-            background: linear-gradient(135deg, rgba(45, 45, 45, 0.3) 0%, rgba(26, 26, 26, 0.3) 100%);
-        }
-
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-top: 50px;
-        }
-
-        .blog-card {
-            background: linear-gradient(135deg, rgba(45, 45, 45, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s var(--ease-out);
+            transition: transform 0.3s;
             cursor: pointer;
         }
 
-        .blog-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--gold);
-            box-shadow: 0 20px 50px rgba(212, 175, 55, 0.2);
+        .blog-post:hover {
+            transform: translateX(10px);
         }
 
-        .blog-card-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--primary-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .blog-post h3 {
             color: var(--gold);
-            font-size: 48px;
-            overflow: hidden;
+            margin-bottom: 0.5rem;
         }
 
-        .blog-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s var(--ease-out);
+        .blog-post-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
         }
 
-        .blog-card:hover .blog-card-image img {
-            transform: scale(1.1);
-        }
-
-        .blog-card-content {
-            padding: 25px;
-        }
-
-        .blog-card-date {
-            font-size: 12px;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .blog-card h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            margin-bottom: 12px;
+        .blog-post p {
             color: var(--text-light);
         }
 
-        .blog-card p {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 15px;
+        /* Updates Timeline */
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
         }
 
-        .read-more {
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: var(--gold);
+        }
+
+        .timeline-item {
+            margin-bottom: 3rem;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+        }
+
+        .timeline-content {
+            background: var(--secondary-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: var(--gold);
+            border-radius: 50%;
+            top: 1.5rem;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            right: -30px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::after {
+            left: -30px;
+        }
+
+        .timeline-content h3 {
             color: var(--gold);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s var(--ease-out);
-            display: inline-block;
+            margin-bottom: 0.5rem;
         }
 
-        .read-more:hover {
-            transform: translateX(5px);
+        .timeline-content .date {
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        /* Footer */
-        footer {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0f0f 100%);
-            border-top: 1px solid var(--border-color);
-            padding: 50px 20px;
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-social {
+        /* Social Links */
+        .social-links {
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 30px;
+            gap: 1rem;
+            margin: 2rem 0;
             flex-wrap: wrap;
         }
 
-        .footer-social a {
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary-dark);
+            border: 1px solid var(--gold);
             color: var(--gold);
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s var(--ease-out);
+            border-radius: 4px;
+            transition: all 0.3s;
         }
 
-        .footer-social a:hover {
-            color: var(--gold-light);
-            transform: translateY(-3px);
-        }
-
-        .footer-text {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.8;
-        }
-
-        .footer-text p {
-            margin-bottom: 10px;
-        }
-
-        .footer-credit {
-            font-size: 12px;
-            color: var(--text-muted);
-            opacity: 0.6;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+        .social-link:hover {
+            background: var(--gold);
+            color: var(--primary-dark);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .hero {
-                flex-direction: column;
-                text-align: center;
-                padding: 100px 20px 40px;
+            nav ul {
+                gap: 1rem;
+                font-size: 0.9rem;
             }
 
             .hero-content {
-                max-width: 100%;
-                margin-bottom: 40px;
+                grid-template-columns: 1fr;
             }
 
-            .hero-content h1 {
-                font-size: 48px;
+            .hero-text h1 {
+                font-size: 2rem;
             }
 
-            .hero-image {
-                max-width: 300px;
+            .timeline::before {
+                left: 0;
             }
 
-            .cta-buttons {
-                justify-content: center;
+            .timeline-item {
+                width: 100%;
+                margin-left: 0 !important;
+                text-align: left;
+                padding-left: 40px;
             }
 
-            .social-links {
-                justify-content: center;
+            .timeline-content::after {
+                left: -30px !important;
             }
 
-            .section-title {
-                font-size: 36px;
-            }
-
-            .nav-links {
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero-content h1 {
-                font-size: 36px;
-            }
-
-            .hero-content .subtitle {
-                font-size: 14px;
-            }
-
-            .btn {
-                padding: 12px 24px;
-                font-size: 12px;
-            }
-
-            .section-title {
-                font-size: 28px;
-            }
-
-            .blog-grid,
-            .media-gallery {
+            .gallery {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;500;600;700&display=swap" rel="stylesheet">
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            color: var(--gold);
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0 10px;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            color: var(--gold-light);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
-        <div class="nav-container">
-            <a href="#" class="logo">MUSFIQ R. FARHAN</a>
-            <ul class="nav-links">
-                <li><a href="#about">About</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#blog">Blog</a></li>
-                <li><a href="#videos">Videos</a></li>
+        <div class="container">
+            <div class="logo" onclick="showSection('home')">Musfiq R. Farhan</div>
+            <ul>
+                <li><a onclick="showSection('home')" class="nav-link active">Home</a></li>
+                <li><a onclick="showSection('about')" class="nav-link">About</a></li>
+                <li><a onclick="showSection('blog')" class="nav-link">Blog</a></li>
+                <li><a onclick="showSection('pictures')" class="nav-link">Pictures</a></li>
+                <li><a onclick="showSection('videos')" class="nav-link">Videos</a></li>
+                <li><a onclick="showSection('updates')" class="nav-link">Updates</a></li>
+                <li><a onclick="showSection('reviews')" class="nav-link">Reviews</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="subtitle">Welcome to my world</div>
-            <h1>Musfiq R. Farhan</h1>
-            <p>Multi-talented Bangladeshi entertainer bridging the worlds of radio, television, and digital media with storytelling that connects with millions across Bangladesh.</p>
-            <div class="cta-buttons">
-                <a href="#gallery" class="btn btn-primary">Explore Gallery</a>
-                <a href="#videos" class="btn btn-secondary">Watch Videos</a>
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="active">
+            <div class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <div class="hero-text">
+                            <h1>Musfiq R. Farhan</h1>
+                            <p>Multi-Talented Entertainer</p>
+                            <p>RJ | Actor | Content Creator | Digital Media Pioneer</p>
+                            <p>Bridging the worlds of radio, television, and digital media with storytelling that connects with millions across Bangladesh.</p>
+                            <div class="social-links">
+                                <a href="https://www.instagram.com/musfiqfarhan" class="social-link" target="_blank">Instagram</a>
+                                <a href="https://www.facebook.com/share/1cQdw7JcMs/" class="social-link" target="_blank">Facebook</a>
+                                <a href="https://www.imdb.com/name/nm11068428/" class="social-link" target="_blank">IMDb</a>
+                                <a href="https://youtube.com/@musfiqrfarhan" class="social-link" target="_blank">YouTube</a>
+                            </div>
+                        </div>
+                        <div class="hero-image">
+                            <img src="profile_1.jpg" alt="Musfiq R. Farhan">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="social-links">
-                <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank" class="social-link" title="Instagram">📷</a>
-                <a href="https://www.facebook.com/share/1cQdw7JcMs/?mibextid=wwXIfr" target="_blank" class="social-link" title="Facebook">f</a>
-                <a href="https://www.imdb.com/name/nm11068428/" target="_blank" class="social-link" title="IMDb">🎬</a>
-                <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank" class="social-link" title="YouTube">▶</a>
-            </div>
-        </div>
-        <div class="hero-image">
-            <img src="/profile_1.jpg" alt="Musfiq R. Farhan" loading="lazy">
-        </div>
-    </section>
+        </section>
 
-    <!-- Gallery Section -->
-    <section class="blog" id="gallery">
-        <div class="container">
-            <h2 class="section-title">Photo Gallery</h2>
-            <div class="media-gallery" id="photoGallery">
-                <!-- Photos will be loaded from markdown -->
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <h2 class="section-title">About Me</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+                    <div>
+                        <img src="profile_2.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 10px; border: 2px solid var(--gold);">
+                    </div>
+                    <div>
+                        <h3 style="color: var(--gold); margin-bottom: 1rem;">Career Highlights</h3>
+                        <p style="margin-bottom: 1rem;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms.</p>
+                        
+                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Television</h4>
+                        <p style="margin-bottom: 1rem;">Starred in numerous acclaimed drama series and television productions.</p>
+                        
+                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Radio</h4>
+                        <p style="margin-bottom: 1rem;">Hosted popular radio shows reaching millions of listeners.</p>
+                        
+                        <h4 style="color: var(--gold); margin-top: 2rem; margin-bottom: 1rem;">Digital Media</h4>
+                        <p>Created engaging content across social media platforms with a massive following.</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Blog Section -->
-    <section class="blog" id="blog">
-        <div class="container">
-            <h2 class="section-title">Latest Blog Posts</h2>
-            <div class="blog-grid" id="blogGrid">
-                <!-- Blog posts will be loaded from markdown -->
+        <!-- Blog Section -->
+        <section id="blog">
+            <div class="container">
+                <h2 class="section-title">Blog Posts</h2>
+                <div id="blog-container"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Videos Section -->
-    <section class="blog" id="videos">
-        <div class="container">
-            <h2 class="section-title">Latest Videos</h2>
-            <div class="media-gallery" id="videoGallery">
-                <!-- Videos will be loaded from markdown -->
+        <!-- Pictures Section -->
+        <section id="pictures">
+            <div class="container">
+                <h2 class="section-title">Pictures</h2>
+                <div id="pictures-container"></div>
             </div>
+        </section>
+
+        <!-- Videos Section -->
+        <section id="videos">
+            <div class="container">
+                <h2 class="section-title">Videos</h2>
+                <div id="videos-container"></div>
+            </div>
+        </section>
+
+        <!-- Updates Section -->
+        <section id="updates">
+            <div class="container">
+                <h2 class="section-title">Latest Updates</h2>
+                <div class="timeline" id="updates-container"></div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews">
+            <div class="container">
+                <h2 class="section-title">Audience Reviews</h2>
+                <div style="margin-bottom: 3rem;">
+                    <h3 style="color: var(--gold); margin-bottom: 1rem;">Share Your Review</h3>
+                    <form id="reviewForm" style="background: var(--secondary-dark); padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="color: var(--gold); display: block; margin-bottom: 0.5rem;">Your Name</label>
+                            <input type="text" id="reviewName" required style="width: 100%; padding: 0.75rem; background: var(--primary-dark); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="color: var(--gold); display: block; margin-bottom: 0.5rem;">Your Review</label>
+                            <textarea id="reviewText" required rows="4" style="width: 100%; padding: 0.75rem; background: var(--primary-dark); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 4px; font-family: inherit;"></textarea>
+                        </div>
+                        <button type="submit" style="background: var(--gold); color: var(--primary-dark); border: none; padding: 0.75rem 2rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.3s;" onmouseover="this.style.background='var(--gold-light)'" onmouseout="this.style.background='var(--gold)'">Submit Review</button>
+                    </form>
+                </div>
+                <div id="reviews-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for images -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="">
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-content">
-            <div class="footer-social">
-                <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank">Instagram</a>
-                <a href="https://www.facebook.com/share/1cQdw7JcMs/?mibextid=wwXIfr" target="_blank">Facebook</a>
-                <a href="https://www.imdb.com/name/nm11068428/" target="_blank">IMDb</a>
-                <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank">YouTube</a>
-            </div>
-            <div class="footer-text">
-                <p>Musfiq R. Farhan © 2026. All rights reserved.</p>
-                <p>Multi-talented Bangladeshi entertainer bridging radio, television, and digital media.</p>
-            </div>
-            <div class="footer-credit">
-                <p>Advanced Portfolio with Media Management | Version 2.0</p>
-            </div>
+        <div class="container">
+            <p>&copy; 2026 Musfiq R. Farhan. All rights reserved.</p>
+            <p>Official Portfolio | <a href="https://bayzed123.github.io/MusfiqFarhan/" style="color: var(--gold);">Visit Repository</a></p>
+            <p style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank" style="color: var(--gold); text-decoration: none;">Sayad Md Bayezid Hosan</a></p>
         </div>
     </footer>
 
     <script>
-        // Markdown Parser for Media Content
-        class MediaParser {
-            static parseGoogleDriveLink(url) {
-                const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-                if (match) {
-                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                }
-                return url;
-            }
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.remove('active');
+            });
 
-            static parseYouTubeLink(url) {
-                const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                if (match) {
-                    return `https://www.youtube.com/embed/${match[1]}`;
-                }
-                return null;
-            }
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
 
-            static parseInstagramLink(url) {
-                const match = url.match(/instagram\.com\/p\/([a-zA-Z0-9_-]+)/);
-                if (match) {
-                    return `https://www.instagram.com/p/${match[1]}/embed`;
-                }
-                return null;
-            }
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
 
-            static parseFacebookLink(url) {
-                return url;
-            }
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
 
-            static extractCaption(text) {
-                const match = text.match(/Caption:\s*(.+?)(?:\n|$)/);
-                return match ? match[1] : '';
-            }
+            // Update URL
+            window.history.pushState({}, '', `#${sectionId}`);
 
-            static extractTitle(text) {
-                const match = text.match(/Title:\s*(.+?)(?:\n|$)/);
-                return match ? match[1] : 'Untitled';
-            }
+            // Load content if needed
+            if (sectionId === 'blog') loadBlog();
+            if (sectionId === 'pictures') loadPictures();
+            if (sectionId === 'videos') loadVideos();
+            if (sectionId === 'updates') loadUpdates();
+            if (sectionId === 'reviews') loadReviews();
         }
 
-        // Load content from markdown files
-        async function loadMediaContent() {
+        // Load blog posts
+        async function loadBlog() {
+            const container = document.getElementById('blog-container');
+            container.innerHTML = '<p>Loading blog posts...</p>';
+            
             try {
-                // Load photos from updates folder
-                const photoResponse = await fetch('/updates/photos.md');
-                if (photoResponse.ok) {
-                    const photoText = await photoResponse.text();
-                    displayPhotos(photoText);
+                const response = await fetch('blog-posts/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".md"]');
+                
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No blog posts yet.</p>';
+                    return;
                 }
 
-                // Load videos from updates folder
-                const videoResponse = await fetch('/updates/videos.md');
-                if (videoResponse.ok) {
-                    const videoText = await videoResponse.text();
-                    displayVideos(videoText);
+                let html = '';
+                for (const link of links) {
+                    const filename = link.textContent;
+                    const url = `blog-posts/${filename}`;
+                    html += `<div class="blog-post" onclick="window.open('${url}', '_blank')">
+                        <h3>${filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '')}</h3>
+                        <p class="blog-post-meta">${filename.substring(0, 10)}</p>
+                        <p>Click to read full post...</p>
+                    </div>`;
                 }
-
-                // Load blog posts
-                const blogResponse = await fetch('/blog/');
-                if (blogResponse.ok) {
-                    // Display sample blog posts
-                    displaySampleBlog();
-                }
-            } catch (error) {
-                console.log('Content loading: Using sample data');
-                displaySampleContent();
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading blog posts.</p>';
             }
         }
 
-        function displayPhotos(markdown) {
-            const gallery = document.getElementById('photoGallery');
-            const lines = markdown.split('\n');
+        // Load pictures
+        async function loadPictures() {
+            const container = document.getElementById('pictures-container');
+            container.innerHTML = '<p>Loading pictures...</p>';
             
-            lines.forEach(line => {
-                if (line.includes('drive.google.com') || line.includes('![')) {
-                    const imgUrl = MediaParser.parseGoogleDriveLink(line);
-                    const caption = MediaParser.extractCaption(line);
-                    const title = MediaParser.extractTitle(line);
-                    
-                    const item = document.createElement('div');
-                    item.className = 'media-item';
-                    item.innerHTML = `
-                        <div class="media-image">
-                            <img src="${imgUrl}" alt="${title}" loading="lazy">
-                        </div>
-                        <div class="media-content">
-                            <div class="media-title">${title}</div>
-                            <div class="media-caption">${caption}</div>
-                            <div class="media-date">${new Date().toLocaleDateString()}</div>
-                        </div>
-                    `;
-                    gallery.appendChild(item);
-                }
-            });
-        }
-
-        function displayVideos(markdown) {
-            const gallery = document.getElementById('videoGallery');
-            const lines = markdown.split('\n');
-            
-            lines.forEach(line => {
-                let embedUrl = null;
-                let platform = '';
+            try {
+                const response = await fetch('pictures/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".md"]');
                 
-                if (line.includes('youtube.com') || line.includes('youtu.be')) {
-                    embedUrl = MediaParser.parseYouTubeLink(line);
-                    platform = 'YouTube';
-                } else if (line.includes('instagram.com')) {
-                    embedUrl = MediaParser.parseInstagramLink(line);
-                    platform = 'Instagram';
-                } else if (line.includes('facebook.com')) {
-                    embedUrl = MediaParser.parseFacebookLink(line);
-                    platform = 'Facebook';
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No pictures yet.</p>';
+                    return;
                 }
-                
-                if (embedUrl) {
-                    const caption = MediaParser.extractCaption(line);
-                    const title = MediaParser.extractTitle(line);
-                    
-                    const item = document.createElement('div');
-                    item.className = 'media-item';
-                    item.innerHTML = `
-                        <div class="media-video">
-                            <iframe src="${embedUrl}" allowfullscreen="" allow="autoplay"></iframe>
+
+                let html = '<div class="gallery">';
+                for (const link of links) {
+                    const filename = link.textContent;
+                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
+                    html += `<div class="gallery-item" onclick="window.open('pictures/${filename}', '_blank')">
+                        <div style="background: var(--secondary-dark); height: 250px; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: var(--gold);">📸 ${title}</span>
                         </div>
-                        <div class="media-content">
-                            <div class="media-title">${title}</div>
-                            <div class="media-caption">${caption}</div>
-                            <div class="media-date">${platform} • ${new Date().toLocaleDateString()}</div>
+                        <div class="gallery-item-info">
+                            <h3>${title}</h3>
+                            <p>${filename.substring(0, 10)}</p>
                         </div>
-                    `;
-                    gallery.appendChild(item);
+                    </div>`;
                 }
-            });
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading pictures.</p>';
+            }
         }
 
-        function displaySampleBlog() {
-            const grid = document.getElementById('blogGrid');
-            const samplePosts = [
-                {
-                    title: 'Welcome to My Portfolio',
-                    date: 'May 14, 2026',
-                    excerpt: 'Excited to launch my official portfolio website where I share my journey, latest projects, and thoughts on entertainment.'
-                },
-                {
-                    title: 'Behind the Scenes of Tipu Sultan',
-                    date: 'May 10, 2026',
-                    excerpt: 'An exclusive look at the making of my latest drama project, the challenges faced, and the incredible team.'
-                },
-                {
-                    title: 'The Art of Storytelling',
-                    date: 'May 5, 2026',
-                    excerpt: 'Sharing my insights on how storytelling has evolved in the digital age and why authentic connections matter.'
-                }
-            ];
+        // Load videos
+        async function loadVideos() {
+            const container = document.getElementById('videos-container');
+            container.innerHTML = '<p>Loading videos...</p>';
             
-            samplePosts.forEach(post => {
-                const card = document.createElement('div');
-                card.className = 'blog-card';
-                card.innerHTML = `
-                    <div class="blog-card-image">📝</div>
-                    <div class="blog-card-content">
-                        <div class="blog-card-date">${post.date}</div>
-                        <h3>${post.title}</h3>
-                        <p>${post.excerpt}</p>
-                        <a href="#" class="read-more">Read More →</a>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function displaySampleContent() {
-            displaySampleBlog();
-        }
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            try {
+                const response = await fetch('videos/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".md"]');
+                
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No videos yet.</p>';
+                    return;
                 }
-            });
+
+                let html = '';
+                for (const link of links) {
+                    const filename = link.textContent;
+                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
+                    html += `<div class="blog-post" onclick="window.open('videos/${filename}', '_blank')">
+                        <h3>🎥 ${title}</h3>
+                        <p class="blog-post-meta">${filename.substring(0, 10)}</p>
+                        <p>Click to view video details...</p>
+                    </div>`;
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading videos.</p>';
+            }
+        }
+
+        // Load updates
+        async function loadUpdates() {
+            const container = document.getElementById('updates-container');
+            container.innerHTML = '<p>Loading updates...</p>';
+            
+            try {
+                const response = await fetch('latest-updates/');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a[href$=".md"]');
+                
+                if (links.length === 0) {
+                    container.innerHTML = '<p>No updates yet.</p>';
+                    return;
+                }
+
+                let html = '';
+                for (const link of links) {
+                    const filename = link.textContent;
+                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
+                    html += `<div class="timeline-item" onclick="window.open('latest-updates/${filename}', '_blank')">
+                        <div class="timeline-content">
+                            <h3>${title}</h3>
+                            <div class="date">${filename.substring(0, 10)}</div>
+                            <p>Click to view full update...</p>
+                        </div>
+                    </div>`;
+                }
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p>Error loading updates.</p>';
+            }
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            const container = document.getElementById('reviews-container');
+            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No reviews yet. Be the first to share your thoughts!</p>';
+                return;
+            }
+
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">';
+            for (const review of reviews.reverse()) {
+                html += `<div style="background: var(--secondary-dark); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--gold);">
+                    <h4 style="color: var(--gold); margin-bottom: 0.5rem;">${review.name}</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">${review.date}</p>
+                    <p>${review.text}</p>
+                </div>`;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Handle review form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('reviewForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const name = document.getElementById('reviewName').value;
+                    const text = document.getElementById('reviewText').value;
+                    
+                    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+                    reviews.push({
+                        name: name,
+                        text: text,
+                        date: new Date().toLocaleDateString()
+                    });
+                    localStorage.setItem('reviews', JSON.stringify(reviews));
+                    
+                    form.reset();
+                    loadReviews();
+                    alert('Thank you for your review!');
+                });
+            }
         });
 
-        // Load content on page load
-        window.addEventListener('load', loadMediaContent);
+        // Modal functions
+        function openModal(img) {
+            document.getElementById('imageModal').classList.add('active');
+            document.getElementById('modalImage').src = img.src;
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', function() {
+            const hash = window.location.hash.substring(1) || 'home';
+            showSection(hash);
+        });
+
+        // Load initial section from URL
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.substring(1) || 'home';
+            showSection(hash);
+        });
     </script>
 </body>
 </html>
