@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musfiq R. Farhan | Actor, RJ, Content Creator</title>
-    <meta name="description" content="Musfiq R. Farhan - Multi-talented Bangladeshi entertainer. Actor, RJ, Content Creator, Digital Media Pioneer bridging radio, television, and digital media.">
-    <meta name="keywords" content="Musfiq R. Farhan, actor, RJ, content creator, Bangladesh, entertainment">
+    <meta name="description" content="Musfiq R. Farhan - Premium Portfolio. Multi-talented Bangladeshi entertainer, actor, RJ, and content creator.">
+    <meta name="keywords" content="Musfiq R. Farhan, actor, portfolio, entertainment, Bangladesh">
     <meta name="author" content="Musfiq R. Farhan">
+    <meta property="og:title" content="Musfiq R. Farhan | Premium Portfolio">
+    <meta property="og:description" content="Explore the cinematic portfolio of Musfiq R. Farhan">
+    <meta property="og:type" content="website">
+    
+    <title>Musfiq R. Farhan | Premium Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -16,13 +24,17 @@
         }
 
         :root {
-            --primary-dark: #1a1a1a;
-            --secondary-dark: #2d2d2d;
-            --gold: #d4af37;
-            --gold-light: #e8c547;
-            --text-light: #f5f5f5;
-            --text-muted: #b0b0b0;
-            --border-color: #3a3a3a;
+            --primary-dark: #0a0e27;
+            --secondary-dark: #111827;
+            --tertiary-dark: #1f2937;
+            --accent-green: #10b981;
+            --accent-green-light: #34d399;
+            --accent-green-dark: #059669;
+            --text-primary: #f3f4f6;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         html {
@@ -30,74 +42,100 @@
         }
 
         body {
-            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--primary-dark) 0%, #0f0f0f 100%);
-            color: var(--text-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0f1419 100%);
+            color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
             background-attachment: fixed;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Navigation */
+        /* ============ NAVIGATION ============ */
         nav {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
             padding: 1rem 0;
         }
 
         nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         nav .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             cursor: pointer;
+            letter-spacing: -1px;
         }
 
         nav ul {
             display: flex;
             list-style: none;
-            gap: 1.5rem;
+            gap: 2rem;
             flex-wrap: wrap;
         }
 
         nav a {
-            color: var(--text-light);
+            color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.3s;
-            cursor: pointer;
             font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
         }
 
-        nav a:hover, nav a.active {
-            color: var(--gold);
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-green);
+            transition: var(--transition);
         }
 
-        /* Main Content */
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover,
+        nav a.active {
+            color: var(--accent-green);
+        }
+
+        /* ============ MAIN CONTENT ============ */
         main {
-            margin-top: 60px;
+            margin-top: 70px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
         section {
             display: none;
-            padding: 3rem 0;
-            animation: fadeIn 0.5s ease-out;
+            padding: 5rem 0;
+            animation: fadeIn 0.6s ease-out;
         }
 
         section.active {
@@ -115,370 +153,618 @@
             }
         }
 
-        /* Hero Section */
+        /* ============ HERO SECTION ============ */
         .hero {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(45, 45, 45, 0.5) 100%);
-            padding: 3rem 0;
-            border-bottom: 2px solid var(--gold);
-            margin-bottom: 3rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
 
         .hero-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
+            gap: 4rem;
             align-items: center;
+            z-index: 1;
+            width: 100%;
         }
 
         .hero-text h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--gold);
-            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
         }
 
         .hero-text p {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
             line-height: 1.8;
         }
 
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-light) 100%);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-green);
+            border: 2px solid var(--accent-green);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+        }
+
         .hero-image {
-            text-align: center;
+            position: relative;
+            height: 600px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
         }
 
         .hero-image img {
             width: 100%;
-            max-width: 300px;
-            border-radius: 10px;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
         }
 
-        /* Gallery */
-        .gallery {
+        .hero-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* ============ SECTION TITLE ============ */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-green) 0%, transparent 100%);
+            border-radius: 2px;
+        }
+
+        /* ============ HORIZONTAL SCROLL CAROUSEL ============ */
+        .carousel-container {
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-green) var(--tertiary-dark);
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .carousel-container::-webkit-scrollbar-track {
+            background: var(--tertiary-dark);
+            border-radius: 10px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: var(--accent-green);
+            border-radius: 10px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-green-light);
+        }
+
+        .carousel {
+            display: flex;
+            gap: 2rem;
+            min-width: min-content;
+        }
+
+        .carousel-item {
+            flex: 0 0 350px;
+            background: var(--tertiary-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            height: 400px;
+        }
+
+        .carousel-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .carousel-item-image {
+            width: 100%;
+            height: 60%;
+            background: var(--secondary-dark);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .carousel-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .carousel-item:hover .carousel-item-image img {
+            transform: scale(1.1);
+        }
+
+        .carousel-item-content {
+            padding: 1.5rem;
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .carousel-item-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .carousel-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ============ VIDEO LAZY LOADING ============ */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: var(--secondary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .play-button {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(16, 185, 129, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .play-button::after {
+            content: '▶';
+            color: white;
+            font-size: 1.5rem;
+            margin-left: 4px;
+        }
+
+        .video-thumbnail:hover .play-button {
+            background: var(--accent-green-light);
+            transform: scale(1.1);
+        }
+
+        /* ============ GRID LAYOUTS ============ */
+        .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .gallery-item {
-            background: var(--secondary-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            aspect-ratio: 1;
+            background: var(--tertiary-dark);
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
             cursor: pointer;
-        }
-
-        .gallery-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
-            border-color: var(--gold);
+            position: relative;
         }
 
         .gallery-item img {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
+            transition: var(--transition);
         }
 
-        .gallery-item-info {
-            padding: 1rem;
+        .gallery-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
         }
 
-        .gallery-item-info h3 {
-            color: var(--gold);
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
+        .gallery-item:hover img {
+            filter: brightness(0.8);
         }
 
-        .gallery-item-info p {
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        /* ============ MASONRY LAYOUT ============ */
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            auto-rows: 250px;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        /* Blog Posts */
-        .blog-post {
-            background: var(--secondary-dark);
-            border-left: 4px solid var(--gold);
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            border-radius: 4px;
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .blog-post:hover {
-            transform: translateX(10px);
-        }
-
-        .blog-post h3 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-        }
-
-        .blog-post-meta {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .blog-post p {
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        /* Reviews */
-        .review-item {
-            background: var(--secondary-dark);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--gold);
-            margin-bottom: 1.5rem;
-        }
-
-        .review-item h4 {
-            color: var(--gold);
-            margin-bottom: 0.3rem;
-        }
-
-        .review-item .date {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .review-item p {
-            color: var(--text-light);
-            line-height: 1.6;
-        }
-
-        /* Form */
-        .review-form {
-            background: var(--secondary-dark);
-            padding: 2rem;
-            border-radius: 8px;
+        .masonry-item {
+            background: var(--tertiary-dark);
+            border-radius: 12px;
+            overflow: hidden;
             border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .masonry-item:nth-child(3n + 1) {
+            grid-column: span 2;
+        }
+
+        .masonry-item:nth-child(3n + 2) {
+            grid-row: span 2;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .masonry-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .masonry-item:hover img {
+            filter: brightness(0.8);
+        }
+
+        /* ============ MARQUEE SLIDER ============ */
+        .marquee-container {
+            overflow: hidden;
+            background: var(--tertiary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .marquee {
+            display: flex;
+            animation: marquee 30s linear infinite;
+            gap: 3rem;
+        }
+
+        .marquee-item {
+            flex: 0 0 auto;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            white-space: nowrap;
+            letter-spacing: 2px;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* ============ LIGHTBOX ============ */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .lightbox-content img,
+        .lightbox-content iframe {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 2001;
+        }
+
+        .lightbox-close:hover {
+            background: var(--accent-green-light);
+            transform: rotate(90deg);
+        }
+
+        /* ============ LOVE NOTES / REVIEWS ============ */
+        .review-card {
+            background: var(--tertiary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .review-card:hover {
+            border-color: var(--accent-green);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
+        }
+
+        .review-author {
+            font-weight: 700;
+            color: var(--accent-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .review-date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        /* ============ FOOTER ============ */
+        footer {
+            background: var(--secondary-dark);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            margin-top: 5rem;
+        }
+
+        footer .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
             margin-bottom: 2rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        footer h3 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
 
-        .form-group label {
-            color: var(--gold);
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--primary-dark);
-            border: 1px solid var(--border-color);
-            color: var(--text-light);
-            border-radius: 4px;
-            font-family: inherit;
+        footer p {
+            color: var(--text-secondary);
             font-size: 0.95rem;
+            line-height: 1.8;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        footer a {
+            color: var(--accent-green);
+            text-decoration: none;
+            transition: var(--transition);
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
+        footer a:hover {
+            color: var(--accent-green-light);
         }
 
-        .btn-submit {
-            background: var(--gold);
-            color: var(--primary-dark);
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-        }
-
-        .btn-submit:hover {
-            background: var(--gold-light);
-            transform: translateY(-2px);
-        }
-
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding: 2rem 0;
-        }
-
-        .timeline-item {
-            background: var(--secondary-dark);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--gold);
-            margin-bottom: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .timeline-item:hover {
-            transform: translateX(10px);
-        }
-
-        .timeline-item h3 {
-            color: var(--gold);
-            margin-bottom: 0.5rem;
-        }
-
-        .timeline-item .date {
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
-        /* Social Links */
         .social-links {
             display: flex;
             gap: 1rem;
-            margin: 1.5rem 0;
+            margin-top: 1rem;
             flex-wrap: wrap;
         }
 
         .social-link {
-            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--tertiary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.2rem;
-            background: var(--secondary-dark);
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            justify-content: center;
+            color: var(--accent-green);
+            transition: var(--transition);
             text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .social-link:hover {
-            background: var(--gold);
+            background: var(--accent-green);
             color: var(--primary-dark);
+            transform: translateY(-3px);
         }
 
-        /* Section Title */
-        .section-title {
-            font-size: 2rem;
-            color: var(--gold);
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--gold);
-            padding-bottom: 1rem;
-        }
-
-        /* Footer */
-        footer {
-            background: var(--secondary-dark);
-            border-top: 1px solid var(--border-color);
-            padding: 2rem 0;
-            margin-top: 4rem;
-            text-align: center;
-            color: var(--text-muted);
-        }
-
-        footer p {
-            margin-bottom: 0.5rem;
-        }
-
-        footer a {
-            color: var(--gold);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        footer a:hover {
-            color: var(--gold-light);
-        }
-
-        /* Responsive */
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
-            nav .logo {
-                font-size: 1rem;
-            }
-
-            nav ul {
-                gap: 0.75rem;
-                font-size: 0.85rem;
-            }
-
             .hero-content {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
 
-            .hero-text h1 {
-                font-size: 1.8rem;
+            .hero-image {
+                height: 400px;
+            }
+
+            .carousel-item {
+                flex: 0 0 280px;
+            }
+
+            nav ul {
+                gap: 1rem;
+                font-size: 0.85rem;
             }
 
             .section-title {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
 
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 1rem;
+            .masonry-grid {
+                grid-template-columns: 1fr;
+                auto-rows: 200px;
             }
 
-            .gallery-item img {
-                height: 150px;
+            .masonry-item:nth-child(3n + 1),
+            .masonry-item:nth-child(3n + 2) {
+                grid-column: span 1;
+                grid-row: span 1;
             }
 
-            .review-form {
-                padding: 1.5rem;
-            }
-
-            .social-links {
-                gap: 0.75rem;
-            }
-
-            .social-link {
-                padding: 0.5rem 1rem;
-                font-size: 0.8rem;
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
         }
 
         @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            nav .container {
+                padding: 0 1rem;
+            }
+
             nav ul {
                 gap: 0.5rem;
-                font-size: 0.75rem;
             }
 
             .hero-text h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
 
-            .hero-text p {
-                font-size: 0.9rem;
+            .carousel-item {
+                flex: 0 0 250px;
+                height: 350px;
             }
 
             .section-title {
-                font-size: 1.3rem;
-            }
-
-            .gallery {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            }
-
-            .gallery-item img {
-                height: 120px;
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -487,448 +773,419 @@
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <div class="logo" onclick="showSection('home')">MRF</div>
+            <div class="logo" onclick="navigateTo('home')">MRF</div>
             <ul>
-                <li><a onclick="showSection('home')" class="nav-link active">Home</a></li>
-                <li><a onclick="showSection('about')" class="nav-link">About</a></li>
-                <li><a onclick="showSection('blog')" class="nav-link">Blog</a></li>
-                <li><a onclick="showSection('pictures')" class="nav-link">Pictures</a></li>
-                <li><a onclick="showSection('videos')" class="nav-link">Videos</a></li>
-                <li><a onclick="showSection('updates')" class="nav-link">Updates</a></li>
-                <li><a onclick="showSection('reviews')" class="nav-link">Reviews</a></li>
+                <li><a href="#home" onclick="navigateTo('home')" class="nav-link active">Home</a></li>
+                <li><a href="#about" onclick="navigateTo('about')" class="nav-link">About</a></li>
+                <li><a href="#gallery" onclick="navigateTo('gallery')" class="nav-link">Gallery</a></li>
+                <li><a href="#love-notes" onclick="navigateTo('love-notes')" class="nav-link">Love Notes</a></li>
+                <li><a href="#blog" onclick="navigateTo('blog')" class="nav-link">Blog</a></li>
+                <li><a href="#contact" onclick="navigateTo('contact')" class="nav-link">Contact</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main>
-        <!-- Home Section -->
+        <!-- HOME PAGE -->
         <section id="home" class="active">
+            <!-- Hero Section -->
             <div class="hero">
-                <div class="container">
-                    <div class="hero-content">
-                        <div class="hero-text">
-                            <h1>Musfiq R. Farhan</h1>
-                            <p><strong>Multi-Talented Entertainer</strong></p>
-                            <p>RJ | Actor | Content Creator | Digital Media Pioneer</p>
-                            <p>Bridging the worlds of radio, television, and digital media with storytelling that connects with millions across Bangladesh.</p>
-                            <div class="social-links">
-                                <a href="https://www.instagram.com/musfiqfarhan" class="social-link" target="_blank">Instagram</a>
-                                <a href="https://www.facebook.com/share/1cQdw7JcMs/" class="social-link" target="_blank">Facebook</a>
-                                <a href="https://www.imdb.com/name/nm11068428/" class="social-link" target="_blank">IMDb</a>
-                                <a href="https://youtube.com/@musfiqrfarhan" class="social-link" target="_blank">YouTube</a>
-                            </div>
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>Musfiq R. Farhan</h1>
+                        <p>Multi-talented Bangladeshi entertainer. Actor • RJ • Content Creator. Bridging the worlds of radio, television, and digital media with storytelling that connects with millions.</p>
+                        <div class="hero-cta">
+                            <button class="btn btn-primary" onclick="navigateTo('gallery')">Explore Work</button>
+                            <button class="btn btn-secondary" onclick="navigateTo('contact')">Get in Touch</button>
                         </div>
-                        <div class="hero-image">
-                            <img src="profile_1.jpg" alt="Musfiq R. Farhan">
-                        </div>
+                    </div>
+                    <div class="hero-image">
+                        <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Musfiq R. Farhan" loading="lazy">
                     </div>
                 </div>
             </div>
 
-            <!-- Reviews on Home -->
-            <div class="container">
-                <h2 class="section-title">Audience Reviews</h2>
-                <div class="review-form">
-                    <h3 style="color: var(--gold); margin-bottom: 1.5rem;">Share Your Review</h3>
-                    <form id="reviewForm">
-                        <div class="form-group">
-                            <label>Your Name</label>
-                            <input type="text" id="reviewName" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Your Review</label>
-                            <textarea id="reviewText" required></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit">Submit Review</button>
-                    </form>
+            <!-- Dramas & TVCs Section -->
+            <div class="container" style="margin-top: 5rem;">
+                <h2 class="section-title">Dramas & TVCs</h2>
+                <div class="carousel-container">
+                    <div class="carousel" id="dramas-carousel">
+                        <!-- Carousel items will be loaded here -->
+                    </div>
                 </div>
-                <div id="home-reviews-container"></div>
+            </div>
+
+            <!-- Behind The Scenes -->
+            <div class="container" style="margin-top: 5rem;">
+                <h2 class="section-title">Behind The Scenes</h2>
+                <div class="carousel-container">
+                    <div class="carousel" id="bts-carousel">
+                        <!-- BTS items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latest Shots -->
+            <div class="container" style="margin-top: 5rem;">
+                <h2 class="section-title">Latest Shots</h2>
+                <div class="carousel-container">
+                    <div class="carousel" id="latest-carousel">
+                        <!-- Latest shots will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Love Notes -->
+            <div class="container" style="margin-top: 5rem; margin-bottom: 5rem;">
+                <h2 class="section-title">Love Notes</h2>
+                <div class="carousel-container">
+                    <div class="carousel" id="love-notes-carousel">
+                        <!-- Love notes will be loaded here -->
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- About Section -->
+        <!-- ABOUT PAGE -->
         <section id="about">
             <div class="container">
                 <h2 class="section-title">About Me</h2>
                 
-                <!-- Profile Images -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; margin-top: 3rem;">
                     <div>
-                        <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 10px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
+                        <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 12px; border: 2px solid var(--accent-green); box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);" loading="lazy">
                     </div>
                     <div>
-                        <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Musfiq R. Farhan" style="width: 100%; border-radius: 10px; border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
-                    </div>
-                </div>
-
-                <!-- About Content -->
-                <div style="background: var(--secondary-dark); padding: 2rem; border-radius: 8px; border-left: 4px solid var(--gold); margin-bottom: 2rem;">
-                    <h3 style="color: var(--gold); margin-bottom: 1rem; font-size: 1.3rem;">Multi-Talented Entertainer</h3>
-                    <p style="margin-bottom: 1rem; line-height: 1.8;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator who connects with millions of viewers and listeners.</p>
-                    
-                    <p style="margin-bottom: 1.5rem; line-height: 1.8;">His unique ability to bridge traditional and modern media has made him a pioneering figure in Bangladesh's entertainment industry. Known for his charismatic presence, engaging storytelling, and authentic connection with audiences, Musfiq R. Farhan continues to push creative boundaries and inspire entertainment enthusiasts across the region.</p>
-                </div>
-
-                <!-- Career Sections -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
-                    <!-- Television -->
-                    <div style="background: var(--secondary-dark); padding: 1.5rem; border-radius: 8px; border-top: 3px solid var(--gold);">
-                        <h4 style="color: var(--gold); margin-bottom: 1rem; font-size: 1.1rem;">📺 Television</h4>
-                        <p style="color: var(--text-muted); line-height: 1.7;">Starred in numerous acclaimed drama series and television productions. Known for powerful performances in both lead and supporting roles, bringing characters to life with depth and authenticity.</p>
-                    </div>
-                    
-                    <!-- Radio -->
-                    <div style="background: var(--secondary-dark); padding: 1.5rem; border-radius: 8px; border-top: 3px solid var(--gold);">
-                        <h4 style="color: var(--gold); margin-bottom: 1rem; font-size: 1.1rem;">🎙️ Radio</h4>
-                        <p style="color: var(--text-muted); line-height: 1.7;">Hosted popular radio shows reaching millions of listeners. Known for engaging hosting style, witty commentary, and ability to connect with audiences through the airwaves.</p>
-                    </div>
-                    
-                    <!-- Digital Media -->
-                    <div style="background: var(--secondary-dark); padding: 1.5rem; border-radius: 8px; border-top: 3px solid var(--gold);">
-                        <h4 style="color: var(--gold); margin-bottom: 1rem; font-size: 1.1rem;">📱 Digital Media</h4>
-                        <p style="color: var(--text-muted); line-height: 1.7;">Created engaging content across social media platforms with a massive following. Pioneer in digital entertainment, adapting traditional storytelling to modern platforms.</p>
-                    </div>
-                </div>
-
-                <!-- Achievements -->
-                <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(45, 45, 45, 0.5) 100%); padding: 2rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <h3 style="color: var(--gold); margin-bottom: 1.5rem; font-size: 1.2rem;">Key Achievements</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div>
-                            <p style="color: var(--text-light);"><strong style="color: var(--gold);">✓</strong> Multiple Award-Winning Performances</p>
-                            <p style="color: var(--text-light); margin-top: 0.75rem;"><strong style="color: var(--gold);">✓</strong> 7M+ Facebook Followers</p>
-                            <p style="color: var(--text-light); margin-top: 0.75rem;"><strong style="color: var(--gold);">✓</strong> IMDb Verified Actor Profile</p>
-                        </div>
-                        <div>
-                            <p style="color: var(--text-light);"><strong style="color: var(--gold);">✓</strong> Pioneering Digital Content Creator</p>
-                            <p style="color: var(--text-light); margin-top: 0.75rem;"><strong style="color: var(--gold);">✓</strong> Radio & TV Host Extraordinaire</p>
-                            <p style="color: var(--text-light); margin-top: 0.75rem;"><strong style="color: var(--gold);">✓</strong> Industry-Recognized Entertainer</p>
-                        </div>
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent-green);">Multi-Talented Entertainer</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 1.5rem;">Musfiq R. Farhan is a renowned Bangladeshi entertainer who has made significant contributions across multiple media platforms. With a career spanning television, radio, and digital media, he has established himself as a versatile performer and content creator.</p>
+                        
+                        <h4 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Career Highlights</h4>
+                        <ul style="list-style: none; color: var(--text-secondary);">
+                            <li style="margin-bottom: 0.75rem;">✓ Multiple Award-Winning Performances</li>
+                            <li style="margin-bottom: 0.75rem;">✓ 7M+ Facebook Followers</li>
+                            <li style="margin-bottom: 0.75rem;">✓ IMDb Verified Actor Profile</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Pioneering Digital Content Creator</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Radio & TV Host Extraordinaire</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Blog Section -->
+        <!-- GALLERY PAGE -->
+        <section id="gallery">
+            <div class="container">
+                <h2 class="section-title">Gallery</h2>
+                
+                <h3 style="color: var(--accent-green); margin-top: 3rem; margin-bottom: 2rem; font-size: 1.3rem;">Masonry Gallery</h3>
+                <div class="masonry-grid" id="masonry-gallery">
+                    <!-- Masonry items will be loaded here -->
+                </div>
+
+                <h3 style="color: var(--accent-green); margin-top: 4rem; margin-bottom: 2rem; font-size: 1.3rem;">Grid Gallery</h3>
+                <div class="gallery-grid" id="grid-gallery">
+                    <!-- Grid items will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- LOVE NOTES PAGE -->
+        <section id="love-notes">
+            <div class="container">
+                <h2 class="section-title">Love Notes</h2>
+                <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem;">Messages and reviews from amazing fans around the world</p>
+                
+                <div id="love-notes-list">
+                    <!-- Love notes will be loaded here -->
+                </div>
+
+                <div style="background: var(--tertiary-dark); border: 2px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-top: 3rem;">
+                    <h3 style="color: var(--accent-green); margin-bottom: 1.5rem;">Leave Your Message</h3>
+                    <form id="love-notes-form">
+                        <input type="text" id="note-name" placeholder="Your Name" required style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--secondary-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);">
+                        <textarea id="note-text" placeholder="Your Message" required style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--secondary-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); min-height: 120px; resize: vertical;"></textarea>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- BLOG PAGE -->
         <section id="blog">
             <div class="container">
-                <h2 class="section-title">Blog Posts</h2>
-                <div id="blog-container"></div>
+                <h2 class="section-title">Blog & News</h2>
+                <div id="blog-list" style="margin-top: 2rem;">
+                    <!-- Blog posts will be loaded here -->
+                </div>
             </div>
         </section>
 
-        <!-- Pictures Section -->
-        <section id="pictures">
+        <!-- CONTACT PAGE -->
+        <section id="contact">
             <div class="container">
-                <h2 class="section-title">Pictures</h2>
-                <div id="pictures-container"></div>
-            </div>
-        </section>
+                <h2 class="section-title">Get in Touch</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem;">
+                    <div>
+                        <h3 style="color: var(--accent-green); margin-bottom: 1.5rem;">Contact Information</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">For business inquiries, collaborations, or any other questions, feel free to reach out.</p>
+                        
+                        <h4 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Follow Me</h4>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/musfiqfarhan" target="_blank" class="social-link" title="Instagram">f</a>
+                            <a href="https://www.facebook.com/share/1cQdw7JcMs/" target="_blank" class="social-link" title="Facebook">f</a>
+                            <a href="https://www.youtube.com/@musfiqrfarhan" target="_blank" class="social-link" title="YouTube">▶</a>
+                            <a href="https://www.imdb.com/name/nm11068428/" target="_blank" class="social-link" title="IMDb">IMDb</a>
+                        </div>
+                    </div>
 
-        <!-- Videos Section -->
-        <section id="videos">
-            <div class="container">
-                <h2 class="section-title">Videos</h2>
-                <div id="videos-container"></div>
-            </div>
-        </section>
-
-        <!-- Updates Section -->
-        <section id="updates">
-            <div class="container">
-                <h2 class="section-title">Latest Updates</h2>
-                <div class="timeline" id="updates-container"></div>
-            </div>
-        </section>
-
-        <!-- Reviews Section -->
-        <section id="reviews">
-            <div class="container">
-                <h2 class="section-title">All Reviews</h2>
-                <div id="reviews-container"></div>
+                    <div>
+                        <h3 style="color: var(--accent-green); margin-bottom: 1.5rem;">Send a Message</h3>
+                        <form id="contact-form">
+                            <input type="text" placeholder="Your Name" required style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--tertiary-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);">
+                            <input type="email" placeholder="Your Email" required style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--tertiary-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);">
+                            <textarea placeholder="Your Message" required style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; background: var(--tertiary-dark); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); min-height: 120px; resize: vertical;"></textarea>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <div class="lightbox-content" id="lightbox-content"></div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p style="font-size: 0.9rem;">All rights reserved &copy; 2026 | Official website <strong>Musfiq R Farhan</strong></p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem;"><a href="https://www.musfiqrfarhan.blog" target="_blank" style="color: var(--gold);">www.MusfiqrFarhan.blog</a></p>
-            <p style="margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; font-size: 0.85rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank" style="color: var(--gold);">Sayad Md Bayezid Hosan</a></p>
+            <div>
+                <h3>Musfiq R. Farhan</h3>
+                <p>Multi-talented Bangladeshi entertainer bridging radio, television, and digital media with storytelling that connects with millions.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <p><a href="#home" onclick="navigateTo('home')">Home</a></p>
+                <p><a href="#about" onclick="navigateTo('about')">About</a></p>
+                <p><a href="#gallery" onclick="navigateTo('gallery')">Gallery</a></p>
+                <p><a href="#contact" onclick="navigateTo('contact')">Contact</a></p>
+            </div>
+            <div>
+                <h3>Follow</h3>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/musfiqfarhan" target="_blank" class="social-link">📷</a>
+                    <a href="https://www.facebook.com/share/1cQdw7JcMs/" target="_blank" class="social-link">f</a>
+                    <a href="https://www.youtube.com/@musfiqrfarhan" target="_blank" class="social-link">▶</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>All rights reserved © 2026 | Official website <strong>Musfiq R Farhan</strong> | <a href="https://www.musfiqrfarhan.blog" target="_blank">www.MusfiqrFarhan.blog</a></p>
+            <p style="margin-top: 0.5rem;">Developed by <a href="https://www.sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
         </div>
     </footer>
 
     <script>
-        // Initialize reviews from localStorage
-        function initializeReviews() {
-            if (!localStorage.getItem('reviews')) {
-                localStorage.setItem('reviews', JSON.stringify([]));
-            }
-        }
-
         // Navigation
-        function showSection(sectionId) {
-            document.querySelectorAll('section').forEach(section => {
-                section.classList.remove('active');
-            });
-
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-
-            document.getElementById(sectionId).classList.add('active');
+        function navigateTo(page) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
+            
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
             event.target.classList.add('active');
-
-            window.history.pushState({}, '', `#${sectionId}`);
-
-            if (sectionId === 'blog') loadBlog();
-            if (sectionId === 'pictures') loadPictures();
-            if (sectionId === 'videos') loadVideos();
-            if (sectionId === 'updates') loadUpdates();
-            if (sectionId === 'reviews') loadReviews();
+            
+            window.scrollTo(0, 0);
         }
 
-        // Load blog posts
-        async function loadBlog() {
-            const container = document.getElementById('blog-container');
-            container.innerHTML = '<p>Loading blog posts...</p>';
+        // Lightbox
+        function openLightbox(src, type = 'image') {
+            const lightbox = document.getElementById('lightbox');
+            const content = document.getElementById('lightbox-content');
             
-            try {
-                const response = await fetch('blog-posts/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".md"]');
-                
-                if (links.length === 0) {
-                    container.innerHTML = '<p>No blog posts yet. Upload markdown files to blog-posts/ folder.</p>';
-                    return;
-                }
-
-                let html = '';
-                for (const link of links) {
-                    const filename = link.textContent;
-                    const url = `blog-posts/${filename}`;
-                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    html += `<div class="blog-post" onclick="viewBlogPost('${url}')" style="cursor: pointer;">
-                        <h3>${title}</h3>
-                        <p class="blog-post-meta">${filename.substring(0, 10)}</p>
-                        <p>Click to read full post...</p>
-                    </div>`;
-                }
-                container.innerHTML = html;
-            } catch (e) {
-                container.innerHTML = '<p>Error loading blog posts.</p>';
+            if (type === 'image') {
+                content.innerHTML = `<img src="${src}" alt="Gallery">`;
+            } else if (type === 'video') {
+                content.innerHTML = `<iframe src="${src}" frameborder="0" allowfullscreen></iframe>`;
             }
-        }
-        
-        // View blog post
-        function viewBlogPost(url) {
-            window.open(url, '_blank');
-        }
-
-        // Load pictures
-        async function loadPictures() {
-            const container = document.getElementById('pictures-container');
-            container.innerHTML = '<p>Loading pictures...</p>';
             
-            try {
-                const response = await fetch('pictures/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".md"]');
-                
-                if (links.length === 0) {
-                    container.innerHTML = '<p>No pictures yet. Upload markdown files to pictures/ folder.</p>';
-                    return;
-                }
+            lightbox.classList.add('active');
+        }
 
-                let html = '<div class="gallery">';
-                for (const link of links) {
-                    const filename = link.textContent;
-                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    const fileUrl = `pictures/${filename}`;
-                    html += `<div class="gallery-item" onclick="viewPictureFile('${fileUrl}')" style="cursor: pointer;">
-                        <div style="background: var(--secondary-dark); height: 200px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
-                            📸
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // Load sample data
+        function loadSampleData() {
+            // Dramas carousel
+            const dramasCarousel = document.getElementById('dramas-carousel');
+            const dramas = [
+                { title: 'Drama 1', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                { title: 'Drama 2', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+                { title: 'Drama 3', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+            ];
+            
+            dramasCarousel.innerHTML = dramas.map(d => `
+                <div class="carousel-item" onclick="openLightbox('${d.video}', 'video')">
+                    <div class="carousel-item-image">
+                        <div class="video-thumbnail">
+                            <img src="${d.image}" alt="${d.title}" loading="lazy">
+                            <div class="play-button"></div>
                         </div>
-                        <div class="gallery-item-info">
-                            <h3>${title}</h3>
-                            <p>${filename.substring(0, 10)}</p>
-                        </div>
-                    </div>`;
-                }
-                html += '</div>';
-                container.innerHTML = html;
-            } catch (e) {
-                container.innerHTML = '<p>Error loading pictures.</p>';
-            }
-        }
-        
-        // View picture file
-        function viewPictureFile(url) {
-            window.open(url, '_blank');
-        }
+                    </div>
+                    <div class="carousel-item-content">
+                        <div class="carousel-item-title">${d.title}</div>
+                        <div class="carousel-item-meta">Click to watch</div>
+                    </div>
+                </div>
+            `).join('');
 
-        // Load videos
-        async function loadVideos() {
-            const container = document.getElementById('videos-container');
-            container.innerHTML = '<p>Loading videos...</p>';
-            
-            try {
-                const response = await fetch('videos/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".md"]');
-                
-                if (links.length === 0) {
-                    container.innerHTML = '<p>No videos yet. Upload markdown files to videos/ folder.</p>';
-                    return;
-                }
+            // Behind the scenes
+            const btsCarousel = document.getElementById('bts-carousel');
+            btsCarousel.innerHTML = [
+                { title: 'On Set', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
+                { title: 'Rehearsal', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
+                { title: 'Makeup', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
+            ].map(b => `
+                <div class="carousel-item" onclick="openLightbox('${b.image}', 'image')">
+                    <div class="carousel-item-image">
+                        <img src="${b.image}" alt="${b.title}" loading="lazy">
+                    </div>
+                    <div class="carousel-item-content">
+                        <div class="carousel-item-title">${b.title}</div>
+                    </div>
+                </div>
+            `).join('');
 
-                let html = '';
-                for (const link of links) {
-                    const filename = link.textContent;
-                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    const fileUrl = `videos/${filename}`;
-                    html += `<div class="blog-post" onclick="viewVideoFile('${fileUrl}')" style="cursor: pointer;">
-                        <h3>🎥 ${title}</h3>
-                        <p class="blog-post-meta">${filename.substring(0, 10)}</p>
-                        <p>Click to view video details...</p>
-                    </div>`;
-                }
-                container.innerHTML = html;
-            } catch (e) {
-                container.innerHTML = '<p>Error loading videos.</p>';
-            }
-        }
-        
-        // View video file
-        function viewVideoFile(url) {
-            window.open(url, '_blank');
-        }
+            // Latest shots
+            const latestCarousel = document.getElementById('latest-carousel');
+            latestCarousel.innerHTML = [
+                { title: 'Photoshoot 1', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
+                { title: 'Photoshoot 2', image: 'https://i.postimg.cc/G9Cg6WhZ/image.jpg' },
+                { title: 'Photoshoot 3', image: 'https://i.postimg.cc/Yh86nVhy/image.jpg' },
+            ].map(l => `
+                <div class="carousel-item" onclick="openLightbox('${l.image}', 'image')">
+                    <div class="carousel-item-image">
+                        <img src="${l.image}" alt="${l.title}" loading="lazy">
+                    </div>
+                    <div class="carousel-item-content">
+                        <div class="carousel-item-title">${l.title}</div>
+                    </div>
+                </div>
+            `).join('');
 
-        // Load updates
-        async function loadUpdates() {
-            const container = document.getElementById('updates-container');
-            container.innerHTML = '<p>Loading updates...</p>';
-            
-            try {
-                const response = await fetch('latest-updates/');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a[href$=".md"]');
-                
-                if (links.length === 0) {
-                    container.innerHTML = '<p>No updates yet.</p>';
-                    return;
-                }
-
-                let html = '';
-                for (const link of links) {
-                    const filename = link.textContent;
-                    const title = filename.replace('.md', '').replace(/\d{4}-\d{2}-\d{2}-/, '');
-                    html += `<div class="timeline-item" onclick="window.open('latest-updates/${filename}', '_blank')">
-                        <h3>${title}</h3>
-                        <div class="date">${filename.substring(0, 10)}</div>
-                        <p>Click to view full update...</p>
-                    </div>`;
-                }
-                container.innerHTML = html;
-            } catch (e) {
-                container.innerHTML = '<p>Error loading updates.</p>';
-            }
-        }
-
-        // Load reviews
-        function loadReviews() {
-            const container = document.getElementById('reviews-container');
-            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-            
-            if (reviews.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No reviews yet. Be the first to share your thoughts!</p>';
-                return;
+            // Love notes carousel
+            const loveNotesCarousel = document.getElementById('love-notes-carousel');
+            const loveNotes = JSON.parse(localStorage.getItem('loveNotes') || '[]');
+            if (loveNotes.length > 0) {
+                loveNotesCarousel.innerHTML = loveNotes.slice(0, 5).map(note => `
+                    <div class="carousel-item" style="flex: 0 0 350px; height: auto; padding: 2rem;">
+                        <div style="color: var(--accent-green); font-weight: 700; margin-bottom: 0.5rem;">${note.name}</div>
+                        <div style="color: var(--text-secondary); font-style: italic; margin-bottom: 1rem;">"${note.text}"</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">${note.date}</div>
+                    </div>
+                `).join('');
             }
 
-            let html = '';
-            for (let i = reviews.length - 1; i >= 0; i--) {
-                const review = reviews[i];
-                html += `<div class="review-item">
-                    <h4>${review.name}</h4>
-                    <div class="date">${review.date}</div>
-                    <p>${review.text}</p>
-                </div>`;
+            // Masonry gallery
+            const masonryGallery = document.getElementById('masonry-gallery');
+            masonryGallery.innerHTML = [
+                'https://i.postimg.cc/G9Cg6WhZ/image.jpg',
+                'https://i.postimg.cc/Yh86nVhy/image.jpg',
+                'https://i.postimg.cc/G9Cg6WhZ/image.jpg',
+                'https://i.postimg.cc/Yh86nVhy/image.jpg',
+                'https://i.postimg.cc/G9Cg6WhZ/image.jpg',
+                'https://i.postimg.cc/Yh86nVhy/image.jpg',
+            ].map(img => `
+                <div class="masonry-item" onclick="openLightbox('${img}', 'image')">
+                    <img src="${img}" alt="Gallery" loading="lazy">
+                </div>
+            `).join('');
+
+            // Grid gallery
+            const gridGallery = document.getElementById('grid-gallery');
+            gridGallery.innerHTML = [
+                'https://i.postimg.cc/Yh86nVhy/image.jpg',
+                'https://i.postimg.cc/G9Cg6WhZ/image.jpg',
+                'https://i.postimg.cc/Yh86nVhy/image.jpg',
+                'https://i.postimg.cc/G9Cg6WhZ/image.jpg',
+            ].map(img => `
+                <div class="gallery-item" onclick="openLightbox('${img}', 'image')">
+                    <img src="${img}" alt="Gallery" loading="lazy">
+                </div>
+            `).join('');
+
+            // Love notes list
+            const loveNotesList = document.getElementById('love-notes-list');
+            if (loveNotes.length > 0) {
+                loveNotesList.innerHTML = loveNotes.map(note => `
+                    <div class="review-card">
+                        <div class="review-author">${note.name}</div>
+                        <div class="review-text">"${note.text}"</div>
+                        <div class="review-date">${note.date}</div>
+                    </div>
+                `).join('');
+            } else {
+                loveNotesList.innerHTML = '<p style="color: var(--text-muted);">No messages yet. Be the first to leave one!</p>';
             }
-            container.innerHTML = html;
+
+            // Blog list
+            const blogList = document.getElementById('blog-list');
+            blogList.innerHTML = `
+                <div class="review-card" style="border-left-color: var(--accent-green);">
+                    <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">Latest News & Updates</h3>
+                    <p style="color: var(--text-secondary);">Check back soon for blog posts and news articles.</p>
+                </div>
+            `;
         }
 
-        // Load home reviews
-        function loadHomeReviews() {
-            const container = document.getElementById('home-reviews-container');
-            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-            
-            if (reviews.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No reviews yet. Be the first to share your thoughts!</p>';
-                return;
-            }
+        // Love notes form
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSampleData();
 
-            let html = '';
-            const recentReviews = reviews.slice(-3).reverse();
-            for (const review of recentReviews) {
-                html += `<div class="review-item">
-                    <h4>${review.name}</h4>
-                    <div class="date">${review.date}</div>
-                    <p>${review.text}</p>
-                </div>`;
-            }
-            container.innerHTML = html;
-        }
-
-        // Handle review form submission
-        function setupReviewForm() {
-            const form = document.getElementById('reviewForm');
-            if (form) {
-                form.addEventListener('submit', function(e) {
+            const loveNotesForm = document.getElementById('love-notes-form');
+            if (loveNotesForm) {
+                loveNotesForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    const name = document.getElementById('reviewName').value;
-                    const text = document.getElementById('reviewText').value;
+                    const name = document.getElementById('note-name').value;
+                    const text = document.getElementById('note-text').value;
+                    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                     
-                    const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
-                    reviews.push({
-                        name: name,
-                        text: text,
-                        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                    });
-                    localStorage.setItem('reviews', JSON.stringify(reviews));
+                    const loveNotes = JSON.parse(localStorage.getItem('loveNotes') || '[]');
+                    loveNotes.push({ name, text, date });
+                    localStorage.setItem('loveNotes', JSON.stringify(loveNotes));
                     
-                    form.reset();
-                    loadHomeReviews();
-                    alert('Thank you for your review!');
+                    loveNotesForm.reset();
+                    loadSampleData();
+                    alert('Thank you for your message!');
                 });
             }
-        }
 
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            initializeReviews();
-            setupReviewForm();
-            loadHomeReviews();
-            
-            const hash = window.location.hash.substring(1) || 'home';
-            if (hash !== 'home') {
-                showSection(hash);
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Thank you for reaching out! We will get back to you soon.');
+                    contactForm.reset();
+                });
             }
         });
 
-        // Handle browser back/forward
-        window.addEventListener('popstate', function() {
-            const hash = window.location.hash.substring(1) || 'home';
-            showSection(hash);
+        // Close lightbox on escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // Close lightbox on background click
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
         });
     </script>
 </body>
