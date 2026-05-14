@@ -162,6 +162,10 @@
             position: relative;
             overflow: hidden;
             padding: 2rem;
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.7) 0%, rgba(15, 20, 25, 0.7) 100%), url('https://i.postimg.cc/ftGZYD4h/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
         .hero::before {
@@ -171,7 +175,7 @@
             right: -50%;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
             animation: pulse 8s ease-in-out infinite;
             z-index: 0;
         }
@@ -539,6 +543,97 @@
             }
         }
 
+        /* ============ INFINITE CAROUSEL ============ */
+        .infinite-carousel {
+            display: flex;
+            gap: 2rem;
+            animation: infiniteScroll 40s linear infinite;
+            padding: 2rem 0;
+        }
+
+        .infinite-carousel:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes infiniteScroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-100% - 2rem));
+            }
+        }
+
+        .infinite-carousel-item {
+            flex: 0 0 350px;
+            background: var(--tertiary-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            height: 300px;
+        }
+
+        .infinite-carousel-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-green);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .infinite-carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .infinite-carousel-item:hover img {
+            transform: scale(1.1);
+            filter: brightness(0.8);
+        }
+
+        /* ============ ABOUT HERO ============ */
+        .about-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.6) 0%, rgba(15, 20, 25, 0.6) 100%), url('https://i.postimg.cc/dLJppLjg/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 2rem;
+        }
+
+        .about-hero-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .about-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-green-light) 0%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+
+        .about-hero p {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
         /* ============ LIGHTBOX ============ */
         .lightbox {
             display: none;
@@ -630,7 +725,9 @@
 
         /* ============ FOOTER ============ */
         footer {
-            background: var(--secondary-dark);
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(15, 20, 25, 0.9) 100%), url('https://i.postimg.cc/p9336Cs1/image.jpg');
+            background-size: cover;
+            background-position: center;
             border-top: 1px solid var(--border-color);
             padding: 3rem 0;
             margin-top: 5rem;
@@ -701,6 +798,54 @@
             transform: translateY(-3px);
         }
 
+        /* ============ SKILLS SECTION ============ */
+        .skills-section {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.9) 0%, rgba(15, 20, 25, 0.9) 100%), url('https://i.postimg.cc/Tp7xcVvW/image.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 5rem 2rem;
+            border-radius: 16px;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skills-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-category {
+            margin-bottom: 2rem;
+        }
+
+        .skill-category h3 {
+            color: var(--accent-green);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .skill-tag {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .skill-tag:hover {
+            background: var(--accent-green);
+            color: var(--primary-dark);
+        }
+
         /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
             .hero-content {
@@ -766,6 +911,19 @@
             .section-title {
                 font-size: 1.5rem;
             }
+
+            .infinite-carousel-item {
+                flex: 0 0 280px;
+                height: 250px;
+            }
+
+            .about-hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-hero p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -828,8 +986,8 @@
             <!-- Latest Shots -->
             <div class="container" style="margin-top: 5rem;">
                 <h2 class="section-title">Latest Shots</h2>
-                <div class="carousel-container">
-                    <div class="carousel" id="latest-carousel">
+                <div style="overflow: hidden; border-radius: 12px;">
+                    <div class="infinite-carousel" id="latest-carousel">
                         <!-- Latest shots will be loaded here -->
                     </div>
                 </div>
@@ -848,7 +1006,15 @@
 
         <!-- ABOUT PAGE -->
         <section id="about">
-            <div class="container">
+            <!-- About Hero -->
+            <div class="about-hero">
+                <div class="about-hero-content">
+                    <h1>Musfiq R. Farhan</h1>
+                    <p>Hello, I'm Musfiq R. Farhan – A multi-talented entertainer bridging radio, television, and digital media with storytelling that connects with millions.</p>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top: 3rem;">
                 <h2 class="section-title">About Me</h2>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; margin-top: 3rem;">
@@ -867,6 +1033,46 @@
                             <li style="margin-bottom: 0.75rem;">✓ Pioneering Digital Content Creator</li>
                             <li style="margin-bottom: 0.75rem;">✓ Radio & TV Host Extraordinaire</li>
                         </ul>
+                    </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="skills-section">
+                    <div class="skills-content">
+                        <h2 class="section-title" style="color: var(--accent-green); margin-bottom: 2rem;">My Expertise</h2>
+                        
+                        <div class="skill-category">
+                            <h3>Acting & Performance</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Drama</span>
+                                <span class="skill-tag">TVC</span>
+                                <span class="skill-tag">Film</span>
+                                <span class="skill-tag">Character Acting</span>
+                                <span class="skill-tag">Emotional Depth</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-category">
+                            <h3>Radio & Hosting</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">RJ</span>
+                                <span class="skill-tag">Talk Show Host</span>
+                                <span class="skill-tag">Event Hosting</span>
+                                <span class="skill-tag">Voice Over</span>
+                                <span class="skill-tag">Live Performance</span>
+                            </div>
+                        </div>
+
+                        <div class="skill-category">
+                            <h3>Digital & Content</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Content Creation</span>
+                                <span class="skill-tag">Social Media</span>
+                                <span class="skill-tag">YouTube</span>
+                                <span class="skill-tag">Instagram</span>
+                                <span class="skill-tag">Digital Marketing</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -895,6 +1101,14 @@
                 <h2 class="section-title">Love Notes</h2>
                 <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 3rem;">Messages and reviews from amazing fans around the world</p>
                 
+                <!-- Infinite Auto-Scrolling Carousel -->
+                <div style="overflow: hidden; border-radius: 12px; margin-bottom: 3rem;">
+                    <div class="infinite-carousel" id="love-notes-infinite">
+                        <!-- Love notes carousel will be loaded here -->
+                    </div>
+                </div>
+
+                <h3 style="color: var(--accent-green); margin: 3rem 0 1.5rem 0; font-size: 1.3rem;">All Messages</h3>
                 <div id="love-notes-list">
                     <!-- Love notes will be loaded here -->
                 </div>
@@ -1190,3 +1404,47 @@
     </script>
 </body>
 </html>
+
+<script>
+// Update loadSampleData function - add this after existing loadSampleData
+(function() {
+    const originalLoadSampleData = window.loadSampleData;
+    window.loadSampleData = function() {
+        originalLoadSampleData.call(this);
+        
+        // Update Latest Shots with infinite carousel
+        const latestCarousel = document.getElementById('latest-carousel');
+        const latestShots = [
+            { image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
+            { image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
+            { image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
+            { image: 'https://i.postimg.cc/XZh004Yd/image.jpg' },
+            { image: 'https://i.postimg.cc/WhnL1M4D/image.jpg' },
+            { image: 'https://i.postimg.cc/p9336Cs1/image.jpg' },
+        ];
+        
+        latestCarousel.innerHTML = latestShots.concat(latestShots).map(l => `
+            <div class="infinite-carousel-item" onclick="openLightbox('${l.image}', 'image')">
+                <img src="${l.image}" alt="Latest Shot" loading="lazy">
+            </div>
+        `).join('');
+
+        // Update Love Notes infinite carousel
+        const loveNotesInfinite = document.getElementById('love-notes-infinite');
+        const loveNotes = JSON.parse(localStorage.getItem('loveNotes') || '[]');
+        
+        if (loveNotes.length > 0) {
+            const infiniteNotes = loveNotes.concat(loveNotes);
+            loveNotesInfinite.innerHTML = infiniteNotes.map(note => `
+                <div class="infinite-carousel-item" style="padding: 2rem; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="color: var(--accent-green); font-weight: 700; margin-bottom: 0.5rem;">${note.name}</div>
+                    <div style="color: var(--text-secondary); font-style: italic; margin-bottom: 1rem; line-height: 1.6;">"${note.text}"</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">${note.date}</div>
+                </div>
+            `).join('');
+        } else {
+            loveNotesInfinite.innerHTML = '<div class="infinite-carousel-item" style="padding: 2rem; display: flex; align-items: center; justify-content: center;"><p style="color: var(--text-muted);">Be the first to leave a message!</p></div>';
+        }
+    };
+})();
+</script>
