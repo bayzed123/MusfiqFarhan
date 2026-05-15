@@ -861,35 +861,44 @@
         .news-card h3 { font-size: 20px; margin-bottom: 20px; }
 
         /* --- Brand Marquee --- */
-        .marquee {
-            overflow: hidden;
-            white-space: nowrap;
-            padding: 40px 0;
+        .brand-marquee {
             background: var(--glass);
             border-top: 1px solid var(--glass-border);
             border-bottom: 1px solid var(--glass-border);
+            overflow: hidden;
         }
 
-        .marquee-content {
-            display: inline-block;
-            animation: marquee 30s linear infinite;
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            padding: 20px 0;
         }
 
-        .marquee-content span {
-            font-size: 32px;
-            font-weight: 900;
-            margin: 0 60px;
-            color: rgba(255,255,255,0.1);
-            text-transform: uppercase;
-            letter-spacing: 5px;
+        .marquee-track-logos {
+            display: flex;
+            width: max-content;
+            animation: marqueeLogos 30s linear infinite;
+            align-items: center;
+        }
+
+        .marquee-track-logos img {
+            height: 60px;
+            max-width: 150px;
+            object-fit: contain;
+            margin: 0 50px;
+            filter: grayscale(100%);
+            opacity: 0.5;
             transition: var(--transition-smooth);
         }
 
-        .marquee-content span:hover {
-            color: var(--emerald);
+        .marquee-track-logos img:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px var(--emerald-glow));
         }
 
-        @keyframes marquee {
+        @keyframes marqueeLogos {
             from { transform: translateX(0); }
             to { transform: translateX(-50%); }
         }
@@ -1153,8 +1162,8 @@
         <div class="coming-soon">
             <div class="cs-content">
                 <span class="cs-tag cinematic-font">PREMIERING 2026</span>
-                <h2 class="cs-title luxury-font">Poran Pakhi</h2>
-                <a href="#" class="btn btn-primary">Watch Trailer</a>
+                <h2 class="cs-title luxury-font">New Project</h2>
+                <a href="https://youtu.be/7Kt-gYcTSNM?si=-9MO4gpVkO7tiIsq" target="_blank" class="btn btn-primary">Watch Trailer</a>
             </div>
         </div>
     </section>
@@ -1265,20 +1274,28 @@
     </section>
 
     <!-- 10. Brand Partnership Marquee -->
-    <section class="marquee">
-        <div class="marquee-content">
-            <span>SAMSUNG</span>
-            <span>COCA COLA</span>
-            <span>ROBI</span>
-            <span>GRAMEENPHONE</span>
-            <span>UNILEVER</span>
-            <span>PEPSI</span>
-            <span>SAMSUNG</span>
-            <span>COCA COLA</span>
-            <span>ROBI</span>
-            <span>GRAMEENPHONE</span>
-            <span>UNILEVER</span>
-            <span>PEPSI</span>
+    <section class="brand-marquee section-padding">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="text-align: center; margin-bottom: 50px; font-size: 24px; letter-spacing: 2px;">PRODUCTION PARTNERS</h2>
+        </div>
+        <div class="marquee-container">
+            <div class="marquee-track-logos">
+                <img src="https://yt3.googleusercontent.com/OwoUZA0O-OKdHyxgMloame_XjYqFR2zsk7iVyx0W_ESeeO-jcBGiIZcViRalfoRhikbtCJVZcw=s900-c-k-c0x00ffffff-no-rj" alt="Visual Scene">
+                <img src="https://yt3.googleusercontent.com/ytc/AIdro_m8A7DFB-1C18VualkC-mfDAtYRyxtzFNDZKf9Wn6ybysU=s900-c-k-c0x00ffffff-no-rj" alt="Logo 2">
+                <img src="https://yt3.googleusercontent.com/ytc/AIdro_k56_9nxV_0y3BBcWoZkE5oA0U0NTySyhPrOKXK3fbD4vI=s900-c-k-c0x00ffffff-no-rj" alt="Logo 3">
+                <img src="https://yt3.googleusercontent.com/xi6mu92uIywkiupDjAcOcfRv_sdLBcNNg71GHOz2dRnVhp0QvXXwrXONS1ZvXlwPeS0o6aNUpQ=s176-c-k-c0x00ffffff-no-rj-mo" alt="Logo 4">
+                <img src="https://yt3.googleusercontent.com/FFAaF3PzQVBTvfG9zvhDZi13apYR_4oumwXzZf_zKheIahyczU69Mc6TStf92c-rSAEiJdt2=s900-c-k-c0x00ffffff-no-rj" alt="Laser Vision">
+                <img src="https://upload.wikimedia.org/wikipedia/en/c/ce/G-Series_Logo.png" alt="G-Series">
+                <img src="https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064479891277" alt="Global TV">
+                <!-- Duplicate for infinite loop -->
+                <img src="https://yt3.googleusercontent.com/OwoUZA0O-OKdHyxgMloame_XjYqFR2zsk7iVyx0W_ESeeO-jcBGiIZcViRalfoRhikbtCJVZcw=s900-c-k-c0x00ffffff-no-rj" alt="Visual Scene">
+                <img src="https://yt3.googleusercontent.com/ytc/AIdro_m8A7DFB-1C18VualkC-mfDAtYRyxtzFNDZKf9Wn6ybysU=s900-c-k-c0x00ffffff-no-rj" alt="Logo 2">
+                <img src="https://yt3.googleusercontent.com/ytc/AIdro_k56_9nxV_0y3BBcWoZkE5oA0U0NTySyhPrOKXK3fbD4vI=s900-c-k-c0x00ffffff-no-rj" alt="Logo 3">
+                <img src="https://yt3.googleusercontent.com/xi6mu92uIywkiupDjAcOcfRv_sdLBcNNg71GHOz2dRnVhp0QvXXwrXONS1ZvXlwPeS0o6aNUpQ=s176-c-k-c0x00ffffff-no-rj-mo" alt="Logo 4">
+                <img src="https://yt3.googleusercontent.com/FFAaF3PzQVBTvfG9zvhDZi13apYR_4oumwXzZf_zKheIahyczU69Mc6TStf92c-rSAEiJdt2=s900-c-k-c0x00ffffff-no-rj" alt="Laser Vision">
+                <img src="https://upload.wikimedia.org/wikipedia/en/c/ce/G-Series_Logo.png" alt="G-Series">
+                <img src="https://lookaside.fbsbx.com/lookaside/crawler/media/?media_id=100064479891277" alt="Global TV">
+            </div>
         </div>
     </section>
 
