@@ -532,11 +532,15 @@
             margin: 0 -5%;
             padding: 0 5%;
             overflow-x: auto;
+            overflow-y: hidden;
             display: flex;
             gap: 30px;
             scrollbar-width: none;
             -ms-overflow-style: none;
             padding-bottom: 40px;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
 
         .carousel-wrapper::-webkit-scrollbar { display: none; }
@@ -549,6 +553,16 @@
             overflow: hidden;
             cursor: pointer;
             transition: var(--transition-smooth);
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            flex-shrink: 0;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-card:hover {
+            border-color: var(--emerald);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.25);
         }
 
         .project-card img {
@@ -580,19 +594,60 @@
         .project-info h3 { font-size: 24px; margin-bottom: 10px; }
         .project-info span { color: var(--emerald); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
 
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(16, 185, 129, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #fff;
+            transition: var(--transition-smooth);
+            z-index: 10;
+        }
+
+        .project-card:hover .play-btn {
+            background: var(--emerald);
+            transform: translate(-50%, -50%) scale(1.15);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+        }
+
         /* --- Behind The Scenes --- */
         .bts-slider {
             display: flex;
             gap: 20px;
             overflow-x: auto;
+            overflow-y: hidden;
             scrollbar-width: none;
+            -ms-overflow-style: none;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
+
+        .bts-slider::-webkit-scrollbar { display: none; }
 
         .bts-item {
             min-width: 300px;
             height: 400px;
             border-radius: 15px;
             overflow: hidden;
+            scroll-snap-align: center;
+            scroll-snap-stop: always;
+            flex-shrink: 0;
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            transition: var(--transition-smooth);
+        }
+
+        .bts-item:hover {
+            border-color: var(--emerald);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
         }
 
         .bts-item img {
@@ -1068,44 +1123,48 @@
         </div>
     </section>
 
-    <!-- 6. The Media Hub (Carousel) -->
+    <!-- 6. Recent Releases (Netflix-Style Video Carousel) -->
+    <section class="section-padding" id="recent-releases">
+        <div class="container">
+            <div class="hub-header reveal">
+                <div class="hub-title">
+                    <p>Latest Uploads</p>
+                    <h2 class="luxury-font">Recent Releases</h2>
+                </div>
+            </div>
+            <div class="carousel-wrapper reveal">
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/ofXi8zgQlus?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/ofXi8zgQlus/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/g9GRWSbIFck?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/g9GRWSbIFck/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/8Oy5CXJoHbg?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/8Oy5CXJoHbg/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/1ShGRKvY9jo?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/1ShGRKvY9jo/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/M3dTY9zTEN8?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/M3dTY9zTEN8/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/YlEQRZFjmeI?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/YlEQRZFjmeI/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/hCrHVIa1P8E?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/hCrHVIa1P8E/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/xd1FzIVpLZo?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/xd1FzIVpLZo/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6.5. The Media Hub (Netflix-Style Video Carousel) -->
     <section class="section-padding" id="filmography">
         <div class="container">
             <div class="hub-header reveal">
                 <div class="hub-title">
-                    <p>Trending Dramas</p>
+                    <p>Featured Collection</p>
                     <h2 class="luxury-font">The Media Hub</h2>
                 </div>
             </div>
             <div class="carousel-wrapper reveal">
-                <div class="project-card">
-                    <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Sheshta Tumi">
-                    <div class="project-info">
-                        <span>Drama / 2025</span>
-                        <h3 class="luxury-font">Sheshta Tumi</h3>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="Sweeper Man">
-                    <div class="project-info">
-                        <span>Drama / 2023</span>
-                        <h3 class="luxury-font">Sweeper Man</h3>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="Visa in Life">
-                    <div class="project-info">
-                        <span>Drama / 2023</span>
-                        <h3 class="luxury-font">Visa in Life</h3>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <img src="https://i.postimg.cc/p9336Cs1/image.jpg" alt="Hangor">
-                    <div class="project-info">
-                        <span>Film / 2022</span>
-                        <h3 class="luxury-font">Hangor</h3>
-                    </div>
-                </div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/vAFi7jb8BqM?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/vAFi7jb8BqM/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/exPkakUfP6k?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/exPkakUfP6k/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/8dNT1GvYS14?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/8dNT1GvYS14/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/HPLgIcZZdx4?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/HPLgIcZZdx4/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/OUT5XKUs-M8?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/OUT5XKUs-M8/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/Xi_EhPWcf9k?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/Xi_EhPWcf9k/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/s4ggAWZ1xUA?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/s4ggAWZ1xUA/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/UT0a504rXqU?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/UT0a504rXqU/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/owAjwljtkBM?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/owAjwljtkBM/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
+                <div class="project-card" onclick="this.innerHTML='<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/exPkakUfP6k?autoplay=1\" frameborder=\"0\" allow=\"autoplay; encrypted-media\" allowfullscreen></iframe>'" style="background-image: url('https://i.ytimg.com/vi/exPkakUfP6k/maxresdefault.jpg'); background-size: cover; background-position: center;"><div class="play-btn"><i class="fas fa-play"></i></div></div>
             </div>
         </div>
     </section>
