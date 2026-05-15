@@ -56,6 +56,10 @@ To set up and run this project locally, follow these steps:
     *   **Video Data**: Update the `videosData` object in the JavaScript section with your specific YouTube video titles, IDs, and tags.
     *   **Newsroom & BTS**: Modify content as needed.
 
+## Technical Documentation
+
+For an in-depth understanding of the project's architecture, implementation details, and advanced customization options, please refer to the [Wiki.md](Wiki.md).
+
 ## Technologies Used
 
 *   **HTML5**: Semantic structure.
@@ -64,6 +68,12 @@ To set up and run this project locally, follow these steps:
 *   **Google Firebase Realtime Database**: Backend for the Live Fan Wall.
 *   **Font Awesome**: Icons.
 *   **Google Fonts**: Playfair Display, Inter, Cinzel.
+
+## License
+
+This project is licensed under a custom commercial license. You are free to use, distribute, and modify this software for commercial purposes without alteration, provided that **all original developer credits remain intact and visible**. Any removal or obfuscation of the developer credit is strictly prohibited and constitutes a violation of copyright.
+
+For more details, see the [LICENSE.md](LICENSE.md) file.
 
 ## Developer
 
