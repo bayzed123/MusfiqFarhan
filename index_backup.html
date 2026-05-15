@@ -14,10 +14,6 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-    
     <style>
         :root {
             --midnight: #05070a;
@@ -215,6 +211,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            margin-top: 70px;
         }
 
         .hero-bg {
@@ -224,9 +221,9 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(to bottom, rgba(5, 7, 10, 0) 0%, rgba(5, 7, 10, 0.3) 40%, rgba(5, 7, 10, 0.8) 70%, rgba(0, 0, 0, 1) 100%), 
-                        url('./assets/E3EB8379-ACDC-4F8A-ABAD-01E60197723E.png');
+                        url('./assets/hero-portrait.png');
             background-size: cover;
-            background-position: center center;
+            background-position: center;
             z-index: -1;
             transform: scale(1.1);
             transition: transform 10s ease-out;
@@ -273,7 +270,7 @@
             flex-wrap: wrap;
         }
 
-        /* --- The Story (Bio) --- */
+        /* --- Bio & Milestones --- */
         .bio-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -294,39 +291,6 @@
             font-weight: 300;
         }
 
-        /* --- About Me Section (New) --- */
-        .about-me-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .about-photo-container {
-            position: relative;
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-        }
-
-        #about-photo {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: var(--transition-smooth);
-        }
-
-        .about-photo-container:hover #about-photo {
-            transform: scale(1.05);
-        }
-
-        .about-content h2 {
-            font-size: 42px;
-            margin-bottom: 25px;
-        }
-
-        /* --- Milestones & Awards --- */
         .milestones {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -414,7 +378,7 @@
             margin-bottom: 30px;
         }
 
-        /* --- The Media Hub (Carousel) --- */
+        /* --- The Hub (Carousel) --- */
         .hub-header {
             display: flex;
             justify-content: space-between;
@@ -478,6 +442,47 @@
         .project-info h3 { font-size: 24px; margin-bottom: 10px; }
         .project-info span { color: var(--emerald); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
 
+        /* --- Featured Spotlight --- */
+        .spotlight-container {
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            background: #000;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+        }
+
+        .video-facade {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .play-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            transition: var(--transition-smooth);
+        }
+
+        .video-facade:hover .play-btn {
+            background: var(--emerald);
+            color: var(--midnight);
+            transform: scale(1.1);
+        }
+
         /* --- Behind The Scenes --- */
         .bts-slider {
             display: flex;
@@ -499,7 +504,7 @@
             object-fit: cover;
         }
 
-        /* --- Love Notes Hub (Multi-Row) --- */
+        /* --- Love Notes Hub --- */
         .love-notes-hub {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%);
             border-top: 1px solid var(--glass-border);
@@ -579,52 +584,40 @@
             font-size: 14px;
         }
 
-        /* --- Multi-Row Marquee Display --- */
+        /* --- Love Notes Marquee Display --- */
         .love-notes-marquee-section {
             margin-top: 60px;
         }
 
-        .marquee-row {
+        .marquee-display {
             overflow: hidden;
             background: rgba(16, 185, 129, 0.03);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
-            padding: 20px 0;
-            min-height: 140px;
+            padding: 30px 0;
+            min-height: 200px;
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
         }
 
         .marquee-track {
             display: flex;
             gap: 30px;
+            animation: marqueeScroll 25s linear infinite;
             padding: 0 30px;
             will-change: transform;
         }
 
-        .marquee-track-1 {
-            animation: marqueeScrollLeft 30s linear infinite;
-        }
-
-        .marquee-track-2 {
-            animation: marqueeScrollRight 35s linear infinite;
-        }
-
-        .marquee-track-3 {
-            animation: marqueeScrollLeft 32s linear infinite;
-        }
-
-        .marquee-row:hover .marquee-track {
+        .marquee-track:hover {
             animation-play-state: paused;
         }
 
         .love-note-card {
             flex: 0 0 auto;
-            min-width: 320px;
+            min-width: 350px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(16, 185, 129, 0.2);
-            padding: 25px;
+            padding: 30px;
             border-radius: 15px;
             backdrop-filter: blur(20px);
             transition: var(--transition-smooth);
@@ -639,17 +632,17 @@
         }
 
         .love-note-message {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text-dim);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-style: italic;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .love-note-author {
             color: var(--emerald);
             font-weight: 700;
-            font-size: 12px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -662,21 +655,12 @@
             padding: 40px;
         }
 
-        @keyframes marqueeScrollLeft {
-            from {
+        @keyframes marqueeScroll {
+            0% {
                 transform: translateX(0);
             }
-            to {
+            100% {
                 transform: translateX(-50%);
-            }
-        }
-
-        @keyframes marqueeScrollRight {
-            from {
-                transform: translateX(-50%);
-            }
-            to {
-                transform: translateX(0);
             }
         }
 
@@ -825,7 +809,7 @@
 
         /* --- Mobile Responsive --- */
         @media (max-width: 992px) {
-            .bio-grid, .about-me-grid, .contact-grid { grid-template-columns: 1fr; gap: 50px; }
+            .bio-grid, .contact-grid { grid-template-columns: 1fr; gap: 50px; }
             .news-grid { grid-template-columns: 1fr 1fr; }
             .hero-title { font-size: 4rem; }
         }
@@ -855,7 +839,6 @@
             .bio-grid { grid-template-columns: 1fr; }
             .hero { margin-top: 0; }
             .hero-bg { background-position: 85% center; }
-            .marquee-row { min-height: 120px; }
         }
     </style>
 </head>
@@ -867,10 +850,9 @@
             <a href="#" class="logo cinematic-font">MUSFIQ<span>.</span></a>
             <nav class="nav-links" id="nav-links">
                 <a href="#home" class="active">Home</a>
-                <a href="#story">Story</a>
-                <a href="#about">About</a>
                 <a href="#filmography">Filmography</a>
-                <a href="#love-notes">Live Fan Wall</a>
+                <a href="#about">About</a>
+                <a href="#love-notes">Love Notes</a>
                 <a href="#news">News</a>
                 <a href="#contact">Contact</a>
             </nav>
@@ -895,67 +877,43 @@
         </div>
     </section>
 
-    <!-- 2. The Story (Bio) -->
-    <section class="section-padding" id="story">
+    <!-- 2. Luxury Editorial Bio & Milestones -->
+    <section class="section-padding" id="about">
         <div class="container">
             <div class="bio-grid">
                 <div class="bio-text reveal">
                     <p class="cinematic-font" style="color: var(--emerald); font-size: 12px; margin-bottom: 15px;">The Journey</p>
                     <h2 class="luxury-font">A Legacy in the Making</h2>
                     <p>A prominent Bangladeshi actor, RJ, and content creator known for his versatility and independent success in the industry. Successfully transitioned from radio to television and OTT, building a massive audience through sheer talent and self-produced content.</p>
+                    <div class="awards-badges">
+                        <div class="award-badge"><i class="fas fa-trophy"></i> Game Changer of The Year 2025</div>
+                        <div class="award-badge"><i class="fas fa-medal"></i> 4th BIFA Best Actor - OTT</div>
+                        <div class="award-badge"><i class="fas fa-award"></i> 5th BIFA Nominee 2026</div>
+                    </div>
                 </div>
                 <div class="milestones reveal">
                     <div class="glass-card milestone-item">
-                        <span class="milestone-number" data-target="120">120+</span>
+                        <span class="milestone-number" data-target="120">0</span>
                         <span class="milestone-label">Productions</span>
                     </div>
                     <div class="glass-card milestone-item">
-                        <span class="milestone-number" data-target="8">8M+</span>
-                        <span class="milestone-label">Fans</span>
+                        <span class="milestone-number" data-target="8">0</span>
+                        <span class="milestone-label">Million Fans</span>
+                    </div>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="15">0</span>
+                        <span class="milestone-label">Awards Won</span>
+                    </div>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="10">0</span>
+                        <span class="milestone-label">Years of Magic</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 3. About Me Section (New Image Integration) -->
-    <section class="section-padding" id="about">
-        <div class="container">
-            <div class="about-me-grid">
-                <div class="about-photo-container reveal">
-                    <img id="about-photo" src="./assets/about_photo.png" alt="Musfiq R. Farhan" onerror="this.src='https://via.placeholder.com/600x800?text=About+Photo'">
-                </div>
-                <div class="about-content reveal">
-                    <h2 class="luxury-font">Behind the Spotlight</h2>
-                    <p style="margin-bottom: 25px;">Beyond the characters and the cameras, I am driven by a passion for authentic storytelling and connecting with my audience on a deeper level. Every project is a new chapter in my journey to push the boundaries of Bangladeshi entertainment.</p>
-                    <p style="color: var(--text-dim);">My transition from radio to screen has been fueled by the unwavering support of my fans, who I consider my greatest strength.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. BIFA Awards & Milestones -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="milestones reveal" style="margin-bottom: 60px;">
-                <div class="glass-card milestone-item">
-                    <span class="milestone-number">15+</span>
-                    <span class="milestone-label">Awards Won</span>
-                </div>
-                <div class="glass-card milestone-item">
-                    <span class="milestone-number">10</span>
-                    <span class="milestone-label">Years of Magic</span>
-                </div>
-            </div>
-            <div class="awards-badges reveal" style="justify-content: center;">
-                <div class="award-badge"><i class="fas fa-trophy"></i> Game Changer of The Year 2025</div>
-                <div class="award-badge"><i class="fas fa-medal"></i> 4th BIFA Best Actor - OTT</div>
-                <div class="award-badge"><i class="fas fa-award"></i> 5th BIFA Nominee 2026</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. Coming Soon Mega Banner -->
+    <!-- 3. Coming Soon Mega Banner -->
     <section class="reveal">
         <div class="coming-soon">
             <div class="cs-content">
@@ -966,13 +924,17 @@
         </div>
     </section>
 
-    <!-- 6. The Media Hub (Carousel) -->
+    <!-- 4. Latest Dramas & TVCs (The Hub) -->
     <section class="section-padding" id="filmography">
         <div class="container">
             <div class="hub-header reveal">
                 <div class="hub-title">
-                    <p>Trending Dramas</p>
-                    <h2 class="luxury-font">The Media Hub</h2>
+                    <p>Selected Works</p>
+                    <h2 class="luxury-font">The Hub</h2>
+                </div>
+                <div class="carousel-nav">
+                    <a href="#filmography" class="btn btn-outline" style="padding: 10px 20px;"><i class="fas fa-arrow-left"></i></a>
+                    <a href="#filmography" class="btn btn-outline" style="padding: 10px 20px;"><i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
             <div class="carousel-wrapper reveal">
@@ -981,6 +943,20 @@
                     <div class="project-info">
                         <span>Drama / 2025</span>
                         <h3 class="luxury-font">Sheshta Tumi</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/Yh86nVhy/image.jpg" alt="Stupids">
+                    <div class="project-info">
+                        <span>Drama / 2024</span>
+                        <h3 class="luxury-font">Stupids</h3>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <img src="https://i.postimg.cc/G9Cg6WhZ/image.jpg" alt="Plural No. 3rd Person">
+                    <div class="project-info">
+                        <span>Drama / 2024</span>
+                        <h3 class="luxury-font">Plural No. 3rd Person</h3>
                     </div>
                 </div>
                 <div class="project-card">
@@ -1008,25 +984,37 @@
         </div>
     </section>
 
-    <!-- 7. Behind The Scenes Slider -->
+    <!-- 5. Featured Spotlight (Big Screen) -->
     <section class="section-padding">
         <div class="container">
-            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Exclusive BTS Stills</h2>
+            <div class="spotlight-container reveal">
+                <div class="video-facade" style="background-image: url('https://i.ytimg.com/vi/UT0a504rXqU/maxresdefault.jpg');" onclick="this.innerHTML='<iframe width=\'100%\' height=\'100%\' src=\'https://www.youtube.com/embed/UT0a504rXqU?autoplay=1\' frameborder=\'0\' allow=\'autoplay; encrypted-media\' allowfullscreen></iframe>'">
+                    <div class="play-btn"><i class="fas fa-play"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Behind The Scenes -->
+    <section class="section-padding">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Behind The Scenes</h2>
             <div class="bts-slider reveal">
                 <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 1"></div>
                 <div class="bts-item"><img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="BTS 2"></div>
                 <div class="bts-item"><img src="https://i.postimg.cc/p9336Cs1/image.jpg" alt="BTS 3"></div>
                 <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 4"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="BTS 5"></div>
             </div>
         </div>
     </section>
 
-    <!-- 8. Live Fan Wall (Firebase Marquee) -->
+    <!-- 7. THE LOVE NOTE HUB (FAN ENGAGEMENT) -->
     <section class="section-padding love-notes-hub" id="love-notes">
         <div class="container">
             <div class="love-notes-header reveal">
-                <h2 class="luxury-font">Live Fan Wall</h2>
-                <p>Messages from fans globally appear here instantly</p>
+                <h2 class="luxury-font">Love Notes from Fans</h2>
+                <p>Share your thoughts and become part of the Musfiq R. Farhan community</p>
             </div>
 
             <!-- Input Section -->
@@ -1038,29 +1026,24 @@
                     </div>
                     <div class="form-group">
                         <label for="fan-message">Your Message</label>
-                        <textarea id="fan-message" placeholder="Share your support..." required maxlength="150"></textarea>
+                        <textarea id="fan-message" placeholder="Share your love and support..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit Note</button>
+                    <button type="submit" class="btn btn-primary">Send Love</button>
                 </form>
             </div>
 
-            <!-- Multi-Row Infinite Marquee -->
+            <!-- Visual Display - Infinite Marquee -->
             <div class="love-notes-marquee-section reveal">
-                <div class="marquee-row">
-                    <div class="marquee-track marquee-track-1" id="marquee-row-1">
-                        <div class="marquee-placeholder">Loading global messages...</div>
-                    </div>
-                </div>
-                <div class="marquee-row">
-                    <div class="marquee-track marquee-track-2" id="marquee-row-2">
-                        <div class="marquee-placeholder">Loading global messages...</div>
+                <div class="marquee-display">
+                    <div class="marquee-track" id="marquee-track">
+                        <div class="marquee-placeholder">Be the first to leave a message! 💚</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 9. Newsroom & PR Grid -->
+    <!-- 8. Newsroom & PR -->
     <section class="section-padding" id="news">
         <div class="container">
             <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
@@ -1069,25 +1052,25 @@
                     <span class="news-date">May 14, 2026</span>
                     <h3 class="luxury-font">Musfiq R. Farhan Shines in 'Poran Pakhi' Premiere</h3>
                     <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The latest Eid special drama breaks viewership records within 24 hours of release...</p>
-                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="news-card">
                     <span class="news-date">April 20, 2026</span>
                     <h3 class="luxury-font">BIFA Awards 2026: Musfiq Nominated for Best Actor</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Farhan secures his third consecutive nomination for excellence in OTT content...</p>
-                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Celebrating excellence in OTT content, Farhan secures his third consecutive nomination...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="news-card">
                     <span class="news-date">March 05, 2026</span>
-                    <h3 class="luxury-font">New Brand Partnership with Luxury Timepieces</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Musfiq R. Farhan becomes the face of global premium watch brand...</p>
-                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    <h3 class="luxury-font">New Brand Partnership Announced with Luxury Timepieces</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Musfiq R. Farhan becomes the new face of global premium watch brand...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700; letter-spacing: 1px;">READ MORE <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 10. Brand Partnership Marquee -->
+    <!-- 9. Brand Partnerships -->
     <section class="marquee">
         <div class="marquee-content">
             <span>SAMSUNG</span>
@@ -1105,16 +1088,20 @@
         </div>
     </section>
 
-    <!-- 11. Premium Contact & Footer -->
+    <!-- 10. Premium Contact & Footer -->
     <section class="section-padding" id="contact">
         <div class="container">
             <div class="contact-grid">
                 <div class="reveal">
                     <h2 class="luxury-font" style="font-size: 48px; margin-bottom: 30px;">Let's Create Something <span style="color: var(--emerald);">Iconic</span></h2>
-                    <p style="color: var(--text-dim); margin-bottom: 40px;">For business inquiries and collaborations, reach out directly.</p>
+                    <p style="color: var(--text-dim); margin-bottom: 40px;">For business inquiries, collaborations, and media requests, please use the form or reach out directly via social channels.</p>
                     <div style="margin-bottom: 20px;">
                         <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--emerald);">Email</p>
                         <p style="font-size: 18px;">hello@musfiqfarhan.com</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--emerald);">Location</p>
+                        <p style="font-size: 18px;">Dhaka, Bangladesh</p>
                     </div>
                 </div>
                 <div class="glass-card contact-form reveal">
@@ -1133,109 +1120,200 @@
         <div class="container">
             <a href="#" class="footer-logo cinematic-font luxury-font">MUSFIQ<span>.</span></a>
             <div class="social-links">
-                <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.facebook.com/share/1cQdw7JcMs/?mibextid=wwXIfr" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                <a href="https://www.imdb.com/name/nm11068428/bio/" target="_blank"><i class="fab fa-imdb"></i></a>
-                <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank"><i class="fab fa-youtube"></i></a>
-                <a href="https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/share/1cQdw7JcMs/?mibextid=wwXIfr" target="_blank" title="Facebook Page (8M)"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.facebook.com/share/1Nq9zsuqu3/?mibextid=wwXIfr" target="_blank" title="Facebook Profile"><i class="fab fa-facebook"></i></a>
+                <a href="https://www.imdb.com/name/nm11068428/bio/" target="_blank" title="IMDb"><i class="fab fa-imdb"></i></a>
+                <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X" target="_blank" title="WhatsApp Channel"><i class="fab fa-whatsapp"></i></a>
             </div>
             <p class="copyright">All rights reserved | <a href="https://www.musfiqrfarhan.blog" target="_blank">Musfiq R. Farhan</a></p>
             <p class="footer-credit">Developed & Managed by <a href="https://sayadbayezid.com" target="_blank">Sayad Md Bayezid Hosan</a></p>
+            <p style="font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 10px;">&copy; 2026 Musfiq R. Farhan. All Rights Reserved.</p>
         </div>
     </footer>
 
     <!-- Scripts -->
     <script>
-        // ===== FIREBASE CONFIGURATION =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyALxBewz4RLHnVowgarmRj6x7ssteW_4NQ",
-            authDomain: "musfiq-portfolio.firebaseapp.com",
-            projectId: "musfiq-portfolio",
-            storageBucket: "musfiq-portfolio.firebasestorage.app",
-            messagingSenderId: "648496327545",
-            appId: "1:648496327545:web:23ea5cca0d078170995da8",
-            measurementId: "G-9PYJSSMN8K",
-            databaseURL: "https://musfiq-portfolio-default-rtdb.firebaseio.com"
-        };
-
-        // Initialize Firebase
-        let database = null;
-        let loveNotesRef = null;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            database = firebase.database();
-            loveNotesRef = database.ref('love_notes');
-        } catch (error) {
-            console.error('Firebase failed:', error);
-        }
-
         // ===== LOVE NOTES SYSTEM =====
-        let allNotes = [];
+        const STORAGE_KEY = 'mrf_love_notes';
 
-        function renderMultiRowMarquee() {
-            if (allNotes.length === 0) return;
-            const row1Notes = allNotes.filter((_, i) => i % 2 === 0);
-            const row2Notes = allNotes.filter((_, i) => i % 2 !== 0);
-            renderRow('marquee-row-1', row1Notes);
-            renderRow('marquee-row-2', row2Notes);
+        // Load love notes from LocalStorage
+        function loadLoveNotes() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
         }
 
-        function renderRow(rowId, notes) {
-            const rowElement = document.getElementById(rowId);
-            if (!notes.length) return;
-            let html = notes.map(note => `
-                <div class="love-note-card">
-                    <div class="love-note-message">"${note.message}"</div>
-                    <div class="love-note-author">- ${note.name}</div>
-                </div>
-            `).join('');
-            html += html; // Duplicate for infinite scroll
-            rowElement.innerHTML = html;
+        // Save love notes to LocalStorage
+        function saveLoveNotes(notes) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
         }
 
-        function setupFirebaseListener() {
-            if (!loveNotesRef) return;
-            loveNotesRef.on('value', (snapshot) => {
-                allNotes = [];
-                snapshot.forEach((child) => allNotes.push(child.val()));
-                allNotes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                allNotes = allNotes.slice(0, 40);
-                renderMultiRowMarquee();
+        // Render marquee with love notes
+        function renderMarquee() {
+            const notes = loadLoveNotes();
+            const marqueeTrack = document.getElementById('marquee-track');
+            
+            if (notes.length === 0) {
+                marqueeTrack.innerHTML = '<div class="marquee-placeholder">Be the first to leave a message! 💚</div>';
+                return;
+            }
+
+            let html = '';
+            // Create cards and duplicate for infinite loop
+            notes.forEach(note => {
+                html += `
+                    <div class="love-note-card">
+                        <div class="love-note-message">"${note.message}"</div>
+                        <div class="love-note-author">- ${note.name}</div>
+                    </div>
+                `;
             });
+            // Duplicate for seamless loop
+            html += html;
+            
+            marqueeTrack.innerHTML = html;
         }
 
+        // Handle form submission
         document.getElementById('love-notes-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const name = document.getElementById('fan-name').value.trim();
             const message = document.getElementById('fan-message').value.trim();
-            if (!name || !message || !loveNotesRef) return;
-            loveNotesRef.push({ name, message, timestamp: new Date().toISOString() });
+            
+            if (!name || !message) return;
+            
+            // Get existing notes
+            let notes = loadLoveNotes();
+            
+            // Add new note
+            notes.push({
+                name: name,
+                message: message,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Save to LocalStorage
+            saveLoveNotes(notes);
+            
+            // Re-render marquee
+            renderMarquee();
+            
+            // Clear form
             this.reset();
+            
+            // Show success feedback
+            const btn = this.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = 'Love Sent! 💚';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
         });
 
-        // ===== UI LOGIC =====
+        // ===== STICKY HEADER =====
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
-            header.classList.toggle('scrolled', window.scrollY > 50);
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
 
+        // ===== MOBILE MENU =====
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('nav-links');
+        
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             hamburger.classList.toggle('active');
         });
 
+        // Close menu on link click
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // ===== REVEAL ON SCROLL =====
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
-            reveals.forEach(r => {
-                if (r.getBoundingClientRect().top < window.innerHeight - 150) r.classList.add("active");
-            });
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 150;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                    
+                    // Trigger counter if milestone
+                    if(reveals[i].classList.contains('milestones')) {
+                        startCounters();
+                    }
+                }
+            }
         }
         window.addEventListener("scroll", reveal);
 
+        // ===== COUNTER ANIMATION =====
+        function startCounters() {
+            const counters = document.querySelectorAll('.milestone-number');
+            counters.forEach(counter => {
+                if(counter.innerText === '0') {
+                    const target = +counter.getAttribute('data-target');
+                    const updateCount = () => {
+                        const count = +counter.innerText;
+                        const inc = target / 100;
+                        if (count < target) {
+                            counter.innerText = Math.ceil(count + inc);
+                            setTimeout(updateCount, 20);
+                        } else {
+                            counter.innerText = target + '+';
+                        }
+                    };
+                    updateCount();
+                }
+            });
+        }
+
+        // ===== FORM HANDLING =====
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button');
+            btn.innerText = 'Sending...';
+            
+            setTimeout(() => {
+                btn.innerText = 'Inquiry Sent!';
+                btn.style.background = '#fff';
+                btn.style.color = '#000';
+                this.reset();
+                setTimeout(() => {
+                    btn.innerText = 'Send Inquiry';
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }, 2000);
+            }, 1500);
+        });
+
+        // ===== SMOOTH SCROLLING =====
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ===== INITIALIZE =====
         document.addEventListener('DOMContentLoaded', () => {
-            setupFirebaseListener();
+            renderMarquee();
             reveal();
         });
     </script>
