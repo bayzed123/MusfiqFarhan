@@ -85,10 +85,15 @@ For more details, see the [LICENSE.md](LICENSE.md) file.
 
 If you find this portfolio and blog system helpful, consider supporting its development. Your appreciation keeps the project alive and free for everyone!
 
-| Platform | Details |
-| :------- | :------ |
-| ![PayPal Logo](https://www.paypalobjects.com/digitalassets/c/website/marketing/na/us/logos-buttons/redesign/paypal-logo-png-transparent.png) | **PayPal**: `@connectwithbayezid` |
-| ![Payoneer Logo](https://www.payoneer.com/wp-content/uploads/2023/02/Payoneer-Logo.png) | **Payoneer**: `cwb.agency@outlook.com` |
+<div align="left">
+  <a href="https://www.paypal.me/connectwithbayezid" target="_blank">
+    <img src="https://raw.githubusercontent.com/bayzed123/sayadbayezid-portfolio-/main/assets/images/paypal_logo.png" width="150" alt="Support via PayPal">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.payoneer.com/" target="_blank">
+    <img src="https://raw.githubusercontent.com/bayzed123/sayadbayezid-portfolio-/main/assets/images/payoneer_logo.png" width="150" alt="Support via Payoneer">
+  </a>
+</div>
 
 ---
 
