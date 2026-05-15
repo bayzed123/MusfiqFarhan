@@ -1171,15 +1171,15 @@
     <!-- Scripts -->
     <script>
         // ===== FIREBASE CONFIGURATION =====
-        // IMPORTANT: Replace these placeholder values with your actual Firebase project credentials
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY_HERE",
-            authDomain: "YOUR_AUTH_DOMAIN_HERE",
-            databaseURL: "YOUR_DATABASE_URL_HERE",
-            projectId: "YOUR_PROJECT_ID_HERE",
-            storageBucket: "YOUR_STORAGE_BUCKET_HERE",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
-            appId: "YOUR_APP_ID_HERE"
+            apiKey: "AIzaSyALxBewz4RLHnVowgarmRj6x7ssteW_4NQ",
+            authDomain: "musfiq-portfolio.firebaseapp.com",
+            projectId: "musfiq-portfolio",
+            storageBucket: "musfiq-portfolio.firebasestorage.app",
+            messagingSenderId: "648496327545",
+            appId: "1:648496327545:web:23ea5cca0d078170995da8",
+            measurementId: "G-9PYJSSMN8K",
+            databaseURL: "https://musfiq-portfolio-default-rtdb.firebaseio.com" // Standard format for Realtime DB
         };
 
         // Initialize Firebase
@@ -1191,7 +1191,7 @@
             loveNotesRef = database.ref('love_notes');
             console.log('Firebase initialized successfully');
         } catch (error) {
-            console.warn('Firebase not configured yet. Please add your Firebase credentials.');
+            console.error('Firebase initialization failed:', error);
         }
 
         // ===== LOVE NOTES SYSTEM =====
@@ -1256,14 +1256,23 @@
                 loveNotesRef.on('value', (snapshot) => {
                     allNotes = [];
                     snapshot.forEach((childSnapshot) => {
-                        allNotes.push(childSnapshot.val());
+                        const note = childSnapshot.val();
+                        if (note && note.name && note.message) {
+                            allNotes.push(note);
+                        }
                     });
                     // Sort by timestamp (newest first)
                     allNotes.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    // Keep only latest 50 messages for performance
+                    allNotes = allNotes.slice(0, 50);
                     renderMultiRowMarquee();
+                    console.log('Firebase: ' + allNotes.length + ' messages loaded');
+                }, (error) => {
+                    console.error('Firebase listener error:', error);
+                    loadLocalNotes();
                 });
             } catch (error) {
-                console.log('Firebase listener error. Using local storage only.');
+                console.error('Firebase setup error:', error);
                 loadLocalNotes();
             }
         }
