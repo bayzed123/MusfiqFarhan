@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-padding-top: 90px;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1464,9 +1464,21 @@
 
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('nav-links');
+        
         hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+            const isOpen = navLinks.classList.toggle('active');
             hamburger.classList.toggle('active');
+            document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+        });
+
+        // Auto-close menu when any link is clicked
+        const menuLinks = document.querySelectorAll('.nav-links a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
         });
 
         function reveal() {
