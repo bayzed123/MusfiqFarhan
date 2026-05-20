@@ -1,4 +1,3 @@
-
 import os
 import re
 import yaml
@@ -8,6 +7,11 @@ from datetime import datetime
 def extract_youtube_id(url):
     """
     Extract the 11-character YouTube ID from various URL formats.
+    Supports:
+    - https://youtu.be/VIDEO_ID
+    - https://youtu.be/VIDEO_ID?si=...
+    - https://www.youtube.com/watch?v=VIDEO_ID
+    - https://youtube.com/watch?v=VIDEO_ID
     """
     if not url:
         return None
@@ -26,23 +30,28 @@ def extract_youtube_id(url):
 
 def is_image_url(url):
     """
-    Checks if a URL is likely an image based on extension or common image hosting domains.
+    Checks if a URL is likely an image based on common file extensions or image hosting domains.
     """
     if not url:
         return False
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg']
+    image_extensions = [
+        '.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg'
+    ]
     if any(url.lower().endswith(ext) for ext in image_extensions):
         return True
-    image_hosting_domains = ['postimg.cc', 'imgur.com', 'ibb.co', 'flickr.com', 'unsplash.com', 'i.ytimg.com']
+    # Common image hosting domains (can be expanded)
+    image_hosting_domains = [
+        'postimg.cc', 'imgur.com', 'ibb.co', 'flickr.com', 'unsplash.com', 'i.ytimg.com'
+    ]
     if any(domain in url.lower() for domain in image_hosting_domains):
         return True
     return False
 
 def parse_markdown_file(filepath):
     """
-    Parse a Markdown file with flexible format support for various content types.
-    Supports YAML frontmatter, Markdown links, and HTML tags.
-    Intelligently differentiates between video and image links.
+    Parse a Markdown file, supporting YAML frontmatter, Markdown links, and HTML tags.
+    Intelligently differentiates between video (YouTube ID) and image (full URL) links.
+    Extracts title, URL/ID, type, and other metadata.
     """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -52,7 +61,8 @@ def parse_markdown_file(filepath):
         return {}
     
     data = {}
-    
+    raw_content_without_frontmatter = content
+
     # ===== FORMAT 1: YAML FRONTMATTER =====
     yaml_match = re.match(r'^---\n(.*?)\n---\n', content, re.DOTALL)
     if yaml_match:
@@ -60,37 +70,39 @@ def parse_markdown_file(filepath):
             frontmatter = yaml.safe_load(yaml_match.group(1))
             if frontmatter and isinstance(frontmatter, dict):
                 data.update(frontmatter)
+                raw_content_without_frontmatter = content[yaml_match.end():].strip()
         except yaml.YAMLError as e:
             print(f"YAML parsing error in {filepath}: {e}")
     
-    # Extract link/URL from remaining content if not already in frontmatter
-    link_url = None
-    if 'url' in data:
-        link_url = data['url']
-    elif 'id' in data: # For existing video IDs
+    # Prioritize 'url' or 'id' from frontmatter if available
+    link_url = data.get('url')
+    if not link_url and data.get('id'): # If 'id' is present, assume it's a YouTube ID
         link_url = f"https://www.youtube.com/watch?v={data['id']}"
-    else:
-        # Try Markdown link ([Title](URL))
-        markdown_link_match = re.search(r'\[([^\]]+)\]\(([^)]+)\)', content)
+
+    # If no link found in frontmatter, try to extract from remaining content
+    if not link_url:
+        # ===== FORMAT 2: MARKDOWN LINK [Title](URL) =====
+        markdown_link_match = re.search(r'\[([^\]]+)\]\(([^)]+)\)', raw_content_without_frontmatter)
         if markdown_link_match:
             data['title'] = data.get('title', markdown_link_match.group(1).strip())
             link_url = markdown_link_match.group(2).strip()
         
-        # Try HTML anchor tag (<a href="URL">Title</a>) or image tag (<img src="URL">)
+        # ===== FORMAT 3: HTML ANCHOR TAG (<a href="URL">Title</a>) or IMAGE TAG (<img src="URL">) =====
         if not link_url:
-            html_anchor_match = re.search(r'<a\s+href=["\’]([^"\’]+)["\’][^>]*>([^<]+)<\/a>', content, re.IGNORECASE)
+            html_anchor_match = re.search(r'<a\s+href=["\\]([^"\\]+)["\\][^>]*>([^<]+)<\/a>', raw_content_without_frontmatter, re.IGNORECASE)
             if html_anchor_match:
                 data['title'] = data.get('title', html_anchor_match.group(2).strip())
                 link_url = html_anchor_match.group(1).strip()
             else:
-                html_img_match = re.search(r'<img\s+src=["\’]([^"\’]+)["\’][^>]*>', content, re.IGNORECASE)
+                html_img_match = re.search(r'<img\s+src=["\\]([^"\\]+)["\\][^>]*>', raw_content_without_frontmatter, re.IGNORECASE)
                 if html_img_match:
                     link_url = html_img_match.group(1).strip()
                     # Try to get title from alt attribute if available
-                    alt_match = re.search(r'alt=["\’]([^"\’]+)["\’]', html_img_match.group(0), re.IGNORECASE)
+                    alt_match = re.search(r'alt=["\\]([^"\\]+)["\\]', html_img_match.group(0), re.IGNORECASE)
                     if alt_match:
                         data['title'] = data.get('title', alt_match.group(1).strip())
 
+    # Smart Media Parsing: Determine if it's a video or image
     if link_url:
         youtube_id = extract_youtube_id(link_url)
         if youtube_id:
@@ -104,9 +116,15 @@ def parse_markdown_file(filepath):
         else:
             data['type'] = 'link' # Generic link if not video or image
             data['url'] = link_url
-    elif 'title' in data and 'description' in data: # Assume it's an article if title and description are present
-        data['type'] = 'article'
     
+    # If it's a newsroom article, ensure it has a description
+    if 'newsroom' in filepath and 'title' in data and 'description' not in data:
+        # Attempt to extract description from the remaining content
+        first_paragraph_match = re.search(r'^(.*?)(?:\n\n|\Z)', raw_content_without_frontmatter, re.DOTALL)
+        if first_paragraph_match:
+            data['description'] = first_paragraph_match.group(1).strip()
+        data['type'] = data.get('type', 'article') # Default to article type
+
     # Set default tag if not present
     data['tag'] = data.get('tag', 'New')
     
@@ -205,7 +223,9 @@ def generate_js_data_objects(all_content):
     # Newsroom Data
     js_output.append("        // ===== NEWSROOM DATA STRUCTURE =====")
     js_output.append("        const newsroomData = [")
-    for article in all_content['newsroom']:
+    # Sort newsroom articles by date, newest first
+    sorted_news = sorted(all_content['newsroom'], key=lambda x: x.get('date', '0000-00-00'), reverse=True)
+    for article in sorted_news:
         title_escaped = article.get('title', '').replace('"', '\"')
         description_escaped = article.get('description', '').replace('"', '\"')
         date_formatted = article.get('date', '')
@@ -237,10 +257,11 @@ def generate_js_rendering_logic():
     rendering_logic.append("        // ===== COMING SOON RENDERING FUNCTION =====")
     rendering_logic.append("        function renderComingSoon() {")
     rendering_logic.append("            const container = document.getElementById('latest-coming-soon-container');")
-    rendering_logic.append("            if (!container || comingSoonData.length === 0) return;")
+    rendering_logic.append("            if (!container || comingSoonData.length === 0) {\n                container.innerHTML = `<p style=\"text-align: center; color: var(--text-dim);\">No upcoming projects to display.</p>`;\n                return;\n            }")
     rendering_logic.append("            const item = comingSoonData[0]; // Display the first item for now")
     rendering_logic.append("            ")
     rendering_logic.append("            let mediaHtml = '';")
+    rendering_logic.append("            let learnMoreLink = item.media_id_or_url || '#';")
     rendering_logic.append("            if (item.type === 'video') {")
     rendering_logic.append("                mediaHtml = `<div class=\"feature-poster\">` +
                              `<img src=\"https://i.ytimg.com/vi/${item.media_id_or_url}/hqdefault.jpg\" alt=\"${item.title}\">` +
@@ -257,8 +278,7 @@ def generate_js_rendering_logic():
                         <span class=\"feature-tag\">${item.tag}</span>
                         <h2 class=\"luxury-font\">${item.title}</h2>
                         <p class=\"feature-desc\">${item.description}</p>
-                        <!-- Add more details if needed -->
-                        <a href=\"#\" class=\"btn btn-primary\">Learn More</a>
+                        <a href=\"${learnMoreLink}\" target=\"_blank\" class=\"btn btn-primary\">Learn More</a>
                     </div>
                 </div>
             `;")
@@ -267,7 +287,7 @@ def generate_js_rendering_logic():
     rendering_logic.append("        // ===== EXCLUSIVE BTS RENDERING FUNCTION =====")
     rendering_logic.append("        function renderExclusiveBts() {")
     rendering_logic.append("            const container = document.getElementById('bts-carousel');")
-    rendering_logic.append("            if (!container || exclusiveBtsData.length === 0) return;")
+    rendering_logic.append("            if (!container || exclusiveBtsData.length === 0) {\n                container.innerHTML = `<p style=\"text-align: center; color: var(--text-dim);\">No BTS images to display.</p>`;\n                return;\n            }")
     rendering_logic.append("            container.innerHTML = exclusiveBtsData.map(item => `
                 <div class=\"bts-item\"><img src=\"${item.url}\" alt=\"${item.title}\"></div>
             `).join('');")
@@ -276,7 +296,7 @@ def generate_js_rendering_logic():
     rendering_logic.append("        // ===== NEWSROOM RENDERING FUNCTION =====")
     rendering_logic.append("        function renderNewsroom() {")
     rendering_logic.append("            const container = document.getElementById('news-grid-container');")
-    rendering_logic.append("            if (!container || newsroomData.length === 0) return;")
+    rendering_logic.append("            if (!container || newsroomData.length === 0) {\n                container.innerHTML = `<p style=\"text-align: center; color: var(--text-dim);\">No news articles to display.</p>`;\n                return;\n            }")
     rendering_logic.append("            container.innerHTML = newsroomData.map(article => `
                 <div class=\"news-card\">
                     <span class=\"news-date\">${article.date}</span>
@@ -292,6 +312,8 @@ def generate_js_rendering_logic():
 def update_index_html(html_filepath, new_js_data, new_js_rendering_logic):
     """
     Update the index.html file with new JavaScript data objects and rendering logic.
+    This function is designed to be robust against changes in index.html structure
+    by using specific markers and regex patterns for insertion/replacement.
     """
     try:
         with open(html_filepath, 'r', encoding='utf-8') as f:
@@ -300,67 +322,94 @@ def update_index_html(html_filepath, new_js_data, new_js_rendering_logic):
         print(f"Error reading {html_filepath}: {e}")
         return False
 
+    updated_html_content = html_content
+
     # 1. Update/Insert Data Objects
     # Find and replace the existing videosData block
     videos_data_pattern = re.compile(r'\s*// ===== VIDEO DATA STRUCTURE =====.*?^\s*};', re.DOTALL | re.MULTILINE)
-    if videos_data_pattern.search(html_content):
-        updated_html_content = videos_data_pattern.sub(new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[0].strip(), html_content)
+    if videos_data_pattern.search(updated_html_content):
+        # Replace only the videosData part from the generated new_js_data
+        videos_data_only = new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[0].strip()
+        updated_html_content = videos_data_pattern.sub(videos_data_only, updated_html_content)
     else:
         print("Warning: Existing videosData block not found. Attempting to insert before VIDEO RENDERING FUNCTION.")
-        insert_pattern = re.compile(r'\s*// ===== VIDEO RENDERING FUNCTION =====')
-        if insert_pattern.search(html_content):
-            updated_html_content = insert_pattern.sub(new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[0].strip() + "\n\n        // ===== VIDEO RENDERING FUNCTION =====", html_content)
+        insert_point_for_videos_data = re.compile(r'(\s*// ===== VIDEO RENDERING FUNCTION =====)', re.DOTALL)
+        match = insert_point_for_videos_data.search(updated_html_content)
+        if match:
+            videos_data_only = new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[0].strip()
+            updated_html_content = updated_html_content[:match.start()] + videos_data_only + "\n\n" + updated_html_content[match.start():]
         else:
             print("Error: Could not find insertion point for videosData in index.html")
             return False
 
     # Insert new data objects (comingSoonData, exclusiveBtsData, newsroomData)
-    # Find the end of the existing videosData block or the start of the rendering functions
-    # We'll insert the new data objects right after videosData and before rendering functions
-    insertion_point_pattern = re.compile(r'(\s*// ===== VIDEO RENDERING FUNCTION =====)', re.DOTALL)
-    match = insertion_point_pattern.search(updated_html_content)
+    # These should be inserted after videosData and before the rendering functions.
+    # We'll look for the start of the rendering functions as the insertion point.
+    insertion_point_for_new_data = re.compile(r'(\s*// ===== VIDEO RENDERING FUNCTION =====)', re.DOTALL)
+    match = insertion_point_for_new_data.search(updated_html_content)
     if match:
-        # Extract the new data objects part from new_js_data
-        new_data_objects_to_insert = "\n".join(new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[1:])
-        updated_html_content = updated_html_content[:match.start()] + new_data_objects_to_insert.strip() + "\n\n" + updated_html_content[match.start():]
+        # Extract the new data objects part from new_js_data (everything after videosData)
+        new_data_objects_to_insert = "\n".join(new_js_data.split('// ===== COMING SOON DATA STRUCTURE =====')[1:]).strip()
+        # Check if these data objects already exist to avoid duplication
+        if not re.search(r'// ===== COMING SOON DATA STRUCTURE =====', updated_html_content):
+            updated_html_content = updated_html_content[:match.start()] + new_data_objects_to_insert + "\n\n" + updated_html_content[match.start():]
+        else:
+            # If they exist, replace them. This requires more specific regex for each block.
+            # Replace comingSoonData
+            coming_soon_pattern = re.compile(r'\s*// ===== COMING SOON DATA STRUCTURE =====.*?^\s*\];', re.DOTALL | re.MULTILINE)
+            coming_soon_data_block = re.search(r'// ===== COMING SOON DATA STRUCTURE =====.*?^\s*\];', new_js_data, re.DOTALL | re.MULTILINE).group(0)
+            updated_html_content = coming_soon_pattern.sub(coming_soon_data_block, updated_html_content)
+
+            # Replace exclusiveBtsData
+            bts_pattern = re.compile(r'\s*// ===== EXCLUSIVE BTS DATA STRUCTURE =====.*?^\s*\];', re.DOTALL | re.MULTILINE)
+            bts_data_block = re.search(r'// ===== EXCLUSIVE BTS DATA STRUCTURE =====.*?^\s*\];', new_js_data, re.DOTALL | re.MULTILINE).group(0)
+            updated_html_content = bts_pattern.sub(bts_data_block, updated_html_content)
+
+            # Replace newsroomData
+            newsroom_pattern = re.compile(r'\s*// ===== NEWSROOM DATA STRUCTURE =====.*?^\s*\];', re.DOTALL | re.MULTILINE)
+            newsroom_data_block = re.search(r'// ===== NEWSROOM DATA STRUCTURE =====.*?^\s*\];', new_js_data, re.DOTALL | re.MULTILINE).group(0)
+            updated_html_content = newsroom_pattern.sub(newsroom_data_block, updated_html_content)
+
     else:
         print("Error: Could not find insertion point for new data objects in index.html")
         return False
 
     # 2. Update/Insert Rendering Logic
-    # Find the document.addEventListener('DOMContentLoaded', ...) block
+    # Find the document.addEventListener('DOMContentLoaded', ...) block to insert new render calls
     dom_content_loaded_pattern = re.compile(r'(document\.addEventListener\(\'DOMContentLoaded\', \(\) => \{.*?)(// Setup drag scroll functionality)', re.DOTALL)
     match = dom_content_loaded_pattern.search(updated_html_content)
 
     if match:
-        # Existing rendering calls
-        existing_render_calls = """
+        # Existing rendering calls (ensure they are still there)
+        existing_render_calls_block = """
                 console.log('Rendering carousels...', videosData);
                 renderVideoCarousel('recent-carousel', videosData.recent);
                 renderVideoCarousel('media-carousel', videosData.media);
                 console.log('Carousels rendered successfully');
         """
-        # New rendering calls
-        new_render_calls = """
+        # New rendering calls to be added
+        new_render_calls_to_add = """
                 // Render new content sections
                 renderComingSoon();
                 renderExclusiveBts();
                 renderNewsroom();
         """
-        # Replace existing render calls and add new ones
-        updated_html_content = updated_html_content.replace(existing_render_calls, existing_render_calls + new_render_calls)
+        # Check if new render calls are already present to avoid duplication
+        if new_render_calls_to_add.strip() not in updated_html_content:
+            updated_html_content = updated_html_content.replace(existing_render_calls_block, existing_render_calls_block + new_render_calls_to_add)
 
         # Insert the new rendering functions before the DOMContentLoaded event listener
         # Find the script tag closing
         script_end_pattern = re.compile(r'(\s*</script>\s*</body>)', re.DOTALL)
         script_end_match = script_end_pattern.search(updated_html_content)
         if script_end_match:
-            # Insert new rendering logic before the existing script end, but after the existing functions
-            # This is a bit tricky, let's find the last existing function before DOMContentLoaded
+            # Find the last existing function before DOMContentLoaded to insert new functions after it
             last_func_pattern = re.compile(r'(initDragScroll = \(slider\) => \{.*?\};)', re.DOTALL)
             last_func_match = last_func_pattern.search(updated_html_content)
             if last_func_match:
-                updated_html_content = updated_html_content[:last_func_match.end()] + "\n" + new_js_rendering_logic.strip() + "\n" + updated_html_content[last_func_match.end():]
+                # Check if new rendering logic is already present to avoid duplication
+                if new_js_rendering_logic.strip() not in updated_html_content:
+                    updated_html_content = updated_html_content[:last_func_match.end()] + "\n" + new_js_rendering_logic.strip() + "\n" + updated_html_content[last_func_match.end():]
             else:
                 print("Error: Could not find insertion point for new rendering logic (last function) in index.html")
                 return False
@@ -372,36 +421,38 @@ def update_index_html(html_filepath, new_js_data, new_js_rendering_logic):
         print("Error: Could not find DOMContentLoaded block in index.html")
         return False
 
-    # 3. Update HTML structure for new sections if needed (add IDs for containers)
-    # This part needs to be done carefully to avoid breaking layout.
-    # For 'latest-feature' section, add id='latest-coming-soon-container' to the div that holds the content
-    # For 'bts-slider' section, add id='bts-carousel'
-    # For 'news-grid' section, add id='news-grid-container'
-
-    # Add ID to latest-feature content div
+    # 3. Update HTML structure for new sections (add IDs for containers and remove hardcoded content)
+    # Add ID to latest-feature content div if not already present
+    if '<div id="latest-coming-soon-container"></div>' not in updated_html_content:
+        updated_html_content = re.sub(
+            r'(<section class="latest-feature" id="latest">\s*<div class="container">)',
+            r'\1<div id="latest-coming-soon-container"></div>', # Insert a new div for dynamic content
+            updated_html_content, count=1
+        )
+    # Remove hardcoded content within latest-feature if it exists
     updated_html_content = re.sub(
-        r'(<section class="latest-feature" id="latest">\s*<div class="container">)',
-        r'\1<div id="latest-coming-soon-container"></div>', # Insert a new div for dynamic content
-        updated_html_content, count=1
+        r'(<div id="latest-coming-soon-container"></div>\s*)<div class="feature-grid">.*?</div>', r'\1', updated_html_content, flags=re.DOTALL
     )
 
-    # Add ID to bts-slider div
-    updated_html_content = re.sub(
-        r'(<div class="bts-slider reveal">)',
-        r'<div class="bts-slider reveal" id="bts-carousel">', # Add ID to existing div
-        updated_html_content, count=1
-    )
+    # Add ID to bts-slider div if not already present
+    if '<div class="bts-slider reveal" id="bts-carousel">' not in updated_html_content:
+        updated_html_content = re.sub(
+            r'(<div class="bts-slider reveal">)',
+            r'<div class="bts-slider reveal" id="bts-carousel">', # Add ID to existing div
+            updated_html_content, count=1
+        )
     # Remove hardcoded bts-items
     updated_html_content = re.sub(
         r'\s*<div class="bts-item"><img src=\".*?\" alt=\".*?\"></div>\s*', '', updated_html_content
     )
 
-    # Add ID to news-grid div
-    updated_html_content = re.sub(
-        r'(<div class="news-grid reveal">)',
-        r'<div class="news-grid reveal" id="news-grid-container">', # Add ID to existing div
-        updated_html_content, count=1
-    )
+    # Add ID to news-grid div if not already present
+    if '<div class="news-grid reveal" id="news-grid-container">' not in updated_html_content:
+        updated_html_content = re.sub(
+            r'(<div class="news-grid reveal">)',
+            r'<div class="news-grid reveal" id="news-grid-container">', # Add ID to existing div
+            updated_html_content, count=1
+        )
     # Remove hardcoded news-cards
     updated_html_content = re.sub(
         r'\s*<div class="news-card">.*?<\/div>\s*', '', updated_html_content, flags=re.DOTALL
@@ -444,4 +495,3 @@ if __name__ == "__main__":
         print("\n✓ index.html updated successfully with new CMS data and rendering logic.")
     else:
         print("\n✗ Failed to update index.html")
-
