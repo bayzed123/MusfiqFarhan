@@ -6,9 +6,13 @@ on:
     branches:
       - main
     paths:
-      - 'recent-releases/**'
-      - 'the-media-hub/**'
       - 'generate_video_data.py'
+      - 'recent-releases/**.md'
+      - 'the-media-hub/**.md'
+      - 'latest-coming-soon/**.md'
+      - 'premiering-2026/**.md'
+      - 'exclusive-bts-stills/**.md'
+      - 'newsroom/**.md'
 
 jobs:
   update-videos:
