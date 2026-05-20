@@ -120,11 +120,13 @@ This repository is set up for automated content management for the "Recent Relea
 -   `recent-releases/`: Contains Markdown files for videos appearing in the "Recent Releases" carousel.
 -   `the-media-hub/`: Contains Markdown files for videos appearing in "The Media Hub" carousel.
 
-### Markdown File Format
+### Markdown File Format & HTML/JS Mapping
 
-Each video entry must be a Markdown (`.md`) file with YAML frontmatter at the top. The frontmatter should include the `title`, `id` (YouTube video ID), and `tag` for the video. The `generate_video_data.py` script will parse these files.
+Each video entry must be a Markdown (`.md`) file with YAML frontmatter at the top. The frontmatter should include the `title`, `id` (YouTube video ID), and `tag` for the video. The `generate_video_data.py` script will parse these files and automatically convert them into the JavaScript object required by `index.html`.
 
-**Example `recent-releases/your-video-title.md`:**
+#### Example 1: Recent Releases
+
+**What you write in `recent-releases/tor-name-hridoye.md`:**
 
 ```markdown
 ---
@@ -134,7 +136,22 @@ tag: "New"
 ---
 ```
 
-**Example `the-media-hub/another-video.md`:**
+**How it automatically appears in `index.html` (JavaScript):**
+
+```javascript
+// ===== VIDEO DATA STRUCTURE =====
+const videosData = {
+    recent: [
+        { title: "Tor name Hridoye | Musfiq R Farhan | Safa Kabir", id: "ofXi8zgQlus", tag: "New" },
+        // ... other recent videos
+    ],
+    // ...
+};
+```
+
+#### Example 2: The Media Hub
+
+**What you write in `the-media-hub/vp.md`:**
 
 ```markdown
 ---
@@ -142,6 +159,19 @@ title: "VP | Musfiq R Farhan"
 id: "g9GRWSbIFck"
 tag: "Featured"
 ---
+```
+
+**How it automatically appears in `index.html` (JavaScript):**
+
+```javascript
+// ===== VIDEO DATA STRUCTURE =====
+const videosData = {
+    // ...
+    media: [
+        { title: "VP | Musfiq R Farhan", id: "g9GRWSbIFck", tag: "Featured" },
+        // ... other media hub videos
+    ]
+};
 ```
 
 ### How to Update Content
