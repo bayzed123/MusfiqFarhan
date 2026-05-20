@@ -1555,57 +1555,65 @@
         });
 
         // --- Firebase Integration for Fan Wall ---
-        const firebaseConfig = {
-            databaseURL: "https://musfiqrfarhan-fanwall-default-rtdb.firebaseio.com"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        try {
+            const firebaseConfig = {
+                databaseURL: "https://musfiqrfarhan-fanwall-default-rtdb.firebaseio.com"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
 
-        const fanForm = document.getElementById('love-notes-form');
-        fanForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('fan-name').value;
-            const message = document.getElementById('fan-message').value;
-            
-            database.ref('notes').push({
-                name: name,
-                message: message,
-                timestamp: Date.now()
-            }).then(() => {
-                fanForm.reset();
-                alert('Thank you for your love note!');
+            const fanForm = document.getElementById('love-notes-form');
+            if (fanForm) {
+                fanForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('fan-name').value;
+                    const message = document.getElementById('fan-message').value;
+                    
+                    database.ref('notes').push({
+                        name: name,
+                        message: message,
+                        timestamp: Date.now()
+                    }).then(() => {
+                        fanForm.reset();
+                        alert('Thank you for your love note!');
+                    });
+                });
+            }
+
+            // Fetch and display notes
+            database.ref('notes').limitToLast(20).on('value', (snapshot) => {
+                const notes = [];
+                snapshot.forEach((childSnapshot) => {
+                    notes.push(childSnapshot.val());
+                });
+                notes.reverse();
+
+                const row1 = document.getElementById('marquee-row-1');
+                const row2 = document.getElementById('marquee-row-2');
+                
+                if (row1 && row2) {
+                    row1.innerHTML = '';
+                    row2.innerHTML = '';
+
+                    notes.forEach((note, index) => {
+                        const card = `
+                            <div class="love-note-card">
+                                <p class="love-note-message">"${note.message}"</p>
+                                <p class="love-note-author">— ${note.name}</p>
+                            </div>
+                        `;
+                        if (index % 2 === 0) row1.innerHTML += card;
+                        else row2.innerHTML += card;
+                    });
+                    
+                    // Duplicate for infinite scroll
+                    row1.innerHTML += row1.innerHTML;
+                    row2.innerHTML += row2.innerHTML;
+                }
             });
-        });
-
-        // Fetch and display notes
-        database.ref('notes').limitToLast(20).on('value', (snapshot) => {
-            const notes = [];
-            snapshot.forEach((childSnapshot) => {
-                notes.push(childSnapshot.val());
-            });
-            notes.reverse();
-
-            const row1 = document.getElementById('marquee-row-1');
-            const row2 = document.getElementById('marquee-row-2');
-            
-            row1.innerHTML = '';
-            row2.innerHTML = '';
-
-            notes.forEach((note, index) => {
-                const card = `
-                    <div class="love-note-card">
-                        <p class="love-note-message">"${note.message}"</p>
-                        <p class="love-note-author">— ${note.name}</p>
-                    </div>
-                `;
-                if (index % 2 === 0) row1.innerHTML += card;
-                else row2.innerHTML += card;
-            });
-            
-            // Duplicate for infinite scroll
-            row1.innerHTML += row1.innerHTML;
-            row2.innerHTML += row2.innerHTML;
-        });
+        } catch (error) {
+            console.error('Firebase error:', error);
+        }
 
         // ===== VIDEO DATA STRUCTURE =====
         const videosData = {
@@ -1679,8 +1687,14 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // Render video carousels
-            renderVideoCarousel('recent-carousel', videosData.recent);
-            renderVideoCarousel('media-carousel', videosData.media);
+            try {
+                console.log('Rendering carousels...', videosData);
+                renderVideoCarousel('recent-carousel', videosData.recent);
+                renderVideoCarousel('media-carousel', videosData.media);
+                console.log('Carousels rendered successfully');
+            } catch (error) {
+                console.error('Error rendering carousels:', error);
+            }
             // Setup drag scroll functionality
             document.querySelectorAll('.carousel-wrapper').forEach(initDragScroll);
         });
