@@ -328,7 +328,7 @@
             background: linear-gradient(to right, rgba(5, 7, 10, 1), rgba(5, 7, 10, 0.8)), url('./assets/doob-poster.jpg');
             background-size: cover;
             background-position: center;
-            padding: 140px 0 100px;
+            padding: 120px 0;
             position: relative;
             overflow: hidden;
             border-bottom: 1px solid var(--glass-border);
@@ -1201,6 +1201,7 @@
                 <a href="#home" class="active">Home</a>
                 <a href="#story">Story</a>
                 <a href="#about">About</a>
+                <a href="#latest">Latest</a>
                 <a href="#filmography">Filmography</a>
                 <a href="#love-notes">Live Fan Wall</a>
                 <a href="#news">News</a>
@@ -1214,7 +1215,59 @@
         </div>
     </header>
 
-    <!-- Latest Feature Section (New) -->
+    <!-- 1. Immersive Hero Poster (ALWAYS FIRST) -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <span class="hero-subtitle cinematic-font">Award Winning Actor</span>
+            <h1 class="hero-title luxury-font">Hello, I'm Musfiq R. Farhan</h1>
+            <div class="hero-btns">
+                <a href="#filmography" class="btn btn-primary">Explore Filmography</a>
+                <a href="#contact" class="btn btn-outline">Inquiry</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. The Story (Bio) -->
+    <section class="section-padding" id="story">
+        <div class="container">
+            <div class="bio-grid">
+                <div class="bio-text reveal">
+                    <p class="cinematic-font" style="color: var(--emerald); font-size: 12px; margin-bottom: 15px;">The Journey</p>
+                    <h2 class="luxury-font">A Legacy in the Making</h2>
+                    <p>A prominent Bangladeshi actor, RJ, and content creator known for his versatility and independent success in the industry. Successfully transitioned from radio to television and OTT, building a massive audience through sheer talent and self-produced content.</p>
+                </div>
+                <div class="milestones reveal">
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="120">120+</span>
+                        <span class="milestone-label">Productions</span>
+                    </div>
+                    <div class="glass-card milestone-item">
+                        <span class="milestone-number" data-target="8M+">8M+</span>
+                        <span class="milestone-label">Fans</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. About Me Section -->
+    <section class="section-padding" id="about">
+        <div class="container">
+            <div class="about-me-grid">
+                <div class="about-photo-container reveal">
+                    <img id="about-photo" src="./assets/about_photo.png" alt="Musfiq R. Farhan" onerror="this.src='https://via.placeholder.com/600x800?text=About+Photo'">
+                </div>
+                <div class="about-content reveal">
+                    <h2 class="luxury-font">Behind the Spotlight</h2>
+                    <p style="margin-bottom: 25px;">Beyond the characters and the cameras, I am driven by a passion for authentic storytelling and connecting with my audience on a deeper level. Every project is a new chapter in my journey to push the boundaries of Bangladeshi entertainment.</p>
+                    <p style="color: var(--text-dim);">My transition from radio to screen has been fueled by the unwavering support of my fans, who I consider my greatest strength.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Latest Feature Section (NOW BELOW ABOUT) -->
     <section class="latest-feature" id="latest">
         <div class="container">
             <div class="feature-grid">
@@ -1251,59 +1304,7 @@
         </div>
     </section>
 
-    <!-- 1. Immersive Hero Poster -->
-    <section class="hero" id="home">
-        <div class="hero-bg"></div>
-        <div class="hero-content">
-            <span class="hero-subtitle cinematic-font">Award Winning Actor</span>
-            <h1 class="hero-title luxury-font">Hello, I'm Musfiq R. Farhan</h1>
-            <div class="hero-btns">
-                <a href="#filmography" class="btn btn-primary">Explore Filmography</a>
-                <a href="#contact" class="btn btn-outline">Inquiry</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 2. The Story (Bio) -->
-    <section class="section-padding" id="story">
-        <div class="container">
-            <div class="bio-grid">
-                <div class="bio-text reveal">
-                    <p class="cinematic-font" style="color: var(--emerald); font-size: 12px; margin-bottom: 15px;">The Journey</p>
-                    <h2 class="luxury-font">A Legacy in the Making</h2>
-                    <p>A prominent Bangladeshi actor, RJ, and content creator known for his versatility and independent success in the industry. Successfully transitioned from radio to television and OTT, building a massive audience through sheer talent and self-produced content.</p>
-                </div>
-                <div class="milestones reveal">
-                    <div class="glass-card milestone-item">
-                        <span class="milestone-number" data-target="120">120+</span>
-                        <span class="milestone-label">Productions</span>
-                    </div>
-                    <div class="glass-card milestone-item">
-                        <span class="milestone-number" data-target="8M+">8M+</span>
-                        <span class="milestone-label">Fans</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. About Me Section (New Image Integration) -->
-    <section class="section-padding" id="about">
-        <div class="container">
-            <div class="about-me-grid">
-                <div class="about-photo-container reveal">
-                    <img id="about-photo" src="./assets/about_photo.png" alt="Musfiq R. Farhan" onerror="this.src='https://via.placeholder.com/600x800?text=About+Photo'">
-                </div>
-                <div class="about-content reveal">
-                    <h2 class="luxury-font">Behind the Spotlight</h2>
-                    <p style="margin-bottom: 25px;">Beyond the characters and the cameras, I am driven by a passion for authentic storytelling and connecting with my audience on a deeper level. Every project is a new chapter in my journey to push the boundaries of Bangladeshi entertainment.</p>
-                    <p style="color: var(--text-dim);">My transition from radio to screen has been fueled by the unwavering support of my fans, who I consider my greatest strength.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. BIFA Awards & Milestones -->
+    <!-- 5. BIFA Awards & Milestones -->
     <section class="section-padding">
         <div class="container">
             <div class="milestones reveal" style="margin-bottom: 60px;">
@@ -1324,7 +1325,7 @@
         </div>
     </section>
 
-    <!-- 5. Coming Soon Mega Banner -->
+    <!-- 6. Coming Soon Mega Banner -->
     <section class="reveal">
         <div class="coming-soon">
             <div class="cs-content">
@@ -1335,7 +1336,7 @@
         </div>
     </section>
 
-    <!-- 6. Recent Releases (Netflix-Style Video Carousel) -->
+    <!-- 7. Recent Releases (Netflix-Style Video Carousel) -->
     <section class="section-padding" id="recent-releases">
         <div class="container">
             <div class="hub-header reveal">
@@ -1348,7 +1349,7 @@
         </div>
     </section>
 
-    <!-- 6.5. The Media Hub (Netflix-Style Video Carousel) -->
+    <!-- 8. The Media Hub (Netflix-Style Video Carousel) -->
     <section class="section-padding" id="filmography">
         <div class="container">
             <div class="hub-header reveal">
@@ -1361,7 +1362,7 @@
         </div>
     </section>
 
-    <!-- 7. Behind The Scenes Slider -->
+    <!-- 9. Behind The Scenes Slider -->
     <section class="section-padding">
         <div class="container">
             <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Exclusive BTS Stills</h2>
@@ -1374,7 +1375,7 @@
         </div>
     </section>
 
-    <!-- 8. Live Fan Wall (Firebase Marquee) -->
+    <!-- 10. Live Fan Wall (Firebase Marquee) -->
     <section class="section-padding love-notes-hub" id="love-notes">
         <div class="container">
             <div class="love-notes-header reveal">
@@ -1413,7 +1414,7 @@
         </div>
     </section>
 
-    <!-- 9. Newsroom & PR Grid -->
+    <!-- 11. Newsroom & PR Grid -->
     <section class="section-padding" id="news">
         <div class="container">
             <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
@@ -1440,7 +1441,7 @@
         </div>
     </section>
 
-    <!-- 10. Brand Partnership Marquee -->
+    <!-- 12. Brand Partnership Marquee -->
     <section class="brand-marquee section-padding">
         <div class="container">
             <h2 class="luxury-font reveal" style="text-align: center; margin-bottom: 50px; font-size: 24px; letter-spacing: 2px;">PRODUCTION PARTNERS</h2>
@@ -1460,7 +1461,7 @@
         </div>
     </section>
 
-    <!-- 11. Contact & Socials -->
+    <!-- 13. Contact & Socials -->
     <section class="section-padding" id="contact">
         <div class="container">
             <div class="contact-grid">
