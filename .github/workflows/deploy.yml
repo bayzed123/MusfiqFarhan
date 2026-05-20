@@ -1,4 +1,4 @@
-name: Deploy Website
+name: Deploy static content to Pages
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -26,18 +26,15 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
-      - name: Build Site
-        shell: bash
+      - name: Build Website
         run: |
-          echo "🚀 Starting automatic GitHub Pages build..."
+          echo "🚀 Building website..."
 
-          # Clean old build
+          # Create clean _site directory
           rm -rf _site
           mkdir -p _site
 
@@ -45,11 +42,9 @@ jobs:
           if [ -f "index.html" ]; then
             cp index.html _site/index.html
             echo "✅ index.html copied"
-          else
-            echo "❌ index.html not found"
           fi
 
-          # Function to auto copy markdown files
+          # Function to copy markdown files
           copy_markdown_files () {
             SOURCE_DIR="$1"
             TARGET_DIR="$2"
@@ -57,26 +52,26 @@ jobs:
             mkdir -p "_site/$TARGET_DIR"
 
             if [ -d "$SOURCE_DIR" ]; then
-              echo "📂 Processing: $SOURCE_DIR"
-
               shopt -s nullglob
               files=("$SOURCE_DIR"/*.md)
 
               if [ ${#files[@]} -gt 0 ]; then
+                echo "📂 Copying from $SOURCE_DIR"
+
                 for file in "${files[@]}"; do
                   filename=$(basename "$file")
                   cp "$file" "_site/$TARGET_DIR/$filename"
                   echo "✔ Copied: $filename"
                 done
               else
-                echo "⚠ No markdown files inside $SOURCE_DIR"
+                echo "⚠ No markdown files in $SOURCE_DIR"
               fi
             else
-              echo "⚠ Directory not found: $SOURCE_DIR"
+              echo "⚠ Folder not found: $SOURCE_DIR"
             fi
           }
 
-          # Auto process all project folders
+          # Copy project folders
           copy_markdown_files "recent-releases" "recent-releases"
           copy_markdown_files "the-media-hub" "the-media-hub"
           copy_markdown_files "latest-coming-soon" "latest-coming-soon"
@@ -84,25 +79,20 @@ jobs:
           copy_markdown_files "exclusive-bts-stills" "exclusive-bts-stills"
           copy_markdown_files "newsroom" "newsroom"
 
-          # Copy assets folder automatically
+          # Copy assets folder
           if [ -d "assets" ]; then
             cp -r assets _site/
-            echo "✅ assets folder copied"
-          else
-            echo "⚠ assets folder not found"
+            echo "✅ assets copied"
           fi
 
           echo ""
           echo "📦 Final _site structure:"
           find _site -type f
 
-          echo ""
-          echo "✅ Build completed successfully"
-
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site
+          path: './_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
