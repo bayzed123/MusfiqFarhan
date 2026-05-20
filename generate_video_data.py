@@ -1,218 +1,221 @@
 import os
 import re
 import yaml
-from datetime import datetime
-
-# =========================
-# SAFE MARKER REPLACEMENT
-# =========================
-
-def replace_between_markers(html, start_marker, end_marker, new_content):
-    start = html.find(start_marker)
-    end = html.find(end_marker)
-
-    if start == -1 or end == -1:
-        print(f"⚠ Missing marker: {start_marker}")
-        return html
-
-    end = end + len(end_marker)
-
-    return html[:start] + start_marker + "\n" + new_content + "\n" + html[end:]
-
-
-# =========================
-# YOUTUBE ID EXTRACT
-# =========================
 
 def extract_youtube_id(url):
+    """
+    Extract the 11-character YouTube ID from various URL formats.
+    Supports:
+    - https://youtu.be/VIDEO_ID
+    - https://youtu.be/VIDEO_ID?si=...
+    - https://www.youtube.com/watch?v=VIDEO_ID
+    - https://youtube.com/watch?v=VIDEO_ID
+    """
     if not url:
         return None
-
-    patterns = [
-        r'youtu\.be/([a-zA-Z0-9_-]{11})',
-        r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})',
-        r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})'
-    ]
-
-    for p in patterns:
-        match = re.search(p, url)
-        if match:
-            return match.group(1)
-
+    
+    # Pattern 1: youtu.be/VIDEO_ID (with or without query params)
+    match = re.search(r'youtu\.be/([a-zA-Z0-9_-]{11})', url)
+    if match:
+        return match.group(1)
+    
+    # Pattern 2: youtube.com/watch?v=VIDEO_ID
+    match = re.search(r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})', url)
+    if match:
+        return match.group(1)
+    
     return None
 
-
-# =========================
-# IMAGE CHECK
-# =========================
-
-def is_image_url(url):
-    if not url:
-        return False
-
-    ext = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
-    if any(url.lower().endswith(e) for e in ext):
-        return True
-
-    domains = ['postimg.cc', 'imgur.com', 'ibb.co', 'unsplash.com', 'i.ytimg.com']
-    return any(d in url.lower() for d in domains)
-
-
-# =========================
-# PARSE MARKDOWN FILE
-# =========================
-
 def parse_markdown_file(filepath):
+    """
+    Parse a Markdown file with flexible format support.
+    
+    Supports three formats:
+    1. YAML frontmatter (---title: "..." id: "..." tag: "..."---)
+    2. Markdown link ([Title](URL))
+    3. HTML anchor tag (<a href="URL">Title</a>)
+    
+    Returns a dictionary with 'title', 'id', and 'tag' keys, or empty dict if parsing fails.
+    """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
     except Exception as e:
-        print(f"Error: {filepath} -> {e}")
+        print(f"Error reading file {filepath}: {e}")
         return {}
-
-    data = {}
-    raw = content
-
-    # YAML frontmatter
+    
+    # ===== FORMAT 1: YAML FRONTMATTER =====
     yaml_match = re.match(r'^---\n(.*?)\n---\n', content, re.DOTALL)
     if yaml_match:
         try:
-            front = yaml.safe_load(yaml_match.group(1))
-            if isinstance(front, dict):
-                data.update(front)
-                raw = content[yaml_match.end():].strip()
-        except:
-            pass
+            frontmatter = yaml.safe_load(yaml_match.group(1))
+            if frontmatter and isinstance(frontmatter, dict):
+                if 'title' in frontmatter and 'id' in frontmatter:
+                    return {
+                        'title': frontmatter.get('title', ''),
+                        'id': frontmatter.get('id', ''),
+                        'tag': frontmatter.get('tag', 'New')
+                    }
+        except yaml.YAMLError as e:
+            print(f"YAML parsing error in {filepath}: {e}")
+    
+    # ===== FORMAT 2: MARKDOWN LINK [Title](URL) =====
+    markdown_link_match = re.search(r'\[([^\]]+)\]\(([^)]+)\)', content)
+    if markdown_link_match:
+        title = markdown_link_match.group(1).strip()
+        url = markdown_link_match.group(2).strip()
+        youtube_id = extract_youtube_id(url)
+        
+        if youtube_id:
+            return {
+                'title': title,
+                'id': youtube_id,
+                'tag': 'New'
+            }
+    
+    # ===== FORMAT 3: HTML ANCHOR TAG <a href="URL">Title</a> =====
+    html_anchor_match = re.search(r'<a\s+href=["\']([^"\']+)["\']\s*>([^<]+)<\/a>', content, re.IGNORECASE)
+    if html_anchor_match:
+        url = html_anchor_match.group(1).strip()
+        title = html_anchor_match.group(2).strip()
+        youtube_id = extract_youtube_id(url)
+        
+        if youtube_id:
+            return {
+                'title': title,
+                'id': youtube_id,
+                'tag': 'New'
+            }
+    
+    # ===== NO MATCH FOUND =====
+    return {}
 
-    url = data.get("url")
-
-    if not url and data.get("id"):
-        url = f"https://www.youtube.com/watch?v={data['id']}"
-
-    if not url:
-        md = re.search(r'\[([^\]]+)\]\(([^)]+)\)', raw)
-        if md:
-            data["title"] = data.get("title", md.group(1))
-            url = md.group(2)
-
-    if url:
-        yt = extract_youtube_id(url)
-        if yt:
-            data["type"] = "video"
-            data["id"] = yt
-        elif is_image_url(url):
-            data["type"] = "image"
-            data["url"] = url
-        else:
-            data["type"] = "link"
-            data["url"] = url
-
-    data["tag"] = data.get("tag", "New")
-    return data
-
-
-# =========================
-# COLLECT CONTENT
-# =========================
-
-def collect_content(base_path):
-    folders = {
-        "recent": "recent-releases",
-        "media": "the-media-hub",
-        "coming": "latest-coming-soon",
-        "premiere": "premiering-2026",
-        "bts": "exclusive-bts-stills",
-        "news": "newsroom"
+def collect_videos_data(base_path):
+    """
+    Collect video data from Markdown files in recent-releases and the-media-hub folders.
+    """
+    videos_data = {
+        "recent": [],
+        "media": []
     }
 
-    all_data = {k: [] for k in folders}
+    # Collect Recent Releases
+    recent_releases_path = os.path.join(base_path, 'recent-releases')
+    if os.path.exists(recent_releases_path):
+        for filename in sorted(os.listdir(recent_releases_path)):
+            if filename.endswith('.md'):
+                filepath = os.path.join(recent_releases_path, filename)
+                data = parse_markdown_file(filepath)
+                if data and 'title' in data and 'id' in data:
+                    videos_data['recent'].append({
+                        'title': data['title'],
+                        'id': data['id'],
+                        'tag': data.get('tag', 'New')
+                    })
+                    print(f"â Parsed: {filename} -> {data['title']}")
+                else:
+                    print(f"â Failed to parse: {filename}")
 
-    for key, folder in folders.items():
-        path = os.path.join(base_path, folder)
+    # Collect Media Hub videos
+    media_hub_path = os.path.join(base_path, 'the-media-hub')
+    if os.path.exists(media_hub_path):
+        for filename in sorted(os.listdir(media_hub_path)):
+            if filename.endswith('.md'):
+                filepath = os.path.join(media_hub_path, filename)
+                data = parse_markdown_file(filepath)
+                if data and 'title' in data and 'id' in data:
+                    videos_data['media'].append({
+                        'title': data['title'],
+                        'id': data['id'],
+                        'tag': data.get('tag', 'New')
+                    })
+                    print(f"â Parsed: {filename} -> {data['title']}")
+                else:
+                    print(f"â Failed to parse: {filename}")
+    
+    return videos_data
 
-        if not os.path.exists(path):
-            continue
+def generate_videos_data_js(videos_data):
+    """
+    Generate the JavaScript videosData object from collected video data.
+    """
+    js_string = "        // ===== VIDEO DATA STRUCTURE =====\n"
+    js_string += "        const videosData = {\n"
+    
+    # Recent videos
+    js_string += "            recent: [\n"
+    for video in videos_data['recent']:
+        # Escape quotes in title
+        title_escaped = video['title'].replace('"', '\\"')
+        js_string += f"                {{ title: \"{title_escaped}\", id: \"{video['id']}\", tag: \"{video['tag']}\" }},\n"
+    js_string += "            ],\n"
 
-        for file in sorted(os.listdir(path)):
-            if file.endswith(".md"):
-                data = parse_markdown_file(os.path.join(path, file))
-                if data:
-                    data["filename"] = file
-                    all_data[key].append(data)
+    # Media videos
+    js_string += "            media: [\n"
+    for video in videos_data['media']:
+        # Escape quotes in title
+        title_escaped = video['title'].replace('"', '\\"')
+        js_string += f"                {{ title: \"{title_escaped}\", id: \"{video['id']}\", tag: \"{video['tag']}\" }},\n"
+    js_string += "            ]\n"
+    js_string += "        };\n"
+    
+    return js_string
 
-    return all_data
+def update_index_html(html_filepath, new_videos_data_js):
+    """
+    Update the index.html file with the new videosData JavaScript object.
+    """
+    try:
+        with open(html_filepath, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+    except Exception as e:
+        print(f"Error reading {html_filepath}: {e}")
+        return False
 
+    # Find and replace the existing videosData block
+    pattern = re.compile(r'\s*// ===== VIDEO DATA STRUCTURE =====.*?^\s*};', re.DOTALL | re.MULTILINE)
+    
+    if pattern.search(html_content):
+        updated_html_content = pattern.sub(new_videos_data_js.rstrip(), html_content)
+    else:
+        print("Warning: Existing videosData block not found. Attempting to insert before VIDEO RENDERING FUNCTION.")
+        insert_pattern = re.compile(r'\s*// ===== VIDEO RENDERING FUNCTION =====')
+        if insert_pattern.search(html_content):
+            updated_html_content = insert_pattern.sub(new_videos_data_js.rstrip() + "\n\n        // ===== VIDEO RENDERING FUNCTION =====", html_content)
+        else:
+            print("Error: Could not find insertion point in index.html")
+            return False
 
-# =========================
-# GENERATE JS DATA
-# =========================
-
-def generate_js(all_data):
-    return f"""
-// AUTO GENERATED DATA
-
-const videosData = {{
-    recent: {all_data['recent']},
-    media: {all_data['media']}
-}};
-
-const comingSoonData = {all_data['coming'] + all_data['premiere']};
-
-const exclusiveBtsData = {all_data['bts']};
-
-const newsroomData = {all_data['news']};
-"""
-
-
-# =========================
-# MAIN
-# =========================
+    try:
+        with open(html_filepath, 'w', encoding='utf-8') as f:
+            f.write(updated_html_content)
+        return True
+    except Exception as e:
+        print(f"Error writing to {html_filepath}: {e}")
+        return False
 
 if __name__ == "__main__":
-    root = os.path.dirname(os.path.abspath(__file__))
-    index_path = os.path.join(root, "index.html")
+    repo_root = os.path.dirname(os.path.abspath(__file__))
+    index_html_path = os.path.join(repo_root, 'index.html')
 
-    print("🚀 CMS Builder Running...")
+    print("=" * 60)
+    print("Starting Video Data Generation...")
+    print("=" * 60)
 
-    data = collect_content(root)
-    js_data = generate_js(data)
+    # 1. Collect data from Markdown files
+    videos_data = collect_videos_data(repo_root)
 
-    # read html
-    with open(index_path, "r", encoding="utf-8") as f:
-        html = f.read()
+    print("\n" + "=" * 60)
+    print(f"Summary:")
+    print(f"  Recent Releases: {len(videos_data['recent'])} videos")
+    print(f"  Media Hub: {len(videos_data['media'])} videos")
+    print("=" * 60)
 
-    # SAFE MARKER UPDATES ONLY (NO REGEX HTML DAMAGE)
+    # 2. Generate the JavaScript string
+    new_videos_data_js = generate_videos_data_js(videos_data)
 
-    html = replace_between_markers(
-        html,
-        "<!-- CMS:VIDEO_START -->",
-        "<!-- CMS:VIDEO_END -->",
-        "const videosData = " + str(data['recent'])
-    )
-
-    html = replace_between_markers(
-        html,
-        "<!-- CMS:COMING_START -->",
-        "<!-- CMS:COMING_END -->",
-        "const comingSoonData = " + str(data['coming'] + data['premiere'])
-    )
-
-    html = replace_between_markers(
-        html,
-        "<!-- CMS:BTS_START -->",
-        "<!-- CMS:BTS_END -->",
-        "const exclusiveBtsData = " + str(data['bts'])
-    )
-
-    html = replace_between_markers(
-        html,
-        "<!-- CMS:NEWS_START -->",
-        "<!-- CMS:NEWS_END -->",
-        "const newsroomData = " + str(data['news'])
-    )
-
-    # write back
-    with open(index_path, "w", encoding="utf-8") as f:
-        f.write(html)
-
-    print("✅ CMS Updated Safely")
+    # 3. Update index.html
+    if update_index_html(index_html_path, new_videos_data_js):
+        print("\nâ index.html updated successfully with new video data.")
+    else:
+        print("\nâ Failed to update index.html")
