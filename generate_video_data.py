@@ -1,26 +1,17 @@
+
 import os
 import re
 import yaml
+import json
 
 def extract_youtube_id(url):
     """
     Extract the 11-character YouTube ID from various URL formats.
-    Supports:
-    - https://youtu.be/VIDEO_ID
-    - https://youtu.be/VIDEO_ID?si=...
-    - https://www.youtube.com/watch?v=VIDEO_ID
-    - https://youtube.com/watch?v=VIDEO_ID
     """
     if not url:
         return None
     
-    # Pattern 1: youtu.be/VIDEO_ID (with or without query params)
-    match = re.search(r'youtu\.be/([a-zA-Z0-9_-]{11})', url)
-    if match:
-        return match.group(1)
-    
-    # Pattern 2: youtube.com/watch?v=VIDEO_ID
-    match = re.search(r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})', url)
+    match = re.search(r'(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|v/|shorts/))([a-zA-Z0-9_-]{11})', url)
     if match:
         return match.group(1)
     
@@ -29,13 +20,8 @@ def extract_youtube_id(url):
 def parse_markdown_file(filepath):
     """
     Parse a Markdown file with flexible format support.
-    
-    Supports three formats:
-    1. YAML frontmatter (---title: "..." id: "..." tag: "..."---)
-    2. Markdown link ([Title](URL))
-    3. HTML anchor tag (<a href="URL">Title</a>)
-    
-    Returns a dictionary with 'title', 'id', and 'tag' keys, or empty dict if parsing fails.
+    Supports YAML frontmatter, Markdown links, and HTML anchor tags.
+    Returns a dictionary with extracted data, or empty dict if parsing fails.
     """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -50,12 +36,7 @@ def parse_markdown_file(filepath):
         try:
             frontmatter = yaml.safe_load(yaml_match.group(1))
             if frontmatter and isinstance(frontmatter, dict):
-                if 'title' in frontmatter and 'id' in frontmatter:
-                    return {
-                        'title': frontmatter.get('title', ''),
-                        'id': frontmatter.get('id', ''),
-                        'tag': frontmatter.get('tag', 'New')
-                    }
+                return frontmatter
         except yaml.YAMLError as e:
             print(f"YAML parsing error in {filepath}: {e}")
     
@@ -65,105 +46,152 @@ def parse_markdown_file(filepath):
         title = markdown_link_match.group(1).strip()
         url = markdown_link_match.group(2).strip()
         youtube_id = extract_youtube_id(url)
-        
-        if youtube_id:
-            return {
-                'title': title,
-                'id': youtube_id,
-                'tag': 'New'
-            }
+        return {'title': title, 'id': youtube_id, 'tag': 'New', 'url': url} if youtube_id else {'title': title, 'url': url, 'tag': 'New'}
     
     # ===== FORMAT 3: HTML ANCHOR TAG <a href="URL">Title</a> =====
-    html_anchor_match = re.search(r'<a\s+href=["\']([^"\']+)["\']\s*>([^<]+)<\/a>', content, re.IGNORECASE)
+    html_anchor_match = re.search(r'<a\s+href=[\"\"]([^\"\"]+)[\"\"]\s*>([^<]+)<\/a>', content, re.IGNORECASE)
     if html_anchor_match:
         url = html_anchor_match.group(1).strip()
         title = html_anchor_match.group(2).strip()
         youtube_id = extract_youtube_id(url)
-        
-        if youtube_id:
-            return {
-                'title': title,
-                'id': youtube_id,
-                'tag': 'New'
-            }
+        return {'title': title, 'id': youtube_id, 'tag': 'New', 'url': url} if youtube_id else {'title': title, 'url': url, 'tag': 'New'}
     
-    # ===== NO MATCH FOUND =====
     return {}
 
-def collect_videos_data(base_path):
+def collect_content_data(base_path, folder_name, file_extension=".md"):
     """
-    Collect video data from Markdown files in recent-releases and the-media-hub folders.
+    Collect data from files in a specified folder.
     """
-    videos_data = {
-        "recent": [],
-        "media": []
-    }
-
-    # Collect Recent Releases
-    recent_releases_path = os.path.join(base_path, 'recent-releases')
-    if os.path.exists(recent_releases_path):
-        for filename in sorted(os.listdir(recent_releases_path)):
-            if filename.endswith('.md'):
-                filepath = os.path.join(recent_releases_path, filename)
+    data_list = []
+    folder_path = os.path.join(base_path, folder_name)
+    if os.path.exists(folder_path):
+        for filename in sorted(os.listdir(folder_path)):
+            if filename.endswith(file_extension):
+                filepath = os.path.join(folder_path, filename)
                 data = parse_markdown_file(filepath)
-                if data and 'title' in data and 'id' in data:
-                    videos_data['recent'].append({
-                        'title': data['title'],
-                        'id': data['id'],
-                        'tag': data.get('tag', 'New')
-                    })
-                    print(f"â Parsed: {filename} -> {data['title']}")
+                if data:
+                    data_list.append(data)
+                    print(f"\u2713 Parsed: {filename} -> {data.get('title', 'No Title')}")
                 else:
-                    print(f"â Failed to parse: {filename}")
+                    print(f"\u2717 Failed to parse: {filename}")
+    return data_list
 
-    # Collect Media Hub videos
-    media_hub_path = os.path.join(base_path, 'the-media-hub')
-    if os.path.exists(media_hub_path):
-        for filename in sorted(os.listdir(media_hub_path)):
-            if filename.endswith('.md'):
-                filepath = os.path.join(media_hub_path, filename)
-                data = parse_markdown_file(filepath)
-                if data and 'title' in data and 'id' in data:
-                    videos_data['media'].append({
-                        'title': data['title'],
-                        'id': data['id'],
-                        'tag': data.get('tag', 'New')
-                    })
-                    print(f"â Parsed: {filename} -> {data['title']}")
-                else:
-                    print(f"â Failed to parse: {filename}")
-    
-    return videos_data
-
-def generate_videos_data_js(videos_data):
+def generate_js_data_block(variable_name, data_object):
     """
-    Generate the JavaScript videosData object from collected video data.
+    Generates a JavaScript block for the given data object.
     """
-    js_string = "        // ===== VIDEO DATA STRUCTURE =====\n"
-    js_string += "        const videosData = {\n"
-    
-    # Recent videos
-    js_string += "            recent: [\n"
-    for video in videos_data['recent']:
-        # Escape quotes in title
-        title_escaped = video['title'].replace('"', '\\"')
-        js_string += f"                {{ title: \"{title_escaped}\", id: \"{video['id']}\", tag: \"{video['tag']}\" }},\n"
-    js_string += "            ],\n"
-
-    # Media videos
-    js_string += "            media: [\n"
-    for video in videos_data['media']:
-        # Escape quotes in title
-        title_escaped = video['title'].replace('"', '\\"')
-        js_string += f"                {{ title: \"{title_escaped}\", id: \"{video['id']}\", tag: \"{video['tag']}\" }},\n"
-    js_string += "            ]\n"
-    js_string += "        };\n"
-    
+    json_data = json.dumps(data_object, indent=4)
+    js_string = f"        // ===== {variable_name.upper()} DATA STRUCTURE =====\n"
+    js_string += f"        const {variable_name} = {json_data};\n"
     return js_string
 
-def update_index_html(html_filepath, new_videos_data_js):
+def generate_latest_coming_soon_html(data):
+    if not data:
+        return ""
+    item = data[0] # Assuming only one item for the mega banner
+    html = f"""
+    <!-- 6. Latest Coming Soon Mega Banner (Dynamically Generated) -->
+    <section class="reveal">
+        <div class="coming-soon">
+            <div class="cs-content">
+                <span class="cs-tag cinematic-font">{item.get('tag', 'Coming Soon').upper()}</span>
+                <h2 class="cs-title luxury-font">{item.get('title', 'New Project')}</h2>
+                <p class="cs-description">{item.get('description', '')}</p>
+                <div class="feature-details">
+                    <div class="detail-item">
+                        <span>Director</span>
+                        <p>{item.get('director', 'N/A')}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Cast</span>
+                        <p>{', '.join(item.get('cast', ['N/A']))}</p>
+                    </div>
+                    <div class="detail-item">
+                        <span>Release</span>
+                        <p>{item.get('release_date', 'N/A')}</p>
+                    </div>
+                </div>
+                <a href="{item.get('url', '#')}" target="_blank" class="btn btn-primary">Watch Trailer</a>
+            </div>
+        </div>
+    </section>
     """
-    Update the index.html file with the new videosData JavaScript object.
+    return html
+
+def generate_premiering_2026_html(data):
+    if not data:
+        return ""
+    cards_html = ""
+    for item in data:
+        cards_html += f"""
+                <div class="project-card">
+                    <h3 class="luxury-font">{item.get('title', 'Upcoming Project')}</h3>
+                    <p>Status: {item.get('status', 'N/A')}</p>
+                    <p>Expected Release: {item.get('expected_release', 'N/A')}</p>
+                </div>
+        """
+    html = f"""
+    <!-- Premiering 2026 Section (Dynamically Generated) -->
+    <section class="section-padding" id="premiering-2026">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Premiering 2026</h2>
+            <div class="premiering-grid reveal">
+                {cards_html}
+            </div>
+        </div>
+    </section>
+    """
+    return html
+
+def generate_exclusive_bts_stills_html(data):
+    if not data:
+        return ""
+    images_html = ""
+    for item in data:
+        for img in item.get('images', []):
+            images_html += f"<div class="bts-item"><img src="{img.get('url', '#')}" alt="{img.get('alt', 'BTS Image')}"></div>\n"
+    html = f"""
+    <!-- Exclusive BTS Stills Section (Dynamically Generated) -->
+    <section class="section-padding">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Exclusive BTS Stills</h2>
+            <div class="bts-slider reveal">
+                {images_html}
+            </div>
+        </div>
+    </section>
+    """
+    return html
+
+def generate_newsroom_html(data):
+    if not data:
+        return ""
+    news_cards_html = ""
+    for item in data:
+        news_cards_html += f"""
+                <div class="news-card">
+                    <span class="news-date">{item.get('date', 'N/A')}</span>
+                    <h3 class="luxury-font">{item.get('title', 'No Title')}</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">{item.get('summary', '')}</p>
+                    <a href="{item.get('url', '#')}" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+        """
+    html = f"""
+    <!-- Newsroom & PR Grid (Dynamically Generated) -->
+    <section class="section-padding" id="news">
+        <div class="container">
+            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
+            <div class="news-grid reveal">
+                {news_cards_html}
+            </div>
+        </div>
+    </section>
+    """
+    return html
+
+def update_index_html(html_filepath, new_js_data_blocks, new_html_sections):
+    """
+    Update the index.html file with new JavaScript data blocks and dynamic HTML sections.
     """
     try:
         with open(html_filepath, 'r', encoding='utf-8') as f:
@@ -172,19 +200,56 @@ def update_index_html(html_filepath, new_videos_data_js):
         print(f"Error reading {html_filepath}: {e}")
         return False
 
-    # Find and replace the existing videosData block
-    pattern = re.compile(r'\s*// ===== VIDEO DATA STRUCTURE =====.*?^\s*};', re.DOTALL | re.MULTILINE)
-    
-    if pattern.search(html_content):
-        updated_html_content = pattern.sub(new_videos_data_js.rstrip(), html_content)
-    else:
-        print("Warning: Existing videosData block not found. Attempting to insert before VIDEO RENDERING FUNCTION.")
-        insert_pattern = re.compile(r'\s*// ===== VIDEO RENDERING FUNCTION =====')
-        if insert_pattern.search(html_content):
-            updated_html_content = insert_pattern.sub(new_videos_data_js.rstrip() + "\n\n        // ===== VIDEO RENDERING FUNCTION =====", html_content)
+    updated_html_content = html_content
+
+    # Update JavaScript data blocks
+    for var_name, js_block in new_js_data_blocks.items():
+        pattern = re.compile(r'\s*// ===== ' + re.escape(var_name.upper()) + r' DATA STRUCTURE =====.*?^\s*};', re.DOTALL | re.MULTILINE)
+        if pattern.search(updated_html_content):
+            updated_html_content = pattern.sub(js_block.rstrip(), updated_html_content)
+            print(f"\u2713 Replaced existing {var_name} block.")
         else:
-            print("Error: Could not find insertion point in index.html")
-            return False
+            # Fallback for initial insertion if block not found
+            insert_marker = "        // ===== VIDEO RENDERING FUNCTION ====="
+            if insert_marker in updated_html_content:
+                updated_html_content = updated_html_content.replace(insert_marker, js_block.rstrip() + "\n\n" + insert_marker)
+                print(f"\u2713 Inserted {var_name} block before video rendering function.")
+            else:
+                print(f"\u2717 Error: Could not find insertion point for {var_name} in index.html")
+                return False
+
+    # Update HTML sections
+    # Latest Coming Soon
+    updated_html_content = re.sub(
+        r'<!-- 6\. Latest Coming Soon Mega Banner -->.*?<!-- 7\. Recent Releases \(Netflix-Style Video Carousel\) -->',
+        new_html_sections['latestComingSoonHtml'] + '\n\n    <!-- 7. Recent Releases (Netflix-Style Video Carousel) -->',
+        updated_html_content, flags=re.DOTALL
+    )
+    print("\u2713 Updated Latest Coming Soon HTML section.")
+
+    # Premiering 2026
+    updated_html_content = re.sub(
+        r'<!-- Premiering 2026 Section \(Dynamically Generated\) -->.*?<!-- Exclusive BTS Stills Section \(Dynamically Generated\) -->',
+        new_html_sections['premiering2026Html'] + '\n\n    <!-- Exclusive BTS Stills Section (Dynamically Generated) -->',
+        updated_html_content, flags=re.DOTALL
+    )
+    print("\u2713 Updated Premiering 2026 HTML section.")
+
+    # Exclusive BTS Stills
+    updated_html_content = re.sub(
+        r'<!-- Exclusive BTS Stills Section \(Dynamically Generated\) -->.*?<!-- 10\. Live Fan Wall \(Firebase Marquee\) -->',
+        new_html_sections['exclusiveBtsStillsHtml'] + '\n\n    <!-- 10. Live Fan Wall (Firebase Marquee) -->',
+        updated_html_content, flags=re.DOTALL
+    )
+    print("\u2713 Updated Exclusive BTS Stills HTML section.")
+
+    # Newsroom
+    updated_html_content = re.sub(
+        r'<!-- Newsroom & PR Grid \(Dynamically Generated\) -->.*?<!-- 12\. Brand Partnership Marquee -->',
+        new_html_sections['newsroomHtml'] + '\n\n    <!-- 12. Brand Partnership Marquee -->',
+        updated_html_content, flags=re.DOTALL
+    )
+    print("\u2713 Updated Newsroom HTML section.")
 
     try:
         with open(html_filepath, 'w', encoding='utf-8') as f:
@@ -199,23 +264,50 @@ if __name__ == "__main__":
     index_html_path = os.path.join(repo_root, 'index.html')
 
     print("=" * 60)
-    print("Starting Video Data Generation...")
+    print("Starting Content Data Generation...")
     print("=" * 60)
 
-    # 1. Collect data from Markdown files
-    videos_data = collect_videos_data(repo_root)
+    # 1. Collect data from all specified folders
+    all_content_data = {
+        "videosData": {
+            "recent": collect_content_data(repo_root, 'recent-releases'),
+            "media": collect_content_data(repo_root, 'the-media-hub')
+        },
+        "latestComingSoon": collect_content_data(repo_root, 'latest-coming-soon'),
+        "premiering2026": collect_content_data(repo_root, 'premiering-2026'),
+        "exclusiveBtsStills": collect_content_data(repo_root, 'exclusive-bts-stills'),
+        "newsroom": collect_content_data(repo_root, 'newsroom')
+    }
 
     print("\n" + "=" * 60)
     print(f"Summary:")
-    print(f"  Recent Releases: {len(videos_data['recent'])} videos")
-    print(f"  Media Hub: {len(videos_data['media'])} videos")
+    for key, value in all_content_data.items():
+        if isinstance(value, dict):
+            for sub_key, sub_value in value.items():
+                print(f"  {key.replace('Data', '').replace('videos', 'Videos ')} {sub_key.capitalize()}: {len(sub_value)} items")
+        else:
+            print(f"  {key.replace('Data', '')}: {len(value)} items")
     print("=" * 60)
 
-    # 2. Generate the JavaScript string
-    new_videos_data_js = generate_videos_data_js(videos_data)
+    # 2. Generate the JavaScript data blocks
+    js_data_blocks = {
+        "videosData": generate_js_data_block("videosData", all_content_data["videosData"]),
+        "latestComingSoonData": generate_js_data_block("latestComingSoonData", all_content_data["latestComingSoon"]),
+        "premiering2026Data": generate_js_data_block("premiering2026Data", all_content_data["premiering2026"]),
+        "exclusiveBtsStillsData": generate_js_data_block("exclusiveBtsStillsData", all_content_data["exclusiveBtsStills"]),
+        "newsroomData": generate_js_data_block("newsroomData", all_content_data["newsroom"])
+    }
 
-    # 3. Update index.html
-    if update_index_html(index_html_path, new_videos_data_js):
-        print("\nâ index.html updated successfully with new video data.")
+    # 3. Generate dynamic HTML sections
+    html_sections = {
+        "latestComingSoonHtml": generate_latest_coming_soon_html(all_content_data["latestComingSoon"]),
+        "premiering2026Html": generate_premiering_2026_html(all_content_data["premiering2026"]),
+        "exclusiveBtsStillsHtml": generate_exclusive_bts_stills_html(all_content_data["exclusiveBtsStills"]),
+        "newsroomHtml": generate_newsroom_html(all_content_data["newsroom"])
+    }
+
+    # 4. Update index.html
+    if update_index_html(index_html_path, js_data_blocks, html_sections):
+        print("\n\u2713 index.html updated successfully with all new content data and dynamic sections.")
     else:
-        print("\nâ Failed to update index.html")
+        print("\n\u2717 Failed to update index.html")

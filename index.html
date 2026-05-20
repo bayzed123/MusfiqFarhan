@@ -1330,16 +1330,9 @@
         </div>
     </section>
 
-    <!-- 6. Coming Soon Mega Banner -->
-    <section class="reveal">
-        <div class="coming-soon">
-            <div class="cs-content">
-                <span class="cs-tag cinematic-font">PREMIERING 2026</span>
-                <h2 class="cs-title luxury-font">New Project</h2>
-                <a href="https://youtu.be/7Kt-gYcTSNM?si=-9MO4gpVkO7tiIsq" target="_blank" class="btn btn-primary">Watch Trailer</a>
-            </div>
-        </div>
-    </section>
+        <!-- LATEST COMING SOON DYNAMIC CONTENT -->
+
+    <!-- PREMIERING 2026 DYNAMIC CONTENT -->
 
     <!-- 7. Recent Releases (Netflix-Style Video Carousel) -->
     <section class="section-padding" id="recent-releases">
@@ -1419,32 +1412,9 @@
         </div>
     </section>
 
-    <!-- 11. Newsroom & PR Grid -->
-    <section class="section-padding" id="news">
-        <div class="container">
-            <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
-            <div class="news-grid reveal">
-                <div class="news-card">
-                    <span class="news-date">May 20, 2026</span>
-                    <h3 class="luxury-font">Official Poster Released for 'Doob' starring Musfiq R. Farhan</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The first-look poster of 'Doob' directed by Toufiqul Islam has taken the internet by storm. Fans are eagerly waiting for the chemistry between Farhan and Keya Payel...</p>
-                    <a href="#latest" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="news-card">
-                    <span class="news-date">May 14, 2026</span>
-                    <h3 class="luxury-font">Musfiq R. Farhan Shines in 'Poran Pakhi' Premiere</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The latest Eid special drama breaks viewership records within 24 hours of release...</p>
-                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="news-card">
-                    <span class="news-date">April 20, 2026</span>
-                    <h3 class="luxury-font">BIFA Awards 2026: Musfiq Nominated for Best Actor</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Farhan secures his third consecutive nomination for excellence in OTT content...</p>
-                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- NEWSROOM DYNAMIC CONTENT -->
+
+    <!-- EXCLUSIVE BTS STILLS DYNAMIC CONTENT -->
 
     <!-- 12. Brand Partnership Marquee -->
     <section class="brand-marquee section-padding">
@@ -1613,17 +1583,23 @@
             });
         } catch (error) {
             console.error('Firebase error:', error);
-        }        // ===== VIDEO DATA STRUCTURE =====
+        }        // ===== VIDEOSDATA DATA STRUCTURE =====
         const videosData = {
-            recent: [
-                { title: "Tor name Hridoye", id: "ofXi8zgQlus", tag: "New" },
-                { title: "Tor Preme Pagol", id: "2nxozV--nLI", tag: "New" },
-            ],
-            media: [
-                { title: "Tor Preme Pagol", id: "2nxozV--nLI", tag: "Featured" },
-                { title: "VP", id: "g9GRWSbIFck", tag: "Featured" },
-            ]
+            recent: [],
+            media: []
         };
+
+        // ===== LATESTCOMINGSOONDATA DATA STRUCTURE =====
+        const latestComingSoonData = [];
+
+        // ===== PREMIERING2026DATA DATA STRUCTURE =====
+        const premiering2026Data = [];
+
+        // ===== EXCLUSIVEBTSSTILLSDATA DATA STRUCTURE =====
+        const exclusiveBtsStillsData = [];
+
+        // ===== NEWSROOMDATA DATA STRUCTURE =====
+        const newsroomData = [];
 
         // ===== VIDEO RENDERING FUNCTION =====
         function renderVideoCarousel(containerId, videosArray) {
@@ -1637,6 +1613,111 @@
                     <div class="video-title"><h3>${video.title}</h3></div>
                 </div>
             `).join('');
+        }
+
+        // ===== DYNAMIC CONTENT RENDERING FUNCTIONS =====
+        function renderLatestComingSoon() {
+            const container = document.querySelector('<!-- LATEST COMING SOON DYNAMIC CONTENT -->');
+            if (!container || latestComingSoonData.length === 0) return;
+            const item = latestComingSoonData[0];
+            container.outerHTML = `
+                <section class="reveal">
+                    <div class="coming-soon">
+                        <div class="cs-content">
+                            <span class="cs-tag cinematic-font">${item.tag ? item.tag.toUpperCase() : 'COMING SOON'}</span>
+                            <h2 class="cs-title luxury-font">${item.title || 'New Project'}</h2>
+                            <p class="cs-description">${item.description || ''}</p>
+                            <div class="feature-details">
+                                <div class="detail-item">
+                                    <span>Director</span>
+                                    <p>${item.director || 'N/A'}</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span>Cast</span>
+                                    <p>${item.cast ? item.cast.join(', ') : 'N/A'}</p>
+                                </div>
+                                <div class="detail-item">
+                                    <span>Release</span>
+                                    <p>${item.release_date || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <a href="${item.url || '#'}" target="_blank" class="btn btn-primary">Watch Trailer</a>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderPremiering2026() {
+            const container = document.querySelector('<!-- PREMIERING 2026 DYNAMIC CONTENT -->');
+            if (!container || premiering2026Data.length === 0) return;
+            let cardsHtml = '';
+            premiering2026Data.forEach(item => {
+                cardsHtml += `
+                    <div class="project-card">
+                        <h3 class="luxury-font">${item.title || 'Upcoming Project'}</h3>
+                        <p>Status: ${item.status || 'N/A'}</p>
+                        <p>Expected Release: ${item.expected_release || 'N/A'}</p>
+                    </div>
+                `;
+            });
+            container.outerHTML = `
+                <section class="section-padding" id="premiering-2026">
+                    <div class="container">
+                        <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Premiering 2026</h2>
+                        <div class="premiering-grid reveal">
+                            ${cardsHtml}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderExclusiveBtsStills() {
+            const container = document.querySelector('<!-- EXCLUSIVE BTS STILLS DYNAMIC CONTENT -->');
+            if (!container || exclusiveBtsStillsData.length === 0) return;
+            let imagesHtml = '';
+            exclusiveBtsStillsData.forEach(item => {
+                item.images.forEach(img => {
+                    imagesHtml += `<div class="bts-item"><img src="${img.url || '#'}" alt="${img.alt || 'BTS Image'}"></div>`;
+                });
+            });
+            container.outerHTML = `
+                <section class="section-padding">
+                    <div class="container">
+                        <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Exclusive BTS Stills</h2>
+                        <div class="bts-slider reveal">
+                            ${imagesHtml}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderNewsroom() {
+            const container = document.querySelector('<!-- NEWSROOM DYNAMIC CONTENT -->');
+            if (!container || newsroomData.length === 0) return;
+            let newsCardsHtml = '';
+            newsroomData.forEach(item => {
+                newsCardsHtml += `
+                    <div class="news-card">
+                        <span class="news-date">${item.date || 'N/A'}</span>
+                        <h3 class="luxury-font">${item.title || 'No Title'}</h3>
+                        <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">${item.summary || ''}</p>
+                        <a href="${item.url || '#'}" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                `;
+            });
+            container.outerHTML = `
+                <section class="section-padding" id="news">
+                    <div class="container">
+                        <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
+                        <div class="news-grid reveal">
+                            ${newsCardsHtml}
+                        </div>
+                    </div>
+                </section>
+            `;
         }
 
         // ===== FACADE METHOD: PLAY VIDEO ON CLICK =====
@@ -1679,6 +1760,10 @@
                 console.log('Rendering carousels...', videosData);
                 renderVideoCarousel('recent-carousel', videosData.recent);
                 renderVideoCarousel('media-carousel', videosData.media);
+                renderLatestComingSoon();
+                renderPremiering2026();
+                renderExclusiveBtsStills();
+                renderNewsroom();
                 console.log('Carousels rendered successfully');
             } catch (error) {
                 console.error('Error rendering carousels:', error);
