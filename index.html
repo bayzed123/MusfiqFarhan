@@ -1607,49 +1607,50 @@
             row2.innerHTML += row2.innerHTML;
         });
 
-        // --- Original Video Data and Carousel Logic ---
-        const mediaData = [
-            { title: "Sheshta Tumi", tag: "Drama / 2025", img: "https://i.postimg.cc/G9Cg6WhZ/image.jpg", link: "https://youtu.be/7Kt-gYcTSNM" },
-            { title: "Stupids", tag: "Drama / 2024", img: "https://i.postimg.cc/Yh86nVhy/image.jpg", link: "#" },
-            { title: "Plural No. 3rd Person", tag: "Drama / 2024", img: "https://i.postimg.cc/G9Cg6WhZ/image.jpg", link: "#" },
-            { title: "Sweeper Man", tag: "Drama / 2023", img: "https://i.postimg.cc/XZh004Yd/image.jpg", link: "#" },
-            { title: "Visa in Life", tag: "Drama / 2023", img: "https://i.postimg.cc/WhnL1M4D/image.jpg", link: "#" },
-            { title: "Hangor", tag: "Film / 2022", img: "https://i.postimg.cc/p9336Cs1/image.jpg", link: "#" }
-        ];
-
-        const renderCarousels = () => {
-            const mediaCarousel = document.getElementById('media-carousel');
-            const recentCarousel = document.getElementById('recent-carousel');
-            
-            mediaData.forEach(item => {
-                const card = `
-                    <div class="project-card" onclick="if(this.dataset.link !== '#') window.open('${item.link}', '_blank')">
-                        <div class="video-tag">${item.tag.split(' / ')[0]}</div>
-                        <img src="${item.img}" alt="${item.title}">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                        <div class="project-info">
-                            <span>${item.tag}</span>
-                            <h3 class="luxury-font">${item.title}</h3>
-                        </div>
-                    </div>
-                `;
-                mediaCarousel.innerHTML += card;
-            });
-
-            mediaData.slice(0, 3).forEach(item => {
-                const card = `
-                    <div class="project-card" onclick="if(this.dataset.link !== '#') window.open('${item.link}', '_blank')">
-                        <div class="video-tag">Latest</div>
-                        <img src="${item.img}" alt="${item.title}">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                        <div class="video-title">
-                            <h3 class="luxury-font">${item.title}</h3>
-                        </div>
-                    </div>
-                `;
-                recentCarousel.innerHTML += card;
-            });
+        // ===== VIDEO DATA STRUCTURE =====
+        const videosData = {
+            recent: [
+                { title: "Latest Episode", id: "ofXi8zgQlus", tag: "New" },
+                { title: "Behind The Scenes", id: "g9GRWSbIFck", tag: "Exclusive" },
+                { title: "Drama Highlight", id: "8Oy5CXJoHbg", tag: "Trending" },
+                { title: "Interview Special", id: "1ShGRKvY9jo", tag: "New" },
+                { title: "Comedy Sketch", id: "M3dTY9zTEN8", tag: "Award Winning" },
+                { title: "Music Video", id: "YlEQRZFjmeI", tag: "Exclusive" },
+                { title: "Live Performance", id: "hCrHVIa1P8E", tag: "Trending" },
+                { title: "Fan Reaction", id: "xd1FzIVpLZo", tag: "New" }
+            ],
+            media: [
+                { title: "Sheshta Tumi", id: "vAFi7jb8BqM", tag: "Featured" },
+                { title: "Sweeper Man", id: "exPkakUfP6k", tag: "Award Winning" },
+                { title: "Visa in Life", id: "8dNT1GvYS14", tag: "Popular" },
+                { title: "Hangor", id: "HPLgIcZZdx4", tag: "Featured" },
+                { title: "Poran Pakhi", id: "OUT5XKUs-M8", tag: "New" },
+                { title: "Drama Premiere", id: "Xi_EhPWcf9k", tag: "Exclusive" },
+                { title: "Comedy Series", id: "s4ggAWZ1xUA", tag: "Trending" },
+                { title: "Web Series", id: "UT0a504rXqU", tag: "Popular" },
+                { title: "Short Film", id: "owAjwljtkBM", tag: "Award Winning" },
+                { title: "Collaboration", id: "exPkakUfP6k", tag: "Featured" }
+            ]
         };
+
+        // ===== VIDEO RENDERING FUNCTION =====
+        function renderVideoCarousel(containerId, videosArray) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = videosArray.map(video => `
+                <div class="project-card" onclick="playVideo(this, '${video.id}')">
+                    <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="${video.title}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div class="video-tag">${video.tag}</div>
+                    <div class="play-btn"><i class="fas fa-play"></i></div>
+                    <div class="video-title"><h3>${video.title}</h3></div>
+                </div>
+            `).join('');
+        }
+
+        // ===== FACADE METHOD: PLAY VIDEO ON CLICK =====
+        function playVideo(cardElement, videoId) {
+            cardElement.innerHTML = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        }
 
         // --- Drag to Scroll Functionality ---
         const initDragScroll = (slider) => {
@@ -1681,7 +1682,10 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            renderCarousels();
+            // Render video carousels
+            renderVideoCarousel('recent-carousel', videosData.recent);
+            renderVideoCarousel('media-carousel', videosData.media);
+            // Setup drag scroll functionality
             document.querySelectorAll('.carousel-wrapper').forEach(initDragScroll);
         });
     </script>
