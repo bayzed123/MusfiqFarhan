@@ -1590,6 +1590,7 @@
         const videosData = {
             recent: [
                 { title: "Tor name Hridoye", id: "ofXi8zgQlus", tag: "New" },
+                { title: "Tor Preme Pagol", id: "", tag: "New" },
             ],
             media: [
                 { title: "VP", id: "g9GRWSbIFck", tag: "Featured" },
@@ -1634,7 +1635,49 @@
                 description: "",
                 link: "" 
             },
+        ];const comingSoonData = [
+            {
+                title: "Doob",
+                description: "Experience the serene love story 'Doob' starring Musfiq R. Farhan and Keya Payel. Coming this Eid on CMV YouTube.",
+                poster_url: "./assets/doob-poster.jpg",
+                type: "unknown",
+                media_id_or_url: "",
+                tag: "Latest Coming Soon" 
+            },
+            {
+                title: "Tor Preme Pagol",
+                description: "",
+                poster_url: "",
+                type: "video",
+                media_id_or_url: "2nxozV--nLI",
+                tag: "New" 
+            },
+            {
+                title: "Upcoming Project 2026",
+                description: "",
+                poster_url: "",
+                type: "unknown",
+                media_id_or_url: "",
+                tag: "New" 
+            },
         ];
+
+        // ===== EXCLUSIVE BTS DATA STRUCTURE =====
+        const exclusiveBtsData = [
+            { title: "Behind The Scenes - Session 1", url: "" },
+        ];
+
+        // ===== NEWSROOM DATA STRUCTURE =====
+        const newsroomData = [
+            {
+                title: "5th BIFA Best Actor Nomination",
+                date: "2026-05-20",
+                description: "",
+                link: "" 
+            },
+        ];
+
+
 
 
 
@@ -1685,6 +1728,57 @@
                 slider.scrollLeft = scrollLeft - walk;
             });
         };
+// ===== COMING SOON RENDERING FUNCTION =====
+        function renderComingSoon() {
+            const container = document.getElementById('latest-coming-soon-container');
+            if (!container || comingSoonData.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No upcoming projects to display.</p>`;
+                return;
+            }
+            const item = comingSoonData[0]; // Display the first item for now
+            
+            let mediaHtml = '';
+            let learnMoreLink = item.media_id_or_url || '#';
+            if (item.type === 'video') {
+                mediaHtml = `<div class="feature-poster">` +
+                             `<img src="https://i.ytimg.com/vi/${item.media_id_or_url}/hqdefault.jpg" alt="${item.title}">` +
+                             `<div class="play-btn" onclick="playVideo(this.parentNode, '${item.media_id_or_url}')"><i class="fas fa-play"></i></div>` +
+                             `</div>`;
+            } else if (item.type === 'image') {
+                mediaHtml = `<div class="feature-poster"><img src="${item.media_id_or_url}" alt="${item.title}"></div>`;
+            }
+            
+            container.innerHTML = `
+                <div class="feature-grid">
+                    ${mediaHtml}
+                    <div class="feature-content">
+                        <span class="feature-tag">${item.tag}</span>
+                        <h2 class="luxury-font">${item.title}</h2>
+                        <p class="feature-desc">${item.description}</p>
+                        <a href="${learnMoreLink}" target="_blank" class="btn btn-primary">Learn More</a>
+                    </div>
+                </div>
+            `;
+        }
+        // ===== EXCLUSIVE BTS RENDERING FUNCTION =====
+        function renderExclusiveBts() {
+            const container = document.getElementById('bts-carousel');
+            if (!container || exclusiveBtsData.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No BTS images to display.</p>`;
+                return;
+            }
+            container.innerHTML = exclusiveBtsData.map(item => ``).join('');
+        }
+        // ===== NEWSROOM RENDERING FUNCTION =====
+        function renderNewsroom() {
+            const container = document.getElementById('news-grid-container');
+            if (!container || newsroomData.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No news articles to display.</p>`;
+                return;
+            }
+            container.innerHTML = newsroomData.map(article => ``).join('');
+        }
+
 // ===== COMING SOON RENDERING FUNCTION =====
         function renderComingSoon() {
             const container = document.getElementById('latest-coming-soon-container');
