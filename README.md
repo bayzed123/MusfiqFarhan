@@ -1,5 +1,67 @@
 # Musfiq R. Farhan Official Portfolio
 
+This repository hosts the official portfolio website for Musfiq R. Farhan. The website is powered by a Git-backed Headless CMS, allowing for easy content management through Markdown files.
+
+## Content Management System (CMS) Overview
+
+Content for this website is managed by creating or editing Markdown (`.md`) files within specific directories. The `generate_video_data.py` script acts as a compiler, processing these Markdown files, intelligently parsing various data types (videos, images, articles), and dynamically injecting the content into the `index.html` file.
+
+This approach ensures that the website remains up-to-date with the latest content by simply updating Markdown files and running the compiler script.
+
+For detailed instructions on content creation, supported formats, and the compilation process, please refer to the [`workflow.md`](./workflow.md) document.
+
+## Content Directories
+
+To add or update content, place your Markdown files in the appropriate directory:
+
+*   **`recent-releases`**: For new video releases.
+*   **`the-media-hub`**: For general media hub videos.
+*   **`latest-coming-soon`**: For the primary "Coming Soon" feature (can be a video trailer or a poster image).
+*   **`premiering-2026`**: For upcoming projects (mixed: trailer videos or poster images).
+*   **`exclusive-bts-stills`**: For behind-the-scenes images.
+*   **`newsroom`**: For news articles and PR updates.
+
+## How to Update Content
+
+1.  **Create or Edit a Markdown File**: Navigate to the appropriate directory (e.g., `recent-releases`) and create a new `.md` file or edit an existing one.
+2.  **Add Content**: Use one of the supported formats (YAML frontmatter is recommended) to add your content details (title, URL, description, etc.). Refer to [`workflow.md`](./workflow.md) for detailed examples of supported formats (YAML, Markdown links, HTML tags) and smart media parsing rules.
+3.  **Run the Compiler**: Execute the Python script to compile the changes into `index.html`.
+
+    ```bash
+    python3 generate_video_data.py
+    ```
+
+4.  **Commit and Push**: Commit the changes to both the Markdown file(s) and the updated `index.html`, then push to your Git repository.
+
+    ```bash
+    git add .
+    git commit -m "Update content: Added new [Content Type]"
+    git push origin main
+    ```
+
+## AI Content Generation Prompt
+
+If you wish to use an AI to generate content for your Markdown files, you can use the following prompt structure. Remember to replace the bracketed placeholders with your specific details.
+
+```
+Act as a professional content writer for a celebrity portfolio website. I need to create a [content type, e.g., news article, video description, image caption] for Musfiq R. Farhan's official website. The content should be engaging, concise, and professional, adhering to SEO best practices.
+
+Here are the details:
+- **Content Type**: [e.g., News Article, Video Description, Image Caption for BTS]
+- **Main Topic/Title**: [e.g., "Musfiq R. Farhan Nominated for BIFA Award", "Trailer for 'Doob' Released"]
+- **Key Information to Include**: [e.g., Date: May 20, 2026, Award: 5th BIFA Best Actor (Drama), Co-star: Keya Payel, Director: Toufiqul Islam, Release Platform: CMV YouTube]
+- **Desired Tone**: [e.g., Exciting, Informative, Reflective]
+- **Target Audience**: [e.g., Fans, Industry Professionals, Media]
+- **Output Format**: [e.g., YAML Frontmatter for Markdown, Markdown Link, HTML <a> tag, HTML <img> tag]
+
+Generate the content, ensuring it's ready to be placed directly into a Markdown file in the appropriate directory (e.g., `newsroom`, `recent-releases`, `exclusive-bts-stills`). If it's a news article, include a brief summary. If it's a video or image, ensure the link is correctly formatted and the title is compelling.
+```
+
+## Important Notes
+
+*   Always refer to [`workflow.md`](./workflow.md) for the most up-to-date and detailed instructions on content management.
+*   Do not manually edit the JavaScript data objects or rendering functions within `index.html` that are managed by the `generate_video_data.py` script, as they will be overwritten on the next run.
+
 ## Project Overview
 
 This repository hosts the official, high-end portfolio website for **Musfiq R. Farhan**, a prominent Bangladeshi actor, radio jockey (RJ), and content creator. Designed as a cinematic, long-scrolling single-page application, the website combines a "Deep Midnight" aesthetic with premium Emerald Green and Gold highlights, offering an immersive experience for fans, industry professionals, and collaborators.
@@ -99,8 +161,8 @@ If you find this portfolio and blog system helpful, consider supporting its deve
   <!-- Visible Details for Easy Copying -->
   <br><br>
   <p>
-    <b>PayPal:</b> <code>@connectwithbayezid</code> <br>
-    <b>Payoneer:</b> <code>cwb.agency@outlook.com</code>
+    <b>PayPal:</b> `connectwithbayezid` <br>
+    <b>Payoneer:</b> `cwb.agency@outlook.com`
   </p>
 </div>
 
@@ -108,88 +170,4 @@ If you find this portfolio and blog system helpful, consider supporting its deve
 ---
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sayad_Md_Bayezid_Hosan_Portrait.jpg" alt="Sayad Md Bayezid Hosan" width="100%">
 
-*All Rights Reserve | Sayad Md bayezid Hosan.*
-
-
-## Automated Content Management for Video Carousels
-
-This repository is set up for automated content management for the "Recent Releases" and "The Media Hub" sections. You can add or update video entries by simply creating or modifying Markdown files in their respective folders.
-
-### Folder Structure for Automation
-
--   `recent-releases/`: Contains Markdown files for videos appearing in the "Recent Releases" carousel.
--   `the-media-hub/`: Contains Markdown files for videos appearing in "The Media Hub" carousel.
-
-### Markdown File Format & HTML/JS Mapping
-
-Each video entry must be a Markdown (`.md`) file with YAML frontmatter at the top. The frontmatter should include the `title`, `id` (YouTube video ID), and `tag` for the video. The `generate_video_data.py` script will parse these files and automatically convert them into the JavaScript object required by `index.html`.
-
-#### Example 1: Recent Releases
-
-**What you write in `recent-releases/tor-name-hridoye.md`:**
-
-```markdown
----
-title: "Tor name Hridoye | Musfiq R Farhan | Safa Kabir"
-id: "ofXi8zgQlus"
-tag: "New"
----
-```
-
-**How it automatically appears in `index.html` (JavaScript):**
-
-```javascript
-// ===== VIDEO DATA STRUCTURE =====
-const videosData = {
-    recent: [
-        { title: "Tor name Hridoye | Musfiq R Farhan | Safa Kabir", id: "ofXi8zgQlus", tag: "New" },
-        // ... other recent videos
-    ],
-    // ...
-};
-```
-
-#### Example 2: The Media Hub
-
-**What you write in `the-media-hub/vp.md`:**
-
-```markdown
----
-title: "VP | Musfiq R Farhan"
-id: "g9GRWSbIFck"
-tag: "Featured"
----
-```
-
-**How it automatically appears in `index.html` (JavaScript):**
-
-```javascript
-// ===== VIDEO DATA STRUCTURE =====
-const videosData = {
-    // ...
-    media: [
-        { title: "VP | Musfiq R Farhan", id: "g9GRWSbIFck", tag: "Featured" },
-        // ... other media hub videos
-    ]
-};
-```
-
-### How to Update Content
-
-1.  **Create or Edit a Markdown File**: Go to either the `recent-releases/` or `the-media-hub/` folder.
-    *   To add a new video, create a new `.md` file (e.g., `new-video.md`).
-    *   To update an existing video, modify its corresponding `.md` file.
-2.  **Add Frontmatter**: Ensure the file starts with YAML frontmatter containing `title`, `id`, and `tag` as shown in the examples above.
-3.  **Commit and Push**: Commit your changes and push them to the `main` branch of your GitHub repository.
-
-### Automation Process
-
-Upon pushing changes to `recent-releases/`, `the-media-hub/`, or `generate_video_data.py` on the `main` branch, a GitHub Actions workflow (`.github/workflows/render.yml`) will automatically:
-
-1.  Checkout your repository.
-2.  Set up a Python environment.
-3.  Install `PyYAML` (a dependency for parsing Markdown frontmatter).
-4.  Run the `generate_video_data.py` script, which reads your Markdown files and updates the `videosData` JavaScript object in `index.html`.
-5.  Commit the updated `index.html` back to your repository.
-
-This ensures that your website's video carousels are always up-to-date with the content defined in your Markdown files, without manual editing of `index.html`.
+*All Rights Reserve | Sayad Md Bayezid Hosan.*
