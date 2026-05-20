@@ -1,16 +1,20 @@
-name: Update Video Carousels
+name: Compile CMS Content
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'recent-releases/**'
-      - 'the-media-hub/**'
       - 'generate_video_data.py'
+      - 'recent-releases/**.md'
+      - 'the-media-hub/**.md'
+      - 'latest-coming-soon/**.md'
+      - 'premiering-2026/**.md'
+      - 'exclusive-bts-stills/**.md'
+      - 'newsroom/**.md'
 
 jobs:
-  update-videos:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +29,7 @@ jobs:
     - name: Install dependencies
       run: pip install PyYAML
 
-    - name: Run script to generate video data
+    - name: Run content compilation script
       run: python generate_video_data.py
 
     - name: Commit and push changes
@@ -33,4 +37,5 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add index.html
-        git diff-index --quiet HEAD || (git commit -m "chore: Automated update of video data" && git push)
+        git diff --staged --quiet || git commit -m "Automated: Update index.html with latest CMS content"
+        git push
