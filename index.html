@@ -1274,8 +1274,11 @@
 
     <!-- 4. Latest Feature Section (NOW BELOW ABOUT) -->
     <section class="latest-feature" id="latest">
-        <div class="container"><div id="latest-coming-soon-container"></div>
-            
+        <div class="container">
+            <div class="feature-grid">
+                <div class="feature-poster reveal">
+                    <img src="./assets/doob-poster.jpg" alt="Doob Natok Poster - Musfiq R. Farhan & Keya Payel">
+                </div>
                 <div class="feature-content reveal">
                     <span class="feature-tag">Latest Coming Soon</span>
                     <h2 class="luxury-font">Coming This Eid: ‘Doob’</h2>
@@ -1368,7 +1371,12 @@
     <section class="section-padding">
         <div class="container">
             <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 32px;">Exclusive BTS Stills</h2>
-            <div class="bts-slider reveal" id="bts-carousel"></div>
+            <div class="bts-slider reveal">
+                <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 1"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/WhnL1M4D/image.jpg" alt="BTS 2"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/p9336Cs1/image.jpg" alt="BTS 3"></div>
+                <div class="bts-item"><img src="https://i.postimg.cc/XZh004Yd/image.jpg" alt="BTS 4"></div>
+            </div>
         </div>
     </section>
 
@@ -1415,7 +1423,26 @@
     <section class="section-padding" id="news">
         <div class="container">
             <h2 class="luxury-font reveal" style="margin-bottom: 50px; font-size: 42px;">Newsroom</h2>
-            <div class="news-grid reveal" id="news-grid-container"></div>
+            <div class="news-grid reveal">
+                <div class="news-card">
+                    <span class="news-date">May 20, 2026</span>
+                    <h3 class="luxury-font">Official Poster Released for 'Doob' starring Musfiq R. Farhan</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The first-look poster of 'Doob' directed by Toufiqul Islam has taken the internet by storm. Fans are eagerly waiting for the chemistry between Farhan and Keya Payel...</p>
+                    <a href="#latest" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">May 14, 2026</span>
+                    <h3 class="luxury-font">Musfiq R. Farhan Shines in 'Poran Pakhi' Premiere</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">The latest Eid special drama breaks viewership records within 24 hours of release...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">April 20, 2026</span>
+                    <h3 class="luxury-font">BIFA Awards 2026: Musfiq Nominated for Best Actor</h3>
+                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">Farhan secures his third consecutive nomination for excellence in OTT content...</p>
+                    <a href="#" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1586,142 +1613,15 @@
             });
         } catch (error) {
             console.error('Firebase error:', error);
-        }// ===== VIDEO DATA STRUCTURE =====
+        }        // ===== VIDEO DATA STRUCTURE =====
         const videosData = {
             recent: [
                 { title: "Tor name Hridoye", id: "ofXi8zgQlus", tag: "New" },
-                { title: "", id: "", tag: "New" },
             ],
             media: [
                 { title: "VP", id: "g9GRWSbIFck", tag: "Featured" },
             ]
-        };const comingSoonData = [
-            {
-                title: "Doob",
-                description: "Experience the serene love story 'Doob' starring Musfiq R. Farhan and Keya Payel. Coming this Eid on CMV YouTube.",
-                poster_url: "./assets/doob-poster.jpg",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "Latest Coming Soon" 
-            },
-            {
-                title: "Tor Preme Pagol",
-                description: "",
-                poster_url: "",
-                type: "video",
-                media_id_or_url: "2nxozV--nLI",
-                tag: "New" 
-            },
-            {
-                title: "Upcoming Project 2026",
-                description: "",
-                poster_url: "",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "New" 
-            },
-        ];
-
-        // ===== EXCLUSIVE BTS DATA STRUCTURE =====
-        const exclusiveBtsData = [
-            { title: "Behind The Scenes - Session 1", url: "" },
-        ];
-
-        // ===== NEWSROOM DATA STRUCTURE =====
-        const newsroomData = [
-            {
-                title: "5th BIFA Best Actor Nomination",
-                date: "2026-05-20",
-                description: "",
-                link: "" 
-            },
-        ];const comingSoonData = [
-            {
-                title: "Doob",
-                description: "Experience the serene love story 'Doob' starring Musfiq R. Farhan and Keya Payel. Coming this Eid on CMV YouTube.",
-                poster_url: "./assets/doob-poster.jpg",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "Latest Coming Soon" 
-            },
-            {
-                title: "Tor Preme Pagol",
-                description: "",
-                poster_url: "",
-                type: "video",
-                media_id_or_url: "2nxozV--nLI",
-                tag: "New" 
-            },
-            {
-                title: "Upcoming Project 2026",
-                description: "",
-                poster_url: "",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "New" 
-            },
-        ];
-
-        // ===== EXCLUSIVE BTS DATA STRUCTURE =====
-        const exclusiveBtsData = [
-            { title: "Behind The Scenes - Session 1", url: "" },
-        ];
-
-        // ===== NEWSROOM DATA STRUCTURE =====
-        const newsroomData = [
-            {
-                title: "5th BIFA Best Actor Nomination",
-                date: "2026-05-20",
-                description: "",
-                link: "" 
-            },
-        ];const comingSoonData = [
-            {
-                title: "Doob",
-                description: "Experience the serene love story 'Doob' starring Musfiq R. Farhan and Keya Payel. Coming this Eid on CMV YouTube.",
-                poster_url: "./assets/doob-poster.jpg",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "Latest Coming Soon" 
-            },
-            {
-                title: "Tor Preme Pagol",
-                description: "",
-                poster_url: "",
-                type: "video",
-                media_id_or_url: "2nxozV--nLI",
-                tag: "New" 
-            },
-            {
-                title: "Upcoming Project 2026",
-                description: "",
-                poster_url: "",
-                type: "unknown",
-                media_id_or_url: "",
-                tag: "New" 
-            },
-        ];
-
-        // ===== EXCLUSIVE BTS DATA STRUCTURE =====
-        const exclusiveBtsData = [
-            { title: "Behind The Scenes - Session 1", url: "" },
-        ];
-
-        // ===== NEWSROOM DATA STRUCTURE =====
-        const newsroomData = [
-            {
-                title: "5th BIFA Best Actor Nomination",
-                date: "2026-05-20",
-                description: "",
-                link: "" 
-            },
-        ];
-
-
-
-
-
-
+        };
 
         // ===== VIDEO RENDERING FUNCTION =====
         function renderVideoCarousel(containerId, videosArray) {
@@ -1770,159 +1670,6 @@
                 slider.scrollLeft = scrollLeft - walk;
             });
         };
-// ===== COMING SOON RENDERING FUNCTION =====
-        function renderComingSoon() {
-            const container = document.getElementById('latest-coming-soon-container');
-            if (!container || comingSoonData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No upcoming projects to display.</p>`;
-                return;
-            }
-            const item = comingSoonData[0]; // Display the first item for now
-            
-            let mediaHtml = '';
-            let learnMoreLink = item.media_id_or_url || '#';
-            if (item.type === 'video') {
-                mediaHtml = `<div class="feature-poster">` +
-                             `<img src="https://i.ytimg.com/vi/${item.media_id_or_url}/hqdefault.jpg" alt="${item.title}">` +
-                             `<div class="play-btn" onclick="playVideo(this.parentNode, '${item.media_id_or_url}')"><i class="fas fa-play"></i></div>` +
-                             `</div>`;
-            } else if (item.type === 'image') {
-                mediaHtml = `<div class="feature-poster"><img src="${item.media_id_or_url}" alt="${item.title}"></div>`;
-            }
-            
-            container.innerHTML = `
-                <div class="feature-grid">
-                    ${mediaHtml}
-                    <div class="feature-content">
-                        <span class="feature-tag">${item.tag}</span>
-                        <h2 class="luxury-font">${item.title}</h2>
-                        <p class="feature-desc">${item.description}</p>
-                        <a href="${learnMoreLink}" target="_blank" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            `;
-        }
-        // ===== EXCLUSIVE BTS RENDERING FUNCTION =====
-        function renderExclusiveBts() {
-            const container = document.getElementById('bts-carousel');
-            if (!container || exclusiveBtsData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No BTS images to display.</p>`;
-                return;
-            }
-            container.innerHTML = exclusiveBtsData.map(item => ``).join('');
-        }
-        // ===== NEWSROOM RENDERING FUNCTION =====
-        function renderNewsroom() {
-            const container = document.getElementById('news-grid-container');
-            if (!container || newsroomData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No news articles to display.</p>`;
-                return;
-            }
-            container.innerHTML = newsroomData.map(article => ``).join('');
-        }
-
-// ===== COMING SOON RENDERING FUNCTION =====
-        function renderComingSoon() {
-            const container = document.getElementById('latest-coming-soon-container');
-            if (!container || comingSoonData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No upcoming projects to display.</p>`;
-                return;
-            }
-            const item = comingSoonData[0]; // Display the first item for now
-            
-            let mediaHtml = '';
-            let learnMoreLink = item.media_id_or_url || '#';
-            if (item.type === 'video') {
-                mediaHtml = `<div class="feature-poster">` +
-                             `<img src="https://i.ytimg.com/vi/${item.media_id_or_url}/hqdefault.jpg" alt="${item.title}">` +
-                             `<div class="play-btn" onclick="playVideo(this.parentNode, '${item.media_id_or_url}')"><i class="fas fa-play"></i></div>` +
-                             `</div>`;
-            } else if (item.type === 'image') {
-                mediaHtml = `<div class="feature-poster"><img src="${item.media_id_or_url}" alt="${item.title}"></div>`;
-            }
-            
-            container.innerHTML = `
-                <div class="feature-grid">
-                    ${mediaHtml}
-                    <div class="feature-content">
-                        <span class="feature-tag">${item.tag}</span>
-                        <h2 class="luxury-font">${item.title}</h2>
-                        <p class="feature-desc">${item.description}</p>
-                        <a href="${learnMoreLink}" target="_blank" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            `;
-        }
-        // ===== EXCLUSIVE BTS RENDERING FUNCTION =====
-        function renderExclusiveBts() {
-            const container = document.getElementById('bts-carousel');
-            if (!container || exclusiveBtsData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No BTS images to display.</p>`;
-                return;
-            }
-            container.innerHTML = exclusiveBtsData.map(item => ``).join('');
-        }
-        // ===== NEWSROOM RENDERING FUNCTION =====
-        function renderNewsroom() {
-            const container = document.getElementById('news-grid-container');
-            if (!container || newsroomData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No news articles to display.</p>`;
-                return;
-            }
-            container.innerHTML = newsroomData.map(article => ``).join('');
-        }
-
-// ===== COMING SOON RENDERING FUNCTION =====
-        function renderComingSoon() {
-            const container = document.getElementById('latest-coming-soon-container');
-            if (!container || comingSoonData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No upcoming projects to display.</p>`;
-                return;
-            }
-            const item = comingSoonData[0]; // Display the first item for now
-            
-            let mediaHtml = '';
-            let learnMoreLink = item.media_id_or_url || '#';
-            if (item.type === 'video') {
-                mediaHtml = `<div class="feature-poster">` +
-                             `<img src="https://i.ytimg.com/vi/${item.media_id_or_url}/hqdefault.jpg" alt="${item.title}">` +
-                             `<div class="play-btn" onclick="playVideo(this.parentNode, '${item.media_id_or_url}')"><i class="fas fa-play"></i></div>` +
-                             `</div>`;
-            } else if (item.type === 'image') {
-                mediaHtml = `<div class="feature-poster"><img src="${item.media_id_or_url}" alt="${item.title}"></div>`;
-            }
-            
-            container.innerHTML = `
-                <div class="feature-grid">
-                    ${mediaHtml}
-                    <div class="feature-content">
-                        <span class="feature-tag">${item.tag}</span>
-                        <h2 class="luxury-font">${item.title}</h2>
-                        <p class="feature-desc">${item.description}</p>
-                        <a href="${learnMoreLink}" target="_blank" class="btn btn-primary">Learn More</a>
-                    </div>
-                </div>
-            `;
-        }
-        // ===== EXCLUSIVE BTS RENDERING FUNCTION =====
-        function renderExclusiveBts() {
-            const container = document.getElementById('bts-carousel');
-            if (!container || exclusiveBtsData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No BTS images to display.</p>`;
-                return;
-            }
-            container.innerHTML = exclusiveBtsData.map(item => ``).join('');
-        }
-        // ===== NEWSROOM RENDERING FUNCTION =====
-        function renderNewsroom() {
-            const container = document.getElementById('news-grid-container');
-            if (!container || newsroomData.length === 0) {
-                container.innerHTML = `<p style="text-align: center; color: var(--text-dim);">No news articles to display.</p>`;
-                return;
-            }
-            container.innerHTML = newsroomData.map(article => ``).join('');
-        }
-
 
         document.addEventListener('DOMContentLoaded', () => {
             // Render video carousels
@@ -1931,11 +1678,6 @@
                 renderVideoCarousel('recent-carousel', videosData.recent);
                 renderVideoCarousel('media-carousel', videosData.media);
                 console.log('Carousels rendered successfully');
-        
-                // Render new content sections
-                renderComingSoon();
-                renderExclusiveBts();
-                renderNewsroom();
             } catch (error) {
                 console.error('Error rendering carousels:', error);
             }
