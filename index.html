@@ -671,6 +671,11 @@
             scroll-snap-type: x mandatory;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
+            cursor: grab;
+        }
+
+        .carousel-wrapper:active {
+            cursor: grabbing;
         }
 
         .carousel-wrapper::-webkit-scrollbar { display: none; }
@@ -1602,42 +1607,82 @@
             row2.innerHTML += row2.innerHTML;
         });
 
-        // --- Dynamic Video Carousel (Example Data) ---
+        // --- Original Video Data and Carousel Logic ---
         const mediaData = [
-            { title: "Sheshta Tumi", tag: "Drama", img: "https://i.postimg.cc/XZh004Yd/image.jpg", link: "https://youtu.be/7Kt-gYcTSNM" },
-            { title: "Sweeper Man", tag: "OTT", img: "https://i.postimg.cc/WhnL1M4D/image.jpg", link: "#" },
-            { title: "Visa in Life", tag: "Drama", img: "https://i.postimg.cc/p9336Cs1/image.jpg", link: "#" },
-            { title: "Hangor", tag: "Film", img: "https://i.postimg.cc/XZh004Yd/image.jpg", link: "#" }
+            { title: "Sheshta Tumi", tag: "Drama / 2025", img: "https://i.postimg.cc/G9Cg6WhZ/image.jpg", link: "https://youtu.be/7Kt-gYcTSNM" },
+            { title: "Stupids", tag: "Drama / 2024", img: "https://i.postimg.cc/Yh86nVhy/image.jpg", link: "#" },
+            { title: "Plural No. 3rd Person", tag: "Drama / 2024", img: "https://i.postimg.cc/G9Cg6WhZ/image.jpg", link: "#" },
+            { title: "Sweeper Man", tag: "Drama / 2023", img: "https://i.postimg.cc/XZh004Yd/image.jpg", link: "#" },
+            { title: "Visa in Life", tag: "Drama / 2023", img: "https://i.postimg.cc/WhnL1M4D/image.jpg", link: "#" },
+            { title: "Hangor", tag: "Film / 2022", img: "https://i.postimg.cc/p9336Cs1/image.jpg", link: "#" }
         ];
 
-        const carousel = document.getElementById('media-carousel');
-        mediaData.forEach(item => {
-            carousel.innerHTML += `
-                <div class="project-card">
-                    <div class="video-tag">${item.tag}</div>
-                    <img src="${item.img}" alt="${item.title}">
-                    <div class="play-btn"><i class="fas fa-play"></i></div>
-                    <div class="project-info">
-                        <span>${item.tag}</span>
-                        <h3>${item.title}</h3>
+        const renderCarousels = () => {
+            const mediaCarousel = document.getElementById('media-carousel');
+            const recentCarousel = document.getElementById('recent-carousel');
+            
+            mediaData.forEach(item => {
+                const card = `
+                    <div class="project-card" onclick="if(this.dataset.link !== '#') window.open('${item.link}', '_blank')">
+                        <div class="video-tag">${item.tag.split(' / ')[0]}</div>
+                        <img src="${item.img}" alt="${item.title}">
+                        <div class="play-btn"><i class="fas fa-play"></i></div>
+                        <div class="project-info">
+                            <span>${item.tag}</span>
+                            <h3 class="luxury-font">${item.title}</h3>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+                mediaCarousel.innerHTML += card;
+            });
 
-        // Recent Carousel
-        const recentCarousel = document.getElementById('recent-carousel');
-        mediaData.slice(0, 3).forEach(item => {
-            recentCarousel.innerHTML += `
-                <div class="project-card">
-                    <div class="video-tag">Latest</div>
-                    <img src="${item.img}" alt="${item.title}">
-                    <div class="play-btn"><i class="fas fa-play"></i></div>
-                    <div class="video-title">
-                        <h3>${item.title}</h3>
+            mediaData.slice(0, 3).forEach(item => {
+                const card = `
+                    <div class="project-card" onclick="if(this.dataset.link !== '#') window.open('${item.link}', '_blank')">
+                        <div class="video-tag">Latest</div>
+                        <img src="${item.img}" alt="${item.title}">
+                        <div class="play-btn"><i class="fas fa-play"></i></div>
+                        <div class="video-title">
+                            <h3 class="luxury-font">${item.title}</h3>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+                recentCarousel.innerHTML += card;
+            });
+        };
+
+        // --- Drag to Scroll Functionality ---
+        const initDragScroll = (slider) => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('active');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('active');
+            });
+            slider.addEventListener('mousemove', (e) => {
+                if(!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCarousels();
+            document.querySelectorAll('.carousel-wrapper').forEach(initDragScroll);
         });
     </script>
 </body>
