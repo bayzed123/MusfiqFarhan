@@ -109,3 +109,57 @@ If you find this portfolio and blog system helpful, consider supporting its deve
 <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sayad_Md_Bayezid_Hosan_Portrait.jpg" alt="Sayad Md Bayezid Hosan" width="100%">
 
 *All Rights Reserve | Sayad Md bayezid Hosan.*
+
+
+## Automated Content Management for Video Carousels
+
+This repository is set up for automated content management for the "Recent Releases" and "The Media Hub" sections. You can add or update video entries by simply creating or modifying Markdown files in their respective folders.
+
+### Folder Structure for Automation
+
+-   `recent-releases/`: Contains Markdown files for videos appearing in the "Recent Releases" carousel.
+-   `the-media-hub/`: Contains Markdown files for videos appearing in "The Media Hub" carousel.
+
+### Markdown File Format
+
+Each video entry must be a Markdown (`.md`) file with YAML frontmatter at the top. The frontmatter should include the `title`, `id` (YouTube video ID), and `tag` for the video. The `generate_video_data.py` script will parse these files.
+
+**Example `recent-releases/your-video-title.md`:**
+
+```markdown
+---
+title: "Tor name Hridoye | Musfiq R Farhan | Safa Kabir"
+id: "ofXi8zgQlus"
+tag: "New"
+---
+```
+
+**Example `the-media-hub/another-video.md`:**
+
+```markdown
+---
+title: "VP | Musfiq R Farhan"
+id: "g9GRWSbIFck"
+tag: "Featured"
+---
+```
+
+### How to Update Content
+
+1.  **Create or Edit a Markdown File**: Go to either the `recent-releases/` or `the-media-hub/` folder.
+    *   To add a new video, create a new `.md` file (e.g., `new-video.md`).
+    *   To update an existing video, modify its corresponding `.md` file.
+2.  **Add Frontmatter**: Ensure the file starts with YAML frontmatter containing `title`, `id`, and `tag` as shown in the examples above.
+3.  **Commit and Push**: Commit your changes and push them to the `main` branch of your GitHub repository.
+
+### Automation Process
+
+Upon pushing changes to `recent-releases/`, `the-media-hub/`, or `generate_video_data.py` on the `main` branch, a GitHub Actions workflow (`.github/workflows/render.yml`) will automatically:
+
+1.  Checkout your repository.
+2.  Set up a Python environment.
+3.  Install `PyYAML` (a dependency for parsing Markdown frontmatter).
+4.  Run the `generate_video_data.py` script, which reads your Markdown files and updates the `videosData` JavaScript object in `index.html`.
+5.  Commit the updated `index.html` back to your repository.
+
+This ensures that your website's video carousels are always up-to-date with the content defined in your Markdown files, without manual editing of `index.html`.
