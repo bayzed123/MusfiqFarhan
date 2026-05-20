@@ -34,58 +34,55 @@ jobs:
       - name: Build Site
         run: |
           echo "Building website..."
+          
+          # Create _site directory
           mkdir -p _site
           
+          # Copy main index.html
           if [ -f "index.html" ]; then
             cp index.html _site/index.html
-            echo "index.html copied"
+            echo "✅ index.html copied"
           fi
           
-          mkdir -p _site/blog
-          if [ -d "blog-posts" ] && [ "$(ls -A blog-posts/*.md 2>/dev/null)" ]; then
-            for file in blog-posts/*.md; do
-              if [ -f "<LaTex>$file" ]; then
-                filename=$</LaTex>(basename "<LaTex>$file")
-                cp "$</LaTex>file" "_site/blog/<LaTex>$filename"
-              fi
-            done
-          fi
-          
-          mkdir -p _site/pictures
-          if [ -d "pictures" ] && [ "$</LaTex>(ls -A pictures/*.md 2>/dev/null)" ]; then
-            for file in pictures/*.md; do
-              if [ -f "<LaTex>$file" ]; then
-                filename=$</LaTex>(basename "<LaTex>$file")
-                cp "$</LaTex>file" "_site/pictures/<LaTex>$filename"
-              fi
-            done
-          fi
-          
-          mkdir -p _site/videos
-          if [ -d "videos" ] && [ "$</LaTex>(ls -A videos/*.md 2>/dev/null)" ]; then
-            for file in videos/*.md; do
-              if [ -f "<LaTex>$file" ]; then
-                filename=$</LaTex>(basename "<LaTex>$file")
-                cp "$</LaTex>file" "_site/videos/<LaTex>$filename"
-              fi
-            done
-          fi
-          
-          mkdir -p _site/latest-updates
-          if [ -d "latest-updates" ] && [ "$</LaTex>(ls -A latest-updates/*.md 2>/dev/null)" ]; then
-            for file in latest-updates/*.md; do
-              if [ -f "<LaTex>$file" ]; then
-                filename=$</LaTex>(basename "<LaTex>$file")
-                cp "$</LaTex>file" "_site/latest-updates/$filename"
-              fi
-            done
-          fi
-          
+          # Function to copy markdown files
+          copy_markdown_files() {
+            SOURCE_DIR="$1"
+            TARGET_DIR="$2"
+
+            mkdir -p "_site/$TARGET_DIR"
+
+            if [ -d "$SOURCE_DIR" ] && compgen -G "$SOURCE_DIR/*.md" > /dev/null; then
+              echo "📂 Copying markdown files from $SOURCE_DIR to _site/$TARGET_DIR"
+
+              for file in "$SOURCE_DIR"/*.md; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  cp "$file" "_site/$TARGET_DIR/$filename"
+                  echo "✔ Copied: $filename"
+                fi
+              done
+            else
+              echo "⚠ No markdown files found in $SOURCE_DIR"
+            fi
+          }
+
+          # Copy project folders
+          copy_markdown_files "recent-releases" "recent-releases"
+          copy_markdown_files "the-media-hub" "the-media-hub"
+          copy_markdown_files "latest-coming-soon" "latest-coming-soon"
+          copy_markdown_files "premiering-2026" "premiering-2026"
+          copy_markdown_files "exclusive-bts-stills" "exclusive-bts-stills"
+          copy_markdown_files "newsroom" "newsroom"
+
+          # Copy assets folder
           if [ -d "assets" ]; then
             cp -r assets _site/
+            echo "✅ assets folder copied"
           fi
           
+          echo "📁 Final _site structure:"
           ls -la _site/
+          find _site -type f
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
