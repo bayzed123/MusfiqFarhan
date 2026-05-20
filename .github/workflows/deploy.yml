@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - main
-  # এটি যোগ করেছি যাতে কম্পাইল হওয়ার পর অটোমেটিক রান হয়
-  workflow_run:
-    workflows: ["Compile CMS Content"]
-    types:
-      - completed
   workflow_dispatch:
 
 permissions:
@@ -30,18 +25,66 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Build Site
         run: |
-          echo "Preparing site for deployment..."
+          echo "Building website..."
           mkdir -p _site
-          # আপনার পুরো প্রজেক্টের ফাইলগুলো _site এ কপি হচ্ছে
-          cp -r ./* _site/ || true
-          # পাইথন এবং গিটহাবের অপ্রয়োজনীয় ফাইল মুছে দিচ্ছি
-          rm -rf _site/.github _site/.git _site/*.yml _site/*.py _site/*.md
+          
+          if [ -f "index.html" ]; then
+            cp index.html _site/index.html
+            echo "index.html copied"
+          fi
+          
+          mkdir -p _site/blog
+          if [ -d "blog-posts" ] && [ "$(ls -A blog-posts/*.md 2>/dev/null)" ]; then
+            for file in blog-posts/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/blog/<LaTex>$filename"
+              fi
+            done
+          fi
+          
+          mkdir -p _site/pictures
+          if [ -d "pictures" ] && [ "$</LaTex>(ls -A pictures/*.md 2>/dev/null)" ]; then
+            for file in pictures/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/pictures/<LaTex>$filename"
+              fi
+            done
+          fi
+          
+          mkdir -p _site/videos
+          if [ -d "videos" ] && [ "$</LaTex>(ls -A videos/*.md 2>/dev/null)" ]; then
+            for file in videos/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/videos/<LaTex>$filename"
+              fi
+            done
+          fi
+          
+          mkdir -p _site/latest-updates
+          if [ -d "latest-updates" ] && [ "$</LaTex>(ls -A latest-updates/*.md 2>/dev/null)" ]; then
+            for file in latest-updates/*.md; do
+              if [ -f "<LaTex>$file" ]; then
+                filename=$</LaTex>(basename "<LaTex>$file")
+                cp "$</LaTex>file" "_site/latest-updates/$filename"
+              fi
+            done
+          fi
+          
+          if [ -d "assets" ]; then
+            cp -r assets _site/
+          fi
+          
           ls -la _site/
 
       - name: Upload artifact
