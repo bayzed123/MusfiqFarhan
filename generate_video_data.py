@@ -149,7 +149,7 @@ def generate_exclusive_bts_stills_html(data):
     images_html = ""
     for item in data:
         for img in item.get('images', []):
-            images_html += f"<div class="bts-item"><img src="{img.get('url', '#')}" alt="{img.get('alt', 'BTS Image')}"></div>\n"
+            images_html += f'<div class="bts-item"><img src="{img.get("url", "#")}" alt="{img.get("alt", "BTS Image")}"></div>\n'
     html = f"""
     <!-- Exclusive BTS Stills Section (Dynamically Generated) -->
     <section class="section-padding">
@@ -212,7 +212,7 @@ def update_index_html(html_filepath, new_js_data_blocks, new_html_sections):
             # Fallback for initial insertion if block not found
             insert_marker = "        // ===== VIDEO RENDERING FUNCTION ====="
             if insert_marker in updated_html_content:
-                updated_html_content = updated_html_content.replace(insert_marker, js_block.rstrip() + "\n\n" + insert_marker)
+                updated_html_content = updated_html_content.replace(insert_marker, js_block.rstrip() + "\n\n        // ===== VIDEO RENDERING FUNCTION =====")
                 print(f"\u2713 Inserted {var_name} block before video rendering function.")
             else:
                 print(f"\u2717 Error: Could not find insertion point for {var_name} in index.html")
@@ -221,32 +221,32 @@ def update_index_html(html_filepath, new_js_data_blocks, new_html_sections):
     # Update HTML sections
     # Latest Coming Soon
     updated_html_content = re.sub(
-        r'<!-- 6\. Latest Coming Soon Mega Banner -->.*?<!-- 7\. Recent Releases \(Netflix-Style Video Carousel\) -->',
-        new_html_sections['latestComingSoonHtml'] + '\n\n    <!-- 7. Recent Releases (Netflix-Style Video Carousel) -->',
+        r'<!-- LATEST COMING SOON DYNAMIC CONTENT -->',
+        new_html_sections['latestComingSoonHtml'],
         updated_html_content, flags=re.DOTALL
     )
     print("\u2713 Updated Latest Coming Soon HTML section.")
 
     # Premiering 2026
     updated_html_content = re.sub(
-        r'<!-- Premiering 2026 Section \(Dynamically Generated\) -->.*?<!-- Exclusive BTS Stills Section \(Dynamically Generated\) -->',
-        new_html_sections['premiering2026Html'] + '\n\n    <!-- Exclusive BTS Stills Section (Dynamically Generated) -->',
+        r'<!-- PREMIERING 2026 DYNAMIC CONTENT -->',
+        new_html_sections['premiering2026Html'],
         updated_html_content, flags=re.DOTALL
     )
     print("\u2713 Updated Premiering 2026 HTML section.")
 
     # Exclusive BTS Stills
     updated_html_content = re.sub(
-        r'<!-- Exclusive BTS Stills Section \(Dynamically Generated\) -->.*?<!-- 10\. Live Fan Wall \(Firebase Marquee\) -->',
-        new_html_sections['exclusiveBtsStillsHtml'] + '\n\n    <!-- 10. Live Fan Wall (Firebase Marquee) -->',
+        r'<!-- EXCLUSIVE BTS STILLS DYNAMIC CONTENT -->',
+        new_html_sections['exclusiveBtsStillsHtml'],
         updated_html_content, flags=re.DOTALL
     )
     print("\u2713 Updated Exclusive BTS Stills HTML section.")
 
     # Newsroom
     updated_html_content = re.sub(
-        r'<!-- Newsroom & PR Grid \(Dynamically Generated\) -->.*?<!-- 12\. Brand Partnership Marquee -->',
-        new_html_sections['newsroomHtml'] + '\n\n    <!-- 12. Brand Partnership Marquee -->',
+        r'<!-- NEWSROOM DYNAMIC CONTENT -->',
+        new_html_sections['newsroomHtml'],
         updated_html_content, flags=re.DOTALL
     )
     print("\u2713 Updated Newsroom HTML section.")
