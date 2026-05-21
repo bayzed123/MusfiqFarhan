@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Specifically giving full access to Googlebot
+User-agent: Googlebot
+Allow: /
+
+# Giving access to Google Images
+User-agent: Googlebot-Image
+Allow: /
+
+Sitemap: https://musfiqrfarhan.blog/sitemap.xml
