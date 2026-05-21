@@ -1,4 +1,3 @@
-
 import os
 import re
 import yaml
@@ -61,6 +60,7 @@ def parse_markdown_file(filepath):
 def collect_content_data(base_path, folder_name, file_extension=".md"):
     """
     Collect data from files in a specified folder.
+    Supports multiple entries in a single file separated by '---'
     """
     data_list = []
     folder_path = os.path.join(base_path, folder_name)
@@ -68,12 +68,31 @@ def collect_content_data(base_path, folder_name, file_extension=".md"):
         for filename in sorted(os.listdir(folder_path)):
             if filename.endswith(file_extension):
                 filepath = os.path.join(folder_path, filename)
-                data = parse_markdown_file(filepath)
-                if data:
-                    data_list.append(data)
-                    print(f"\u2713 Parsed: {filename} -> {data.get('title', 'No Title')}")
-                else:
-                    print(f"\u2717 Failed to parse: {filename}")
+                try:
+                    with open(filepath, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    
+                    # Split by '---' and filter out empty strings
+                    blocks = [b.strip() for b in content.split('---') if b.strip()]
+                    
+                    for block in blocks:
+                        try:
+                            # Try parsing as YAML
+                            data = yaml.safe_load(block)
+                            if data and isinstance(data, dict):
+                                data_list.append(data)
+                                print(f"\u2713 Parsed block in {filename} -> {data.get('title', 'No Title')}")
+                                continue
+                        except:
+                            pass
+                        
+                        # Fallback to other parsing methods for the block
+                        # (simplified for this block)
+                        youtube_id = extract_youtube_id(block)
+                        if youtube_id:
+                            data_list.append({'title': 'Video', 'id': youtube_id, 'tag': 'New'})
+                except Exception as e:
+                    print(f"\u2717 Error reading {filename}: {e}")
     return data_list
 
 def generate_js_data_block(variable_name, data_object):
