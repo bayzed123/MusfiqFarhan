@@ -18,10 +18,7 @@ def parse_frontmatter(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        match = re.match(r'^---\s*
-(.*?)
----\s*
-(.*)', content, re.DOTALL)
+        match = re.match(r'^---\s*(.*?)---\s*(.*)', content, re.DOTALL)
         if match:
             yaml_content = match.group(1)
             data = yaml.safe_load(yaml_content)
