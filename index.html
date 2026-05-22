@@ -1572,7 +1572,7 @@
                     const name = document.getElementById('fan-name').value;
                     const message = document.getElementById('fan-message').value;
                     
-                    database.ref('notes').push({
+                    database.ref('love_notes').push({
                         name: name,
                         message: message,
                         timestamp: Date.now()
@@ -1584,10 +1584,14 @@
             }
 
             // Fetch and display notes
-            database.ref('notes').limitToLast(20).on('value', (snapshot) => {
+            // Use 'love_notes' as it was the previous path in index_old.html
+            database.ref('love_notes').limitToLast(30).on('value', (snapshot) => {
                 const notes = [];
                 snapshot.forEach((childSnapshot) => {
-                    notes.push(childSnapshot.val());
+                    const val = childSnapshot.val();
+                    if (val && val.name && val.message) {
+                        notes.push(val);
+                    }
                 });
                 notes.reverse();
 
@@ -1595,8 +1599,15 @@
                 const row2 = document.getElementById('marquee-row-2');
                 
                 if (row1 && row2) {
-                    row1.innerHTML = '';
-                    row2.innerHTML = '';
+                    if (notes.length === 0) {
+                        const placeholder = '<div class="marquee-placeholder">Be the first to leave a message! 💚</div>';
+                        row1.innerHTML = placeholder;
+                        row2.innerHTML = placeholder;
+                        return;
+                    }
+
+                    let row1Html = '';
+                    let row2Html = '';
 
                     notes.forEach((note, index) => {
                         const card = `
@@ -1605,13 +1616,13 @@
                                 <p class="love-note-author">— ${note.name}</p>
                             </div>
                         `;
-                        if (index % 2 === 0) row1.innerHTML += card;
-                        else row2.innerHTML += card;
+                        if (index % 2 === 0) row1Html += card;
+                        else row2Html += card;
                     });
                     
                     // Duplicate for infinite scroll
-                    row1.innerHTML += row1.innerHTML;
-                    row2.innerHTML += row2.innerHTML;
+                    row1.innerHTML = row1Html + row1Html;
+                    row2.innerHTML = row2Html + row2Html;
                 }
             });
         } catch (error) {

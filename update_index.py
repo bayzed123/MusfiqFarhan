@@ -65,14 +65,13 @@ def update_index_html(data):
         with open(index_path, 'r', encoding='utf-8') as f: html_content = f.read()
         recent_videos = [{'title': i.get('title', ''), 'id': i.get('id', ''), 'tag': i.get('tag', 'New')} for i in data['recent'] if 'title' in i and 'id' in i]
         media_videos = [{'title': i.get('title', ''), 'id': i.get('id', ''), 'tag': i.get('tag', 'Featured')} for i in data['media'] if 'title' in i and 'id' in i]
-        new_videos_data_str = 'const videosData = {
-            recent: ' + json.dumps(recent_videos, indent=16).strip() + ',
-            media: ' + json.dumps(media_videos, indent=16).strip() + '
-        };'
-        pattern = r'const videosData = \{[\s\S]*?\};\s*
-'
-        if re.search(pattern, html_content): html_content = re.sub(pattern, new_videos_data_str + '
-', html_content)
+        new_videos_data_str = f"""const videosData = {{
+            recent: {json.dumps(recent_videos, indent=16).strip()},
+            media: {json.dumps(media_videos, indent=16).strip()}
+        }};"""
+        pattern = r'const videosData = \{[\s\S]*?\};\s*\n'
+        if re.search(pattern, html_content):
+            html_content = re.sub(pattern, new_videos_data_str + '\n', html_content)
         soup = BeautifulSoup(html_content, 'html.parser')
         if data['latest_coming_soon']:
             latest = data['latest_coming_soon'][0]
@@ -112,24 +111,15 @@ def update_index_html(data):
                 if btn and 'url' in premiering: btn['href'] = premiering['url']
         html_content = str(soup)
         if data['bts_stills']:
-            bts_html = ''.join([f'                <div class="bts-item"><img src="{img["url"]}" alt="{img.get("alt", "BTS Still")}"></div>
-' for bts in data['bts_stills'] for img in bts.get('images', []) if isinstance(img, dict) and 'url' in img])
+            bts_html = ''.join([f'                <div class="bts-item"><img src="{img["url"]}" alt="{img.get("alt", "BTS Still")}"></div>\n' for bts in data['bts_stills'] for img in bts.get('images', []) if isinstance(img, dict) and 'url' in img])
             if bts_html:
                 pattern = re.compile(r'<!-- BTS_STILLS_INJECTION_START -->(.*?)<!-- BTS_STILLS_INJECTION_END -->', re.DOTALL)
-                html_content = pattern.sub(f'<!-- BTS_STILLS_INJECTION_START -->
-{bts_html}                <!-- BTS_STILLS_INJECTION_END -->', html_content)
+                html_content = pattern.sub(f'<!-- BTS_STILLS_INJECTION_START -->\n{bts_html}                <!-- BTS_STILLS_INJECTION_END -->', html_content)
         if data['newsroom']:
-            news_html = ''.join([f'                <div class="news-card">
-                    <span class="news-date">{n.get("date", "")}</span>
-                    <h3 class="luxury-font">{n.get("title", "")}</h3>
-                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">{n.get("summary", "")}</p>
-                    <a href="{n.get("url", "#")}" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>
-                </div>
-' for n in data['newsroom'][:3]])
+            news_html = ''.join([f'                <div class="news-card">\n                    <span class="news-date">{n.get("date", "")}</span>\n                    <h3 class="luxury-font">{n.get("title", "")}</h3>\n                    <p style="color: var(--text-dim); font-size: 14px; margin-bottom: 20px;">{n.get("summary", "")}</p>\n                    <a href="{n.get("url", "#")}" style="color: var(--emerald); text-decoration: none; font-size: 12px; font-weight: 700;">READ MORE <i class="fas fa-arrow-right"></i></a>\n                </div>\n' for n in data['newsroom'][:3]])
             if news_html:
                 pattern = re.compile(r'<!-- NEWSROOM_INJECTION_START -->(.*?)<!-- NEWSROOM_INJECTION_END -->', re.DOTALL)
-                html_content = pattern.sub(f'<!-- NEWSROOM_INJECTION_START -->
-{news_html}                <!-- NEWSROOM_INJECTION_END -->', html_content)
+                html_content = pattern.sub(f'<!-- NEWSROOM_INJECTION_START -->\n{news_html}                <!-- NEWSROOM_INJECTION_END -->', html_content)
         with open(index_path, 'w', encoding='utf-8') as f: f.write(html_content)
         return True
     except Exception as e: print(f'Error: {e}'); return False
