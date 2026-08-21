@@ -22,6 +22,11 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('#bts-support-one')).toBeVisible();
   await expect(page.locator('#bts-support-two')).toBeVisible();
   await expect(page.getByRole('link', { name: /Explore BTS/ })).toHaveAttribute('href', /category\.html\?category=Behind%20the%20Scenes/);
+  await expect(page.locator('#watch-title')).toContainText('play');
+  await expect(page.locator('.content-card')).toHaveCount(4);
+  await expect(page.locator('.content-card img').first()).toHaveAttribute('alt', /poster/i);
+  await expect(page.locator('.content-card-link').first()).toHaveAttribute('href', /watch\.html\?slug=/);
+  await expect(page.getByRole('link', { name: /^View all/ }).first()).toHaveAttribute('href', /category\.html\?category=Natok%20%26%20Telefilm/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();

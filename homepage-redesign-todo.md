@@ -9,7 +9,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 3 | Implement cinematic featured-story hero and Musfiq R. Farhan identity introduction | **Complete** | Static checks and the focused local Playwright homepage test passed. |
 | 4 | Implement latest news with four editorial cards and View All News flow | **Complete** | Four-card layout, images, link, syntax, and focused local Playwright test passed. |
 | 5 | Implement signature Behind the Scenes feature layout | **Complete** | Featured BTS, two supporting cards, managed gallery binding, syntax, and focused local Playwright test passed. |
-| 6 | Implement latest videos with Netflix-style cards and watch links | Pending | Video cards, posters, player links, metadata, and existing video schema remain valid. |
+| 6 | Implement latest videos with Netflix-style cards and watch links | **Complete** | Four video cards, poster alt text, watch links, filters, syntax, and focused local Playwright test passed. |
 | 7 | Implement latest gallery masonry treatment and managed gallery links | Pending | Gallery assets have valid sources, alt text, responsive layout, and category context. |
 | 8 | Implement New Natok poster section with status, release date, and detail links | Pending | Poster cards render from managed content where available and use stable links. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | Pending | Editorial links, timeline, social links, sitemap, legal links, and copyright render. |
@@ -41,6 +41,10 @@ Task 4 converted the former journal block into a Latest News section with four m
 ## Task 5 completion note
 
 Task 5 added the signature Behind the Scenes section after Latest News: one large featured frame, two supporting BTS moments, explanatory copy, and an Explore BTS link to the crawlable category archive. Published gallery records containing BTS, studio, making-of, or related terms now populate the section automatically; the curated static frames remain the safe fallback.
+
+## Task 6 completion note
+
+Task 6 reframed the video area as Latest Videos while retaining the existing `#watch` anchor, filters, modal player, YouTube channel link, dynamic video schema, and fallback posters. Each card now also exposes a direct stable `watch.html?slug=...` link, so the section works as both a glossy Netflix-style interaction deck and a crawlable content index.
 
 ## Implementation rule
 
