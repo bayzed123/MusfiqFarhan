@@ -13,7 +13,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 7 | Implement latest gallery masonry treatment and managed gallery links | **Complete** | Four linked gallery frames, alt text, masonry class, filters, syntax, and focused local Playwright test passed. |
 | 8 | Implement New Natok poster section with status, release date, and detail links | **Complete** | Three poster cards, status metadata, alt text, archive links, syntax, and focused local Playwright test passed. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | **Complete** | Featured story, three story links, five timeline milestones, social links, footer copy, syntax, and focused local Playwright test passed. |
-| 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | Pending | Contrast, focus, reduced motion, H1/H2 structure, metadata, schema, and mobile checks pass. |
+| 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | **Complete** | Skip link, author metadata, menu ARIA, focus states, reduced-motion hooks, syntax, and focused local Playwright test passed. |
 | 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | Pending | Local checks, CI workflow, live smoke tests, and deployment report complete. |
 
 ## Audit findings for task 1
@@ -57,6 +57,10 @@ Task 8 added a New Natok poster section with three responsive poster cards, stat
 ## Task 9 completion note
 
 Task 9 added a Featured Stories feature article with three supporting story links, a five-point career-highlights timeline, a Follow the latest updates social panel, and explanatory footer brand copy. Existing reviews, trust content, legal links, social profiles, sitemap, dynamic copyright year, and contact flow remain in place.
+
+## Task 10 completion note
+
+Task 10 added a keyboard skip link, explicit author metadata, menu-to-navigation ARIA relationships, synchronized mobile-menu labels and hidden state, visible focus treatments, reduced-motion-safe transitions, and responsive spacing for the new sections. The existing H1, schema, canonical metadata, category navigation, legal links, and dynamic content behavior remain intact.
 
 ## Implementation rule
 

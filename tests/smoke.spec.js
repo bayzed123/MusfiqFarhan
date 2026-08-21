@@ -49,6 +49,11 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
   await expect(page.locator('header .brand img[alt="MRF Official logo"]')).toBeVisible();
+  await expect(page.locator('.skip-link')).toHaveAttribute('href', '#top');
+  await expect(page.locator('meta[name="author"]')).toHaveAttribute('content', /Musfiq R\. Farhan/);
+  await expect(page.locator('main h1')).toHaveCount(1);
+  await expect(page.locator('.menu-toggle')).toHaveAttribute('aria-controls', 'primary-navigation');
+  await expect(page.locator('#primary-navigation')).toHaveAttribute('aria-hidden', 'true');
   await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', /mrf-mark\.svg/);
   const schemas = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) => nodes.map((node) => node.textContent || '').join(' '));
   expect(schemas).toContain('Organization');
