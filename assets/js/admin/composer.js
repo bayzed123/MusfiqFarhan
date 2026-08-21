@@ -56,7 +56,7 @@ export function composerMarkup() {
           ).join('')}
         </div>
 
-        <form data-composer-form>
+        <form data-composer-form novalidate>
           <input type="hidden" name="id">
 
           <div class="field">
@@ -102,15 +102,15 @@ export function composerMarkup() {
 
             <div class="field" style="margin-top:.9rem">
               <label for="c-video">Video link or file URL <small>YouTube, Facebook, Vimeo or a hosted .mp4</small></label>
-              <input id="c-video" name="video_url" type="url" maxlength="600" placeholder="https://youtu.be/…">
+              <input id="c-video" name="video_url" type="text" inputmode="url" maxlength="600" placeholder="https://youtu.be/… or /media/clip.mp4">
             </div>
             <div class="field">
               <label for="c-image">Cover image URL</label>
-              <input id="c-image" name="image" type="url" maxlength="600" placeholder="https://…">
+              <input id="c-image" name="image" type="text" inputmode="url" maxlength="600" placeholder="https://… or /assets/poster.webp">
             </div>
             <div class="field" style="margin-bottom:0">
               <label for="c-attachment">Extra file URL <small>poster download, PDF, anything else</small></label>
-              <input id="c-attachment" name="attachment_url" type="url" maxlength="600" placeholder="https://…">
+              <input id="c-attachment" name="attachment_url" type="text" inputmode="url" maxlength="600" placeholder="https://… or /assets/file.pdf">
             </div>
           </div>
 
@@ -312,6 +312,12 @@ function refresh(root) {
 export function fillComposer(root, item = null) {
   const form = $('[data-composer-form]', root);
   form.reset();
+  // A hidden input's value IDL attribute is in "default" mode: assigning to it
+  // also sets the content attribute, so form.reset() will not clear it. Left
+  // alone, "Start a new one" after a save would keep the previous id and
+  // overwrite that item instead of creating a new one.
+  form.id.value = item?.id ?? '';
+  form.dataset.kind = item?.kind || '';
   current = item;
   autoState = item ? { seoTitle: false, metaDescription: false, slug: false } : { ...AUTO };
 
@@ -338,7 +344,6 @@ export function fillComposer(root, item = null) {
     return;
   }
 
-  form.id.value = item.id;
   form.title.value = item.title || '';
   form.description.value = item.description || '';
   form.category.value = item.category || CATEGORIES[0].name;
@@ -358,9 +363,7 @@ export function fillComposer(root, item = null) {
   form.published.checked = Number(item.published) === 1;
   form.indexable.checked = Number(item.indexable) !== 0;
   if (item.kind) {
-    const active = root.querySelector(`[data-kind="${CSS.escape(item.kind)}"]`);
-    active?.classList.add('is-active');
-    form.dataset.kind = item.kind;
+    root.querySelector(`[data-kind="${CSS.escape(item.kind)}"]`)?.classList.add('is-active');
   }
   $('[data-upload-list]', root).innerHTML = '';
   refresh(root);
@@ -381,9 +384,13 @@ async function save(root, { asDraft = false } = {}) {
   const button = asDraft ? $('[data-save-draft]', root) : form.querySelector('[type="submit"]');
   button.disabled = true;
   try {
-    const saved = values.id
-      ? await adminApi.updateContent(values.id, values)
-      : await adminApi.createContent(values);
+    // The id identifies the record in the URL, so it is not part of the body.
+    // Form values are strings, and sending a stringly-typed duplicate is an
+    // easy way for a caller to end up comparing "91" against 91.
+    const { id, ...payload } = values;
+    const saved = id
+      ? await adminApi.updateContent(id, payload)
+      : await adminApi.createContent(payload);
     toast(values.published ? 'Published. It is live now.' : 'Saved as a draft.');
     fillComposer(root, saved);
     onSaved(saved);

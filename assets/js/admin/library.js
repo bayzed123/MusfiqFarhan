@@ -48,7 +48,8 @@ function contentRow(item) {
     </div>
     <div class="row__actions">
       <button class="btn btn--ghost btn--sm" type="button" data-edit="${item.id}">Edit</button>
-      <button class="btn btn--ghost btn--sm" type="button" data-toggle="${item.id}">${live ? 'Hide' : 'Publish'}</button>
+      <button class="btn btn--ghost btn--sm" type="button" data-toggle="${item.id}"
+        data-published="${live ? 1 : 0}">${live ? 'Hide' : 'Publish'}</button>
       ${
         live && item.path
           ? `<a class="btn btn--ghost btn--sm" href="${SITE.origin}${esc(item.path)}" target="_blank" rel="noopener">View</a>`
@@ -70,14 +71,25 @@ export function initContentList(root, { onEdit }) {
     status: $('[data-filter-status]', root).value
   });
 
+  // Publishing, hiding and deleting each reload the list. Without a sequence
+  // guard an earlier, slower response can land after a later one and repaint
+  // stale rows — a deleted item reappearing is the visible symptom.
+  let latestRequest = 0;
+
   async function load() {
-    rows.innerHTML = '<p class="empty">Loading…</p>';
+    const request = ++latestRequest;
+    // Only blank the list on the very first load. Publishing, hiding or
+    // deleting also refetches, and clearing the rows each time makes the
+    // whole list flash empty after every action.
+    if (!rows.querySelector('.row')) rows.innerHTML = '<p class="empty">Loading…</p>';
     try {
       const data = await adminApi.listContent(filters());
+      if (request !== latestRequest) return;
       rows.innerHTML = data.items.length
         ? data.items.map(contentRow).join('')
         : '<p class="empty">Nothing matches those filters yet.</p>';
     } catch (error) {
+      if (request !== latestRequest) return;
       rows.innerHTML = `<p class="empty">${esc(error.message)}</p>`;
     }
   }
@@ -110,8 +122,7 @@ export function initContentList(root, { onEdit }) {
     }
 
     if (toggleButton) {
-      const row = toggleButton.closest('.row');
-      const isLive = toggleButton.textContent.trim() === 'Hide';
+      const isLive = toggleButton.dataset.published === '1';
       toggleButton.disabled = true;
       try {
         await adminApi.patchContent(toggleButton.dataset.toggle, { published: isLive ? 0 : 1 });
@@ -121,7 +132,6 @@ export function initContentList(root, { onEdit }) {
         toast(error.message, 'error');
         toggleButton.disabled = false;
       }
-      row?.classList.add('is-busy');
       return;
     }
 
@@ -243,7 +253,7 @@ export function initMedia(root) {
 export function galleryMarkup() {
   return `<div class="panel">
     <div class="panel__head"><h2>Add a gallery image</h2></div>
-    <form data-gallery-form>
+    <form data-gallery-form novalidate>
       <div class="field--row">
         <div class="field">
           <label for="g-title">Title</label>
@@ -262,7 +272,8 @@ export function galleryMarkup() {
       </div>
       <div class="field">
         <label for="g-image">Image URL</label>
-        <input id="g-image" name="image_url" type="url" required data-gallery-image>
+        <input id="g-image" name="image_url" type="text" inputmode="url" required data-gallery-image
+          placeholder="https://… or /assets/portrait.webp">
       </div>
       <div class="dropzone" data-gallery-drop tabindex="0" role="button" aria-label="Upload an image">
         <strong>Or drop an image here to upload it</strong>

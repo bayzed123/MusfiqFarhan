@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 import { SHELL_REGIONS } from './lib/shell.mjs';
 import { CATEGORIES, findCategory } from '../shared/taxonomy.js';
+import { renderMarkdown } from '../shared/markdown.js';
 import { SITE_NAME, SITE_ORIGIN, categoryPath, contentPath } from '../shared/urls.js';
 import {
   categoriesSitemap,
@@ -111,9 +112,15 @@ ${scripts}
 `;
 }
 
-function seoHead({ title, description, canonical, image, type = 'website', extra = '' }) {
+function seoHead({ title, description, canonical, image, type = 'website', extra = '', indexable = true }) {
   const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/hero_red-1280.webp'}`;
-  return `  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  // An item marked non-indexable must say so in the HTML source. Correcting
+  // it from JavaScript afterwards is too late: a crawler can index the page
+  // before the script runs.
+  const robots = indexable
+    ? 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
+    : 'noindex,follow';
+  return `  <meta name="robots" content="${robots}">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
   <link rel="canonical" href="${esc(canonical)}">
@@ -241,31 +248,6 @@ ${categoryCards(matching)}
 
 /* ------------------------------------------------------------- item pages */
 
-/** Minimal markdown → HTML for the pre-rendered article body. */
-function renderBody(text) {
-  const source = String(text || '').trim();
-  if (!source) return '';
-  return source
-    .split(/\n{2,}/)
-    .map((block) => {
-      const trimmed = esc(block.trim());
-      if (!trimmed) return '';
-      const heading = trimmed.match(/^(#{2,4})\s+(.*)$/);
-      if (heading) {
-        const level = Math.min(heading[1].length, 4);
-        return `<h${level}>${heading[2]}</h${level}>`;
-      }
-      if (trimmed.split('\n').every((line) => /^\s*[-*]\s+/.test(line))) {
-        return `<ul>${trimmed
-          .split('\n')
-          .map((line) => `<li>${line.replace(/^\s*[-*]\s+/, '')}</li>`)
-          .join('')}</ul>`;
-      }
-      return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('\n');
-}
-
 async function buildItemPages(items) {
   let count = 0;
   for (const item of items) {
@@ -308,7 +290,7 @@ async function buildItemPages(items) {
 ${playerBlock}
         <div class="article__body" data-entry-body>
           ${item.description ? `<p class="hero__lede" data-entry-lead>${esc(item.description)}</p>` : ''}
-${renderBody(item.body)}
+${renderMarkdown(item.body)}
         </div>
       </div>
       <aside class="article__aside">
@@ -327,6 +309,7 @@ ${renderBody(item.body)}
           canonical,
           image: item.og_image || item.image,
           type: isVideo ? 'video.other' : 'article',
+          indexable: Number(item.indexable) !== 0,
           extra: [
             item.keywords ? `  <meta name="keywords" content="${esc(item.keywords)}">` : '',
             `  <meta name="author" content="${esc(item.author_name || 'Musfiq R. Farhan')}">`,
@@ -387,6 +370,14 @@ Sitemap: ${SITE_ORIGIN}/sitemap.xml
 /* ------------------------------------------------------------------- main */
 
 async function fetchExport() {
+  // MRF_EXPORT_FILE builds from a local export instead of the live API. It is
+  // how the item-page pipeline is exercised offline and in tests; production
+  // builds leave it unset and read from the Worker.
+  const fixture = process.env.MRF_EXPORT_FILE;
+  if (fixture) {
+    log(`reading the export from ${fixture}`);
+    return JSON.parse(await readFile(path.resolve(ROOT, fixture), 'utf8'));
+  }
   const response = await fetch(`${API_BASE}/api/public/export`, {
     headers: { accept: 'application/json' },
     signal: AbortSignal.timeout(20_000)

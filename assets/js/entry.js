@@ -134,16 +134,24 @@ export async function initEntry() {
   const slug = document.body.dataset.slug;
   if (!slug) return;
 
+  // The page is already server-rendered, so a failed or empty content fetch
+  // must not cost the visitor the rating form: it reads a different endpoint
+  // and works on its own.
   let payload;
   try {
     payload = await api.content(slug);
   } catch {
+    initRails();
     initRatings();
     return;
   }
 
-  const { item, related } = payload;
-  if (!item) return;
+  const { item, related } = payload || {};
+  if (!item) {
+    initRails();
+    initRatings();
+    return;
+  }
 
   // Keep the head in step with the live record, in case the item was edited
   // after the page was generated.

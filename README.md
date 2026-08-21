@@ -81,11 +81,18 @@ Ratings and love notes are moderated: they only go live after approval under
 
 ```bash
 npm install                # Playwright only; the site itself has no bundler
-npm run build              # generate pages, sitemaps and the shell
+npm run build              # generate pages, sitemaps and the shell from the API
+npm run build:fixture      # same, from scripts/fixtures/sample-export.json
 npm run serve              # http://127.0.0.1:4173
-npm test                   # Playwright against the built output
+npm test                   # Playwright against whatever is currently built
+npm run verify             # build:fixture + the full suite (works offline)
 npm run test:live          # the same suite against production
 ```
+
+Use `npm run verify` when you cannot reach the Worker: it builds real item
+pages from the committed fixture so the item-page, canonical, rating and
+sitemap tests all have something to run against. Sample content is never
+committed — only CI's real build publishes item pages.
 
 `npm run build` reads `MRF_API_URL` (default: the production Worker). If the
 API cannot be reached it rebuilds the shell, the category pages and the

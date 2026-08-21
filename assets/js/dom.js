@@ -114,38 +114,5 @@ export function addJsonLd(data, id = '') {
   document.head.appendChild(script);
 }
 
-/** Convert a markdown-ish body into safe HTML. Escapes first, then formats. */
-export function renderBody(text) {
-  const source = String(text || '').trim();
-  if (!source) return '';
-  const blocks = esc(source).split(/\n{2,}/);
-  return blocks
-    .map((block) => {
-      const trimmed = block.trim();
-      if (!trimmed) return '';
-      const heading = trimmed.match(/^(#{2,4})\s+(.*)$/);
-      if (heading) {
-        const level = Math.min(heading[1].length, 4);
-        return `<h${level}>${inline(heading[2])}</h${level}>`;
-      }
-      if (/^([-*])\s+/m.test(trimmed) && trimmed.split('\n').every((line) => /^([-*])\s+/.test(line.trim()))) {
-        const items = trimmed
-          .split('\n')
-          .map((line) => `<li>${inline(line.replace(/^\s*[-*]\s+/, ''))}</li>`)
-          .join('');
-        return `<ul>${items}</ul>`;
-      }
-      if (/^&gt;\s?/.test(trimmed)) {
-        return `<blockquote>${inline(trimmed.replace(/^&gt;\s?/gm, ''))}</blockquote>`;
-      }
-      return `<p>${inline(trimmed).replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('');
-}
-
-function inline(text) {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
-}
+/** Article bodies use the shared renderer so the build and the browser agree. */
+export { renderMarkdown as renderBody } from '../../shared/markdown.js';
