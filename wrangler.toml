@@ -1,0 +1,17 @@
+name = "mrf-api"
+main = "worker/src/index.js"
+compatibility_date = "2026-08-21"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "MRF-API"
+database_id = "d267e9bb-5bbb-4845-b222-7579d9e57778"
+migrations_dir = "worker/migrations"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "mrf-api-media"
+
+[vars]
+ALLOWED_ORIGIN = "https://www.musfiqrfarhan.blog"
