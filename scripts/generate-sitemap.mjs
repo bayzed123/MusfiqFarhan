@@ -7,7 +7,8 @@ const base = [
   { loc: `${site}/about.html` },
   { loc: `${site}/contact.html` },
   { loc: `${site}/privacy-policy.html` },
-  { loc: `${site}/editorial-standards.html` }
+  { loc: `${site}/editorial-standards.html` },
+  { loc: `${site}/terms-of-service.html` }
 ];
 const categoryNames = ['Premium','Gallery','Poster Release','Behind the Scenes','New Teaser','New Natok','Short Clips','Blog','Press','Lifestyle & Fashion','Wallpapers','Biography & Journey','Natok & Telefilm','Recent Releases','Popular','Eid Special'];
 const categoryPages = categoryNames.map(name => ({ loc: `${site}/category.html?category=${encodeURIComponent(name)}` }));

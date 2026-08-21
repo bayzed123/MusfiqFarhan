@@ -8,6 +8,12 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.getByText('Stories with')).toBeVisible();
   await expect(page.locator('#fan-notes-track')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
+  await expect(page.locator('#site-search-input')).toBeVisible();
+  await expect(page.locator('header .brand img[alt="MRF Official logo"]')).toBeVisible();
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', /mrf-mark\.svg/);
+  const schemas = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) => nodes.map((node) => node.textContent || '').join(' '));
+  expect(schemas).toContain('Organization');
 });
 
 test('every taxonomy category has a crawlable landing page', async ({ page }) => { const categories=['Premium','Gallery','Poster Release','Behind the Scenes','New Teaser','New Natok','Short Clips','Blog','Press','Lifestyle & Fashion','Wallpapers','Biography & Journey','Natok & Telefilm','Recent Releases','Popular','Eid Special']; for(const category of categories){await page.goto(`/category.html?category=${encodeURIComponent(category)}`);await expect(page.locator('#category-title')).not.toContainText('Archive unavailable');await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href',new RegExp('category.html'))} });
@@ -30,7 +36,7 @@ test('managed watch page renders player and page review form', async ({ page }) 
 });
 
 test('legal and crawl routes are available', async ({ page, request }) => {
-  for (const route of ['/about.html', '/contact.html', '/privacy-policy.html', '/editorial-standards.html', '/sitemap.xml', '/robots.txt']) {
+  for (const route of ['/about.html', '/contact.html', '/privacy-policy.html', '/editorial-standards.html', '/terms-of-service.html', '/sitemap.xml', '/robots.txt']) {
     const response = await request.get(route);
     expect(response.ok(), route).toBeTruthy();
   }
@@ -67,7 +73,7 @@ test('authenticated dashboard category room controls work', async ({ page }) => 
 
 
 test('complete category and subcategory navigation appears on every public page', async ({ page }) => {
-  const routes = ['/', '/category.html?category=Blog', '/post.html?slug=doob-new-story', '/watch.html?slug=eta-golpo-noi-dear-valentine', '/about.html', '/contact.html', '/privacy-policy.html', '/editorial-standards.html'];
+  const routes = ['/', '/category.html?category=Blog', '/post.html?slug=doob-new-story', '/watch.html?slug=eta-golpo-noi-dear-valentine', '/about.html', '/contact.html', '/privacy-policy.html', '/editorial-standards.html', '/terms-of-service.html'];
   for (const route of routes) {
     await page.goto(route);
     const nav = page.locator('[data-category-directory]');

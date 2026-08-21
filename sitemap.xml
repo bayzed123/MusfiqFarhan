@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  
-  <url>
-    <loc>https://www.musfiqrfarhan.blog/</loc>
-    <lastmod>2026-08-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.musfiqrfarhan.blog/editorial-standards.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
+  <url><loc>https://www.musfiqrfarhan.blog/</loc><lastmod>2026-01-01T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/about.html</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/contact.html</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/privacy-policy.html</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/editorial-standards.html</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/terms-of-service.html</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Premium</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Gallery</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Poster%20Release</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Behind%20the%20Scenes</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=New%20Teaser</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=New%20Natok</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Short%20Clips</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Blog</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Press</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Lifestyle%20%26%20Fashion</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Wallpapers</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Biography%20%26%20Journey</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Natok%20%26%20Telefilm</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Recent%20Releases</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Popular</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Eid%20Special</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Blog&amp;subcategory=Recent%20Releases</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Natok%20%26%20Telefilm&amp;subcategory=New%20Natok</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Natok%20%26%20Telefilm&amp;subcategory=Short%20Clips</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Behind%20the%20Scenes&amp;subcategory=Behind%20the%20Scenes</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/category.html?category=Popular&amp;subcategory=Eid%20Special</loc></url>
+  <url><loc>https://www.musfiqrfarhan.blog/post.html?slug=musfiq-r-farhan-biography-age-height-wife</loc><lastmod>2026-08-21T06:00:00+00:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/post.html?slug=doob-new-story</loc><lastmod>2026-05-21T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/post.html?slug=tor-preme-pagol</loc><lastmod>2026-05-14T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/post.html?slug=behind-the-scene</loc><lastmod>2026-04-28T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/watch.html?slug=eta-golpo-noi-dear-valentine</loc><lastmod>2023-01-01T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/watch.html?slug=boro-beshi-valobashi</loc><lastmod>2020-01-01T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/watch.html?slug=shondha-namay-rakhi</loc><lastmod>2019-01-01T00:00:00+06:00</lastmod></url>
+  <url><loc>https://www.musfiqrfarhan.blog/watch.html?slug=shondhya-namaye-rakhi</loc><lastmod>2019-01-01T00:00:00+06:00</lastmod></url>
 </urlset>
