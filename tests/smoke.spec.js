@@ -34,7 +34,7 @@ test('legal and crawl routes are available', async ({ page, request }) => {
   }
 });
 
-test('admin exposes category navigation and direct device upload controls', async ({ page }) => { await page.goto('/admin.html'); await expect(page.locator('#admin-category-nav')).toBeVisible(); await expect(page.locator('#content-image-file')).toHaveAttribute('accept', /image/); await expect(page.locator('#content-video-file')).toHaveAttribute('accept', /video/); await expect(page.locator('#content-attachment-file')).toHaveAttribute('accept', /pdf/); await expect(page.locator('#content-preview')).toBeVisible(); });
+test('admin login gate stays private before authentication', async ({ page }) => { await page.goto('/admin.html'); await expect(page.locator('#login-panel')).toBeVisible(); await expect(page.locator('#dashboard')).toBeHidden(); await expect(page.locator('#username')).toBeVisible(); await expect(page.locator('#password')).toBeVisible(); });
 
 test('admin remains a private noindex login gate', async ({ page }) => {
   await page.goto('/admin.html');
