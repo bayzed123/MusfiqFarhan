@@ -44,3 +44,7 @@
 
 /* Homepage redesign task 6: latest video card links */
 .content-card-link{display:inline-block;margin-top:12px;color:var(--mint);font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.content-card-link:hover{color:var(--lime)}.content-card:focus-visible,.content-card-link:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+
+/* Homepage redesign task 7: linked gallery masonry cards */
+.gallery-card-link{position:relative;display:block;width:100%;height:100%;color:var(--paper)}.gallery-card-link:focus-visible{outline:2px solid var(--mint);outline-offset:-4px}.gallery-item figcaption{left:0;right:0;bottom:0;display:flex;align-items:end;justify-content:space-between;gap:14px;padding:17px 19px}.gallery-item figcaption span{display:block}.gallery-item figcaption small{color:var(--mint);font-size:9px;letter-spacing:.1em;opacity:0;transform:translateY(5px);transition:opacity .25s ease,transform .25s var(--ease);text-transform:uppercase}.gallery-item:hover figcaption small{opacity:1;transform:none}
+@media(max-width:650px){.gallery-item figcaption{padding:13px 14px}.gallery-item figcaption small{opacity:1;transform:none}}

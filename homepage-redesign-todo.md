@@ -10,7 +10,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 4 | Implement latest news with four editorial cards and View All News flow | **Complete** | Four-card layout, images, link, syntax, and focused local Playwright test passed. |
 | 5 | Implement signature Behind the Scenes feature layout | **Complete** | Featured BTS, two supporting cards, managed gallery binding, syntax, and focused local Playwright test passed. |
 | 6 | Implement latest videos with Netflix-style cards and watch links | **Complete** | Four video cards, poster alt text, watch links, filters, syntax, and focused local Playwright test passed. |
-| 7 | Implement latest gallery masonry treatment and managed gallery links | Pending | Gallery assets have valid sources, alt text, responsive layout, and category context. |
+| 7 | Implement latest gallery masonry treatment and managed gallery links | **Complete** | Four linked gallery frames, alt text, masonry class, filters, syntax, and focused local Playwright test passed. |
 | 8 | Implement New Natok poster section with status, release date, and detail links | Pending | Poster cards render from managed content where available and use stable links. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | Pending | Editorial links, timeline, social links, sitemap, legal links, and copyright render. |
 | 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | Pending | Contrast, focus, reduced motion, H1/H2 structure, metadata, schema, and mobile checks pass. |
@@ -45,6 +45,10 @@ Task 5 added the signature Behind the Scenes section after Latest News: one larg
 ## Task 6 completion note
 
 Task 6 reframed the video area as Latest Videos while retaining the existing `#watch` anchor, filters, modal player, YouTube channel link, dynamic video schema, and fallback posters. Each card now also exposes a direct stable `watch.html?slug=...` link, so the section works as both a glossy Netflix-style interaction deck and a crawlable content index.
+
+## Task 7 completion note
+
+Task 7 upgraded the gallery block to Latest Gallery with linked responsive masonry frames, captions, View gallery affordances, filter compatibility, and a View all gallery route. Managed gallery records now link to their category archive and preserve admin-controlled image URL, alt text, caption, category, and sort order behavior.
 
 ## Implementation rule
 

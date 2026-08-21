@@ -27,6 +27,11 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('.content-card img').first()).toHaveAttribute('alt', /poster/i);
   await expect(page.locator('.content-card-link').first()).toHaveAttribute('href', /watch\.html\?slug=/);
   await expect(page.getByRole('link', { name: /^View all/ }).first()).toHaveAttribute('href', /category\.html\?category=Natok%20%26%20Telefilm/);
+  await expect(page.locator('#gallery-title')).toContainText('Frames');
+  await expect(page.locator('#gallery-grid .gallery-card-link')).toHaveCount(4);
+  await expect(page.locator('#gallery-grid img').first()).toHaveAttribute('alt', /.+/);
+  await expect(page.locator('#gallery-grid .gallery-item.gallery-large')).toBeVisible();
+  await expect(page.getByRole('link', { name: /View all gallery/ })).toHaveAttribute('href', /category\.html\?category=Gallery/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
