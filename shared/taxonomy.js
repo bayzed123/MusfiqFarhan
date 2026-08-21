@@ -311,11 +311,16 @@ export function categoryName(slug) {
   return findCategory(slug)?.name || '';
 }
 
+/**
+ * Slug rule for taxonomy names. "&" is dropped rather than spelled out, which
+ * keeps a name that appears as both a category and a subcategory on one slug:
+ * "Biography & Journey" is `biography-journey` in either position.
+ */
 export function subcategorySlug(value) {
   return String(value ?? '')
     .trim()
     .toLowerCase()
-    .replace(/&/g, 'and')
+    .replace(/&/g, ' ')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }

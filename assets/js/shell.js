@@ -37,9 +37,16 @@ function initMegaMenus() {
   for (const item of items) {
     const trigger = $('.nav-link', item);
     let hoverTimer;
+    let openedByHover = false;
 
     trigger.addEventListener('click', (event) => {
       event.preventDefault();
+      // On a mouse the menu is already open by the time the click lands, and
+      // toggling here would shut it the instant the user tried to use it.
+      if (openedByHover && item.classList.contains('is-open')) {
+        openedByHover = false;
+        return;
+      }
       const open = item.classList.toggle('is-open');
       trigger.setAttribute('aria-expanded', String(open));
       closeAll(open ? item : null);
@@ -50,6 +57,7 @@ function initMegaMenus() {
       if (!window.matchMedia('(hover: hover)').matches) return;
       clearTimeout(hoverTimer);
       closeAll(item);
+      openedByHover = !item.classList.contains('is-open');
       item.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
     });
@@ -59,6 +67,7 @@ function initMegaMenus() {
       hoverTimer = setTimeout(() => {
         item.classList.remove('is-open');
         trigger.setAttribute('aria-expanded', 'false');
+        openedByHover = false;
       }, 140);
     });
   }
@@ -215,6 +224,7 @@ async function initLoveTicker() {
     const chips = data.notes.map(chipMarkup).join('');
     track.innerHTML = chips + chips;
     track.style.animationDuration = `${Math.max(30, data.notes.length * 6)}s`;
+    track.dataset.ready = 'true';
   } catch {
     track.innerHTML = '<span class="love-chip"><span class="love-chip__message">Fan notes are loading…</span></span>';
   }

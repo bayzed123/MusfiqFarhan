@@ -210,6 +210,13 @@ p {
   align-items: center;
   gap: 2.25rem;
   width: max-content;
+}
+
+/*
+ * Only scroll once real notes have been loaded and the track duplicated.
+ * Animating the single placeholder would just slide it out of view.
+ */
+.love-strip__track[data-ready] {
   animation: love-scroll 60s linear infinite;
 }
 
@@ -365,10 +372,15 @@ p {
   align-items: center;
   gap: 0.35rem;
   padding: 0.55rem 0.8rem;
+  border: 0;
+  /* The menu triggers are <button>s; without this they inherit the browser's
+     grey button face and read as filled pills. */
+  background: none;
   border-radius: 999px;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--ink-soft);
+  cursor: pointer;
   transition: color 0.2s var(--ease), background 0.2s var(--ease);
 }
 
@@ -537,6 +549,18 @@ p {
 
 .button--block {
   width: 100%;
+}
+
+/*
+ * On a narrow phone the brand, the WhatsApp button, search and the menu
+ * toggle no longer fit on one row. The button is dropped rather than
+ * squeezed — the drawer opens with the same call to action at the top, and
+ * the footer carries it too.
+ */
+@media (max-width: 560px) {
+  .header-actions .button--whatsapp {
+    display: none;
+  }
 }
 
 .nav-toggle {
