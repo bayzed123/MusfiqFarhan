@@ -112,7 +112,7 @@ ${scripts}
 }
 
 function seoHead({ title, description, canonical, image, type = 'website', extra = '' }) {
-  const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/hero_red.png'}`;
+  const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/hero_red-1280.webp'}`;
   return `  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
@@ -145,7 +145,7 @@ function categoryCards(items) {
   return items
     .slice(0, 24)
     .map((item, index) => {
-      const image = item.image || '/assets/hero_red.png';
+      const image = item.image || '/assets/img/hero_red-1280.webp';
       const video = item.type === 'video';
       return `<article class="card">
         <div class="card__media">
@@ -276,7 +276,7 @@ async function buildItemPages(items) {
     const canonical = item.canonical_url || `${SITE_ORIGIN}${contentPath(item)}`;
     const description = item.meta_description || item.description || `${item.title} — ${SITE_NAME}.`;
     const isVideo = item.type === 'video';
-    const poster = item.thumbnail_url || item.image || '/assets/hero_red.png';
+    const poster = item.thumbnail_url || item.image || '/assets/img/hero_red-1280.webp';
 
     const playerBlock = isVideo
       ? `      <div data-entry-player>

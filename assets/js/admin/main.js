@@ -222,7 +222,7 @@ function initSeoView(root) {
         ? problems
             .map(
               ({ item, missing }) => `<article class="row">
-                <img class="row__thumb" src="${esc(item.image || '/assets/hero_red.png')}" alt="" loading="lazy">
+                <img class="row__thumb" src="${esc(item.image || '/assets/img/hero_red-1280.webp')}" alt="" loading="lazy">
                 <div>
                   <p class="row__title">${esc(item.title)}</p>
                   <div class="row__meta"><span class="tag tag--draft">Missing ${esc(missing.join(', '))}</span></div>

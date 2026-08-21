@@ -253,7 +253,7 @@ function paintSeo(root, values) {
     values.meta_description || 'Your meta description will appear here.';
 
   $('[data-card-preview]', root).innerHTML = `<div class="media-tile">
-    <img src="${esc(values.image || '/assets/hero_red.png')}" alt="">
+    <img src="${esc(values.image || '/assets/img/hero_red-1280.webp')}" alt="">
     <div class="media-tile__body">
       <span style="font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-bright)">${esc(
         values.category || 'Category'

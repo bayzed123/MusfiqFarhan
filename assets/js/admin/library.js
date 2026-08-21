@@ -33,7 +33,7 @@ export function contentMarkup() {
 function contentRow(item) {
   const live = Number(item.published) === 1;
   return `<article class="row" data-id="${item.id}">
-    <img class="row__thumb" src="${esc(item.image || '/assets/hero_red.png')}" alt="" loading="lazy" decoding="async">
+    <img class="row__thumb" src="${esc(item.image || '/assets/img/hero_red-1280.webp')}" alt="" loading="lazy" decoding="async">
     <div>
       <p class="row__title">${esc(item.title)}</p>
       <div class="row__meta">

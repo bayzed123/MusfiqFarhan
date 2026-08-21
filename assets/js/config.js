@@ -8,7 +8,7 @@ export const SITE = {
   person: 'Musfiq R. Farhan',
   email: 'farhanvengers.contact@gmail.com',
   whatsapp: 'https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X',
-  fallbackImage: '/assets/hero_red.png'
+  fallbackImage: '/assets/img/hero_red-1280.webp'
 };
 
 export const SOCIAL = [

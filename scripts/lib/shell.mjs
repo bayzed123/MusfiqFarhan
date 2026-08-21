@@ -244,7 +244,7 @@ export function siteSchemaHtml(origin = 'https://www.musfiqrfarhan.blog') {
       description:
         'Musfiq R. Farhan is a Bangladeshi actor, radio jockey and content creator known for natok, telefilm and digital storytelling.',
       url: `${origin}/`,
-      image: [`${origin}/assets/hero_red.png`, `${origin}/assets/profile_1.jpg`],
+      image: [`${origin}/assets/img/og-card.jpg`, `${origin}/assets/profile_1.jpg`],
       knowsLanguage: ['bn', 'en'],
       knowsAbout: ['Acting', 'Bangla natok', 'Telefilm', 'Radio broadcasting', 'Storytelling'],
       hasOccupation: [
