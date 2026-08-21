@@ -14,7 +14,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 8 | Implement New Natok poster section with status, release date, and detail links | **Complete** | Three poster cards, status metadata, alt text, archive links, syntax, and focused local Playwright test passed. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | **Complete** | Featured story, three story links, five timeline milestones, social links, footer copy, syntax, and focused local Playwright test passed. |
 | 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | **Complete** | Skip link, author metadata, menu ARIA, focus states, reduced-motion hooks, syntax, and focused local Playwright test passed. |
-| 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | **Active** | Full local/static checks, CI workflow, live smoke tests, and deployment report remain. |
+| 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | **Complete** | Final static checks, successful CI deployment, live route checks, and post-deployment Playwright tests passed. |
 
 ## Audit findings for task 1
 
@@ -61,6 +61,10 @@ Task 9 added a Featured Stories feature article with three supporting story link
 ## Task 10 completion note
 
 Task 10 added a keyboard skip link, explicit author metadata, menu-to-navigation ARIA relationships, synchronized mobile-menu labels and hidden state, visible focus treatments, reduced-motion-safe transitions, and responsive spacing for the new sections. The existing H1, schema, canonical metadata, category navigation, legal links, and dynamic content behavior remain intact.
+
+## Task 11 completion note
+
+Task 11 completed the ordered delivery cycle. The repository passed final JavaScript syntax checks, sitemap/config checks, whitespace validation, and the focused homepage suite after every implementation task. Commit `fc29bc7` was pushed, deployment workflow `32493860014` completed successfully, the live public-route Playwright suite passed, and direct HTTP checks returned 200 for the homepage, Terms page, sitemap, and MRF logo asset. Live HTML contains the new top bar, identity, Latest News, BTS, Latest Videos, Latest Gallery, New Natok, Featured Stories, Career Highlights, Follow, skip link, and Organization schema markers.
 
 ## Implementation rule
 
