@@ -13,6 +13,10 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('#identity-title')).toContainText('person');
   await expect(page.locator('.identity-portrait img')).toHaveAttribute('alt', /Musfiq R\. Farhan/);
   await expect(page.getByRole('link', { name: /Read the biography/ })).toHaveAttribute('href', /post\.html\?slug=musfiq-r-farhan-biography-age-height-wife/);
+  await expect(page.locator('#journal-title')).toContainText('Latest');
+  await expect(page.locator('.news-card')).toHaveCount(4);
+  await expect(page.locator('.news-card img').first()).toHaveAttribute('alt', /.+/);
+  await expect(page.getByRole('link', { name: /View all news/ })).toHaveAttribute('href', /category\.html\?category=Blog/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
