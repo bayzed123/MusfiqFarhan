@@ -14,7 +14,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 8 | Implement New Natok poster section with status, release date, and detail links | **Complete** | Three poster cards, status metadata, alt text, archive links, syntax, and focused local Playwright test passed. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | **Complete** | Featured story, three story links, five timeline milestones, social links, footer copy, syntax, and focused local Playwright test passed. |
 | 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | **Complete** | Skip link, author metadata, menu ARIA, focus states, reduced-motion hooks, syntax, and focused local Playwright test passed. |
-| 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | Pending | Local checks, CI workflow, live smoke tests, and deployment report complete. |
+| 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | **Active** | Full local/static checks, CI workflow, live smoke tests, and deployment report remain. |
 
 ## Audit findings for task 1
 
