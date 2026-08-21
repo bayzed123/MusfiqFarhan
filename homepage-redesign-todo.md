@@ -11,7 +11,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 5 | Implement signature Behind the Scenes feature layout | **Complete** | Featured BTS, two supporting cards, managed gallery binding, syntax, and focused local Playwright test passed. |
 | 6 | Implement latest videos with Netflix-style cards and watch links | **Complete** | Four video cards, poster alt text, watch links, filters, syntax, and focused local Playwright test passed. |
 | 7 | Implement latest gallery masonry treatment and managed gallery links | **Complete** | Four linked gallery frames, alt text, masonry class, filters, syntax, and focused local Playwright test passed. |
-| 8 | Implement New Natok poster section with status, release date, and detail links | Pending | Poster cards render from managed content where available and use stable links. |
+| 8 | Implement New Natok poster section with status, release date, and detail links | **Complete** | Three poster cards, status metadata, alt text, archive links, syntax, and focused local Playwright test passed. |
 | 9 | Implement featured stories, career highlights, social follow section, and complete footer | Pending | Editorial links, timeline, social links, sitemap, legal links, and copyright render. |
 | 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | Pending | Contrast, focus, reduced motion, H1/H2 structure, metadata, schema, and mobile checks pass. |
 | 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | Pending | Local checks, CI workflow, live smoke tests, and deployment report complete. |
@@ -49,6 +49,10 @@ Task 6 reframed the video area as Latest Videos while retaining the existing `#w
 ## Task 7 completion note
 
 Task 7 upgraded the gallery block to Latest Gallery with linked responsive masonry frames, captions, View gallery affordances, filter compatibility, and a View all gallery route. Managed gallery records now link to their category archive and preserve admin-controlled image URL, alt text, caption, category, and sort order behavior.
+
+## Task 8 completion note
+
+Task 8 added a New Natok poster section with three responsive poster cards, status labels, release/archive metadata, View details links, and a View all natok route. Published managed posts matching natok, telefilm, poster, or release terms update the cards automatically; the curated poster set remains the fallback. Existing category routes and permanent content slugs are preserved.
 
 ## Implementation rule
 

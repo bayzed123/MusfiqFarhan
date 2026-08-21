@@ -32,6 +32,11 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('#gallery-grid img').first()).toHaveAttribute('alt', /.+/);
   await expect(page.locator('#gallery-grid .gallery-item.gallery-large')).toBeVisible();
   await expect(page.getByRole('link', { name: /View all gallery/ })).toHaveAttribute('href', /category\.html\?category=Gallery/);
+  await expect(page.locator('#natok-title')).toContainText('natok');
+  await expect(page.locator('#natok-grid .poster-card')).toHaveCount(3);
+  await expect(page.locator('#natok-grid .poster-art img').first()).toHaveAttribute('alt', /poster/i);
+  await expect(page.locator('#natok-grid .poster-art span').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /View all natok/ })).toHaveAttribute('href', /category\.html\?category=New%20Natok/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
