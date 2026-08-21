@@ -7,6 +7,12 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.getByRole('button', { name: 'Poster release' })).toBeVisible();
   await expect(page.getByText('Stories with')).toBeVisible();
   await expect(page.locator('#fan-notes-track')).toBeVisible();
+  await expect(page.locator('#hero-title')).toContainText('story');
+  await expect(page.locator('.hero-featured-card')).toBeVisible();
+  await expect(page.locator('#hero-featured-title')).toBeVisible();
+  await expect(page.locator('#identity-title')).toContainText('person');
+  await expect(page.locator('.identity-portrait img')).toHaveAttribute('alt', /Musfiq R\. Farhan/);
+  await expect(page.getByRole('link', { name: /Read the biography/ })).toHaveAttribute('href', /post\.html\?slug=musfiq-r-farhan-biography-age-height-wife/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();

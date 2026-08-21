@@ -6,7 +6,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 |---:|---|---|---|
 | 1 | Audit current homepage, routes, assets, data bindings, and deployment constraints | **Complete** | Existing public routes, Worker payloads, assets, scripts, and workflow mapped. |
 | 2 | Build root homepage shell: top bar, responsive header, navigation, logo, mobile menu, and search entry point | **Complete** | Static checks passed and the local Playwright homepage smoke test passed. |
-| 3 | Implement cinematic featured-story hero and Musfiq R. Farhan identity introduction | **Active next** | Hero H1, featured image/content hooks, biography link, and accessibility checks pass. |
+| 3 | Implement cinematic featured-story hero and Musfiq R. Farhan identity introduction | **Complete** | Static checks and the focused local Playwright homepage test passed. |
 | 4 | Implement latest news with four editorial cards and View All News flow | Pending | Four-card layout renders from managed/fallback data and links resolve. |
 | 5 | Implement signature Behind the Scenes feature layout | Pending | Featured BTS and supporting BTS links render without breaking existing category navigation. |
 | 6 | Implement latest videos with Netflix-style cards and watch links | Pending | Video cards, posters, player links, metadata, and existing video schema remain valid. |
@@ -29,6 +29,10 @@ The existing deployment workflow runs D1 migrations, deploys `mrf-api`, generate
 ## Task 2 completion note
 
 Task 2 added the fixed latest-updates top bar, changed the primary public navigation to Home, News, Behind the scenes, Videos, Gallery, Natok, Blog, and Search, added Biography and Contact to the mobile menu, and preserved the existing archive search form and anchor IDs. The top bar and header offsets are responsive at desktop, tablet, and mobile widths. The task was verified with `node --check`, `git diff --check`, structural assertions, and one local Playwright homepage test.
+
+## Task 3 completion note
+
+Task 3 added a featured-story information card inside the cinematic hero with badge, date, summary, and a stable story link. It also added a warm editorial identity section with a portrait, accessible alt text, Bangladeshi actor/RJ description, and a link to the managed biography article. The existing `#spotlight`, `#watch`, `#about`, and API-driven spotlight card were preserved. Managed featured data now updates the new hero card through `renderFeatured()`.
 
 ## Implementation rule
 
