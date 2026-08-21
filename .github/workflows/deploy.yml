@@ -56,8 +56,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Generate dynamic sitemap
+        run: node scripts/generate-sitemap.mjs
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
@@ -65,3 +71,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  verify-site:
+    name: Verify live site with Playwright
+    runs-on: ubuntu-latest
+    needs: deploy-site
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: npm install --no-save @playwright/test@1.55.0
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run public-route smoke tests
+        run: npx playwright test
