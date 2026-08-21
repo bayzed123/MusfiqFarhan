@@ -12,7 +12,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 6 | Implement latest videos with Netflix-style cards and watch links | **Complete** | Four video cards, poster alt text, watch links, filters, syntax, and focused local Playwright test passed. |
 | 7 | Implement latest gallery masonry treatment and managed gallery links | **Complete** | Four linked gallery frames, alt text, masonry class, filters, syntax, and focused local Playwright test passed. |
 | 8 | Implement New Natok poster section with status, release date, and detail links | **Complete** | Three poster cards, status metadata, alt text, archive links, syntax, and focused local Playwright test passed. |
-| 9 | Implement featured stories, career highlights, social follow section, and complete footer | Pending | Editorial links, timeline, social links, sitemap, legal links, and copyright render. |
+| 9 | Implement featured stories, career highlights, social follow section, and complete footer | **Complete** | Featured story, three story links, five timeline milestones, social links, footer copy, syntax, and focused local Playwright test passed. |
 | 10 | Apply the editorial visual system, responsive mobile UX, accessibility, and SEO hierarchy | Pending | Contrast, focus, reduced motion, H1/H2 structure, metadata, schema, and mobile checks pass. |
 | 11 | Run final one-by-one validation, update Playwright coverage, deploy, and report results | Pending | Local checks, CI workflow, live smoke tests, and deployment report complete. |
 
@@ -53,6 +53,10 @@ Task 7 upgraded the gallery block to Latest Gallery with linked responsive mason
 ## Task 8 completion note
 
 Task 8 added a New Natok poster section with three responsive poster cards, status labels, release/archive metadata, View details links, and a View all natok route. Published managed posts matching natok, telefilm, poster, or release terms update the cards automatically; the curated poster set remains the fallback. Existing category routes and permanent content slugs are preserved.
+
+## Task 9 completion note
+
+Task 9 added a Featured Stories feature article with three supporting story links, a five-point career-highlights timeline, a Follow the latest updates social panel, and explanatory footer brand copy. Existing reviews, trust content, legal links, social profiles, sitemap, dynamic copyright year, and contact flow remain in place.
 
 ## Implementation rule
 

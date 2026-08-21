@@ -37,6 +37,14 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('#natok-grid .poster-art img').first()).toHaveAttribute('alt', /poster/i);
   await expect(page.locator('#natok-grid .poster-art span').first()).toBeVisible();
   await expect(page.getByRole('link', { name: /View all natok/ })).toHaveAttribute('href', /category\.html\?category=New%20Natok/);
+  await expect(page.locator('#stories')).toBeVisible();
+  await expect(page.locator('#story-featured-title')).toBeVisible();
+  await expect(page.locator('.story-list-item')).toHaveCount(3);
+  await expect(page.locator('#career-title')).toContainText('chapters');
+  await expect(page.locator('.career-timeline > div')).toHaveCount(5);
+  await expect(page.locator('#follow-title')).toContainText('Follow');
+  await expect(page.locator('.follow-links a')).toHaveCount(3);
+  await expect(page.locator('.footer-brand p')).toContainText('behind-the-scenes');
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
