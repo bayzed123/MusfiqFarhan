@@ -6,7 +6,7 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.getByRole('button', { name: 'New natok' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Poster release' })).toBeVisible();
   await expect(page.getByText('Stories with')).toBeVisible();
-  await expect(page.getByText('Fan Love Notes')).toBeVisible();
+  await expect(page.locator('#fan-notes-track')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
 });
 
