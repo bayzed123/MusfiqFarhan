@@ -12,6 +12,8 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
 
 test('every taxonomy category has a crawlable landing page', async ({ page }) => { const categories=['Premium','Gallery','Poster Release','Behind the Scenes','New Teaser','New Natok','Short Clips','Blog','Press','Lifestyle & Fashion','Wallpapers','Biography & Journey','Natok & Telefilm','Recent Releases','Popular','Eid Special']; for(const category of categories){await page.goto(`/category.html?category=${encodeURIComponent(category)}`);await expect(page.locator('#category-title')).not.toContainText('Archive unavailable');await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href',new RegExp('category.html'))} });
 
+test('new biography blog renders images, schema, and reviews', async ({ page }) => { await page.goto('/post.html?slug=musfiq-r-farhan-biography-age-height-wife'); await expect(page).toHaveTitle(/Musfiq R\. Farhan Biography/); await expect(page.locator('#article-title')).toContainText('Musfiq R. Farhan Biography'); await expect(page.locator('#article-image')).toBeVisible(); await expect(page.locator('#article-gallery')).toBeVisible(); await expect(page.locator('#page-review-form')).toBeVisible(); await expect(page.locator('#article-schema')).toContainText('BlogPosting'); });
+
 test('managed blog page renders metadata surface and page review form', async ({ page }) => {
   await page.goto('/post.html?slug=doob-new-story');
   await expect(page).toHaveTitle(/Doob/);
