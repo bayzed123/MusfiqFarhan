@@ -8,7 +8,7 @@ This checklist follows the attached homepage brief in order. **Only one task is 
 | 2 | Build root homepage shell: top bar, responsive header, navigation, logo, mobile menu, and search entry point | **Complete** | Static checks passed and the local Playwright homepage smoke test passed. |
 | 3 | Implement cinematic featured-story hero and Musfiq R. Farhan identity introduction | **Complete** | Static checks and the focused local Playwright homepage test passed. |
 | 4 | Implement latest news with four editorial cards and View All News flow | **Complete** | Four-card layout, images, link, syntax, and focused local Playwright test passed. |
-| 5 | Implement signature Behind the Scenes feature layout | Pending | Featured BTS and supporting BTS links render without breaking existing category navigation. |
+| 5 | Implement signature Behind the Scenes feature layout | **Complete** | Featured BTS, two supporting cards, managed gallery binding, syntax, and focused local Playwright test passed. |
 | 6 | Implement latest videos with Netflix-style cards and watch links | Pending | Video cards, posters, player links, metadata, and existing video schema remain valid. |
 | 7 | Implement latest gallery masonry treatment and managed gallery links | Pending | Gallery assets have valid sources, alt text, responsive layout, and category context. |
 | 8 | Implement New Natok poster section with status, release date, and detail links | Pending | Poster cards render from managed content where available and use stable links. |
@@ -37,6 +37,10 @@ Task 3 added a featured-story information card inside the cinematic hero with ba
 ## Task 4 completion note
 
 Task 4 converted the former journal block into a Latest News section with four managed/fallback cards, image-led editorial surfaces, dates, summaries, Read the story links, category filters, and a View all news destination. The existing `#journal` ID and post API contract remain intact, so current CMS content continues to populate the section.
+
+## Task 5 completion note
+
+Task 5 added the signature Behind the Scenes section after Latest News: one large featured frame, two supporting BTS moments, explanatory copy, and an Explore BTS link to the crawlable category archive. Published gallery records containing BTS, studio, making-of, or related terms now populate the section automatically; the curated static frames remain the safe fallback.
 
 ## Implementation rule
 

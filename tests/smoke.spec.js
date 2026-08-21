@@ -17,6 +17,11 @@ test('homepage renders the publishing taxonomy and trust sections', async ({ pag
   await expect(page.locator('.news-card')).toHaveCount(4);
   await expect(page.locator('.news-card img').first()).toHaveAttribute('alt', /.+/);
   await expect(page.getByRole('link', { name: /View all news/ })).toHaveAttribute('href', /category\.html\?category=Blog/);
+  await expect(page.locator('#bts')).toBeVisible();
+  await expect(page.locator('#bts-feature-image')).toHaveAttribute('alt', /behind the scenes/i);
+  await expect(page.locator('#bts-support-one')).toBeVisible();
+  await expect(page.locator('#bts-support-two')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Explore BTS/ })).toHaveAttribute('href', /category\.html\?category=Behind%20the%20Scenes/);
   await expect(page.getByRole('link', { name: 'Sitemap' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Terms' })).toBeVisible();
   await expect(page.locator('#site-search-input')).toBeVisible();
