@@ -64,3 +64,16 @@ test('authenticated dashboard category room controls work', async ({ page }) => 
   await expect(page.locator('#content-attachment-file')).toBeVisible();
   await expect(page.locator('#content-preview')).toBeVisible();
 });
+
+
+test('complete category and subcategory navigation appears on every public page', async ({ page }) => {
+  const routes = ['/', '/category.html?category=Blog', '/post.html?slug=doob-new-story', '/watch.html?slug=eta-golpo-noi-dear-valentine', '/about.html', '/contact.html', '/privacy-policy.html', '/editorial-standards.html'];
+  for (const route of routes) {
+    await page.goto(route);
+    const nav = page.locator('[data-category-directory]');
+    await expect(nav).toBeVisible();
+    await expect(nav.locator('.category-room-link')).toHaveCount(16);
+    await expect(nav.locator('a[href*="subcategory="]')).not.toHaveCount(0);
+    await expect(nav.locator('a[href*="&subcategory="]')).not.toHaveCount(0);
+  }
+});
