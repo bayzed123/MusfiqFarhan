@@ -1,58 +1,480 @@
-const json = (body, status = 200, origin = '') => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': status >= 400 ? 'no-store' : 'public, max-age=30', 'access-control-allow-origin': origin || 'https://www.musfiqrfarhan.blog', 'access-control-allow-headers': 'Content-Type, Authorization', 'access-control-allow-methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS' } });
-const text = (body, status = 200, type = 'text/plain; charset=utf-8') => new Response(body, { status, headers: { 'content-type': type, 'cache-control': 'public, max-age=3600' } });
-const allowedOrigins = new Set(['https://www.musfiqrfarhan.blog', 'https://musfiqrfarhan.blog', 'https://bayzed123.github.io']);
-const clean = (value, max = 1000) => String(value ?? '').trim().slice(0, max);
-const slugify = (value) => clean(value, 180).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `item-${Date.now()}`;
-const originFor = (request) => { const origin = request.headers.get('Origin') || ''; return allowedOrigins.has(origin) ? origin : 'https://www.musfiqrfarhan.blog'; };
-const responseHeaders = (origin) => ({ 'access-control-allow-origin': origin, 'access-control-allow-headers': 'Content-Type, Authorization', 'access-control-allow-methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS' });
+/**
+ * MRF-API — the content, media and community API behind musfiqrfarhan.blog.
+ *
+ * Routes are grouped as:
+ *   /api/public/*   read-only data for the site (plus fan submissions)
+ *   /api/admin/*    dashboard operations, HMAC bearer token required
+ *   /media/*        R2 objects with Range support
+ *   /sitemap.xml    generated from live data
+ */
 
-function b64url(bytes) { let str = ''; if (typeof bytes === 'string') str = bytes; else { for (const byte of bytes) str += String.fromCharCode(byte); } return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
-function unb64url(value) { const padded = value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - value.length % 4) % 4); return atob(padded); }
-async function hmac(secret, value) { const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']); return crypto.subtle.sign('HMAC', key, new TextEncoder().encode(value)); }
-async function makeToken(env, username) { const payload = b64url(JSON.stringify({ sub: username, exp: Date.now() + 1000 * 60 * 60 * 12 })); return `${payload}.${b64url(new Uint8Array(await hmac(env.ADMIN_PASSWORD, payload)))}`; }
-async function requireAdmin(request, env) { const header = request.headers.get('Authorization') || ''; const token = header.replace(/^Bearer\s+/i, ''); const [payload, signature] = token.split('.'); if (!payload || !signature) return false; try { const data = JSON.parse(unb64url(payload)); if (!data.exp || data.exp < Date.now()) return false; const expected = new Uint8Array(await hmac(env.ADMIN_PASSWORD, payload)); const actual = Uint8Array.from(unb64url(signature), (char) => char.charCodeAt(0)); if (expected.length !== actual.length) return false; let same = 0; for (let i = 0; i < expected.length; i++) same |= expected[i] ^ actual[i]; return same === 0 && data.sub === env.ADMIN_USER_NAME; } catch { return false; } }
-async function readJson(request) { try { return await request.json(); } catch { return {}; } }
-function rowToContent(row) { return { ...row, published: Number(row.published) }; }
-function mediaKeyFor(name) { const safe = clean(name, 180).replace(/[^a-zA-Z0-9._-]/g, '-'); return `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${safe || 'upload'}`; }
-function normalizeContent(body) { const type = ['video','post','featured'].includes(body.type) ? body.type : ''; const title = clean(body.title, 160); const slug = slugify(body.slug || title); const image = clean(body.image, 600); const videoUrl = clean(body.video_url || body.url, 600); const attachmentUrl = clean(body.attachment_url, 600); const category = clean(body.category || body.tag, 80); const subcategory = clean(body.subcategory, 80); const description = clean(body.description || body.excerpt, 800); const seoTitle = clean(body.seo_title, 180); const metaDescription = clean(body.meta_description, 300); const keywords = clean(body.keywords, 500); const authorName = clean(body.author_name || 'Musfiq R. Farhan', 120); const canonicalUrl = clean(body.canonical_url || (type === 'featured' ? 'https://www.musfiqrfarhan.blog/' : `https://www.musfiqrfarhan.blog/${type === 'post' ? 'post' : 'watch'}.html?slug=${slug}`), 600); const published = body.published === 0 ? 0 : 1; const publishedAt = clean(body.published_at || new Date().toISOString(), 40); if (!type || !title) return { error: 'Content type and title are required.' }; if (published && (!seoTitle || !metaDescription || !canonicalUrl || !authorName || !category || !image || !publishedAt)) return { error: 'Published items require SEO title, meta description, canonical URL, author, category, image, and publish date.' }; if (published && type === 'video' && !videoUrl) return { error: 'Published videos require a YouTube or external video URL.' }; return { type, title, slug, image, videoUrl, attachmentUrl, category, subcategory, year: clean(body.year, 20), description, seoTitle, metaDescription, keywords, authorName, canonicalUrl, ogImage: clean(body.og_image || image, 600), body: clean(body.body, 10000), publishedAt, modifiedAt: new Date().toISOString(), duration: clean(body.duration, 40), embedUrl: clean(body.embed_url, 600), thumbnailUrl: clean(body.thumbnail_url || image, 600), indexable: body.indexable === 0 ? 0 : 1, published }; }
+import { clean, fail, json, originFor, plain, preflight, readJson, toInt, xml } from './lib/http.js';
+import { createToken, credentialsMatch, isAdmin } from './lib/auth.js';
+import {
+  CONTENT_COLUMNS,
+  INSERT_SQL,
+  UPDATE_SQL,
+  bindValues,
+  getPublishedBySlug,
+  listPublished,
+  listRelated,
+  normalizeContent,
+  toPublicItem,
+  uniqueSlug
+} from './lib/content.js';
+import {
+  abortMultipart,
+  completeMultipart,
+  deleteMedia,
+  listMedia,
+  serveMedia,
+  startMultipart,
+  uploadPart,
+  uploadSingle
+} from './lib/media.js';
+import { adminNotes, deleteNote, heartNote, marqueeNotes, publicNotes, submitNote, updateNote } from './lib/notes.js';
+import { adminReviews, deleteReview, publicReviews, submitReview, updateReview } from './lib/reviews.js';
+import { CATEGORIES, HOME_RAILS, KINDS, findCategory, findSubcategory } from '../../shared/taxonomy.js';
+import { fullSitemap } from '../../shared/sitemap.js';
+
+const HOME_RAIL_SIZE = 12;
 
 async function publicHome(env) {
-  const featured = await env.DB.prepare("SELECT * FROM content WHERE type='featured' AND published=1 ORDER BY updated_at DESC LIMIT 1").first();
-  const videos = await env.DB.prepare("SELECT * FROM content WHERE type='video' AND published=1 ORDER BY COALESCE(year, created_at) DESC, id DESC LIMIT 8").all();
-  const posts = await env.DB.prepare("SELECT * FROM content WHERE type='post' AND published=1 ORDER BY COALESCE(year, created_at) DESC, id DESC LIMIT 6").all();
-  return { featured: featured ? rowToContent(featured) : null, videos: videos.results.map(rowToContent), posts: posts.results.map(rowToContent) };
+  const featured = await env.DB.prepare(
+    "SELECT * FROM content WHERE type='featured' AND published=1 ORDER BY sort_order DESC, updated_at DESC LIMIT 1"
+  ).first();
+
+  // The poster strip sits directly under the hero, ahead of every other rail.
+  const posters = await listPublished(env, { category: 'Poster Release', limit: 12 });
+
+  const rails = [];
+  for (const name of HOME_RAILS) {
+    const items = await listPublished(env, { category: name, limit: HOME_RAIL_SIZE });
+    if (items.length) {
+      rails.push({ category: name, slug: findCategory(name)?.slug || '', items });
+    }
+  }
+
+  const latest = await listPublished(env, { limit: 18 });
+
+  return {
+    featured: toPublicItem(featured),
+    posters,
+    rails,
+    latest,
+    generated_at: new Date().toISOString()
+  };
 }
-async function publicReviews(env, slug = '') { const query = slug ? 'SELECT name, rating, body, created_at FROM reviews WHERE approved=1 AND content_slug=? ORDER BY created_at DESC LIMIT 12' : 'SELECT name, rating, body, created_at FROM reviews WHERE approved=1 ORDER BY created_at DESC LIMIT 12'; const result = slug ? await env.DB.prepare(query).bind(slug).all() : await env.DB.prepare(query).all(); const rows = result.results; const average = rows.length ? rows.reduce((sum, row) => sum + Number(row.rating), 0) / rows.length : 0; return { reviews: rows, count: rows.length, average: Number(average.toFixed(1)) }; }
-async function publicGallery(env) { const result = await env.DB.prepare('SELECT id, title, slug, image_url, alt_text, category, caption, sort_order FROM gallery WHERE published=1 ORDER BY sort_order ASC, updated_at DESC').all(); return { items: result.results }; }
-async function adminMetrics(env) { const content = await env.DB.prepare('SELECT COUNT(*) AS count FROM content').first(); const media = await env.DB.prepare('SELECT COUNT(*) AS count FROM media').first(); const pending = await env.DB.prepare('SELECT COUNT(*) AS count FROM reviews WHERE approved=0').first(); const rating = await env.DB.prepare('SELECT AVG(rating) AS avg FROM reviews WHERE approved=1').first(); const mediaItems = await env.DB.prepare('SELECT object_key AS key, public_url AS url FROM media ORDER BY created_at DESC LIMIT 40').all(); return { content: Number(content?.count || 0), media: Number(media?.count || 0), pending_reviews: Number(pending?.count || 0), average_rating: Number(Number(rating?.avg || 0).toFixed(1)), media_items: mediaItems.results }; }
+
+async function publicGallery(env, url) {
+  const category = clean(url.searchParams.get('category'), 80);
+  const rows = category
+    ? await env.DB.prepare(
+        'SELECT * FROM gallery WHERE published=1 AND category=? ORDER BY sort_order ASC, updated_at DESC LIMIT 300'
+      )
+        .bind(category)
+        .all()
+    : await env.DB.prepare(
+        'SELECT * FROM gallery WHERE published=1 ORDER BY sort_order ASC, updated_at DESC LIMIT 300'
+      ).all();
+  return { items: rows.results };
+}
+
+async function exportAll(env) {
+  const content = await env.DB.prepare(
+    `SELECT ${CONTENT_COLUMNS} FROM content WHERE published = 1 ORDER BY published_at DESC`
+  ).all();
+  const gallery = await env.DB.prepare(
+    'SELECT * FROM gallery WHERE published=1 ORDER BY sort_order ASC, updated_at DESC'
+  ).all();
+  const ratings = await env.DB.prepare(
+    `SELECT content_slug, ROUND(AVG(rating),1) AS average, COUNT(*) AS count
+     FROM reviews WHERE approved=1 AND content_slug IS NOT NULL GROUP BY content_slug`
+  ).all();
+  const notes = await env.DB.prepare(
+    'SELECT id, name, message, city, avatar_url, hearts FROM love_notes WHERE approved=1 ORDER BY pinned DESC, created_at DESC LIMIT 60'
+  ).all();
+
+  const ratingBySlug = new Map(ratings.results.map((row) => [row.content_slug, row]));
+  const items = content.results.map((row) => {
+    const rating = ratingBySlug.get(row.slug);
+    return toPublicItem({
+      ...row,
+      rating_average: rating?.average ?? null,
+      rating_count: rating?.count ?? 0
+    });
+  });
+
+  return {
+    items,
+    gallery: gallery.results,
+    notes: notes.results,
+    note_count: notes.results.length,
+    generated_at: new Date().toISOString()
+  };
+}
+
+async function adminMetrics(env) {
+  const row = await env.DB.prepare(
+    `SELECT
+       (SELECT COUNT(*) FROM content) AS content_total,
+       (SELECT COUNT(*) FROM content WHERE published=1) AS content_published,
+       (SELECT COUNT(*) FROM content WHERE published=0) AS content_drafts,
+       (SELECT COUNT(*) FROM gallery) AS gallery_total,
+       (SELECT COUNT(*) FROM media) AS media_total,
+       (SELECT COUNT(*) FROM reviews WHERE approved=0) AS reviews_pending,
+       (SELECT COUNT(*) FROM love_notes WHERE approved=0) AS notes_pending,
+       (SELECT COUNT(*) FROM love_notes WHERE approved=1) AS notes_live,
+       (SELECT AVG(rating) FROM reviews WHERE approved=1) AS rating_average`
+  ).first();
+
+  const missingSeo = await env.DB.prepare(
+    `SELECT COUNT(*) AS count FROM content
+     WHERE published=1 AND (meta_description IS NULL OR meta_description='' OR image IS NULL OR image='')`
+  ).first();
+
+  return {
+    content_total: Number(row?.content_total || 0),
+    content_published: Number(row?.content_published || 0),
+    content_drafts: Number(row?.content_drafts || 0),
+    gallery_total: Number(row?.gallery_total || 0),
+    media_total: Number(row?.media_total || 0),
+    reviews_pending: Number(row?.reviews_pending || 0),
+    notes_pending: Number(row?.notes_pending || 0),
+    notes_live: Number(row?.notes_live || 0),
+    rating_average: Number(Number(row?.rating_average || 0).toFixed(1)),
+    seo_incomplete: Number(missingSeo?.count || 0)
+  };
+}
+
+async function adminContentList(env, url) {
+  const search = clean(url.searchParams.get('q'), 120);
+  const category = clean(url.searchParams.get('category'), 80);
+  const kind = clean(url.searchParams.get('kind'), 40);
+  const status = clean(url.searchParams.get('status'), 20);
+
+  const filters = ['1=1'];
+  const bindings = [];
+  if (search) {
+    filters.push('(title LIKE ? OR slug LIKE ? OR description LIKE ?)');
+    bindings.push(`%${search}%`, `%${search}%`, `%${search}%`);
+  }
+  if (category) {
+    filters.push('category = ?');
+    bindings.push(category);
+  }
+  if (kind) {
+    filters.push('kind = ?');
+    bindings.push(kind);
+  }
+  if (status === 'published') filters.push('published = 1');
+  if (status === 'draft') filters.push('published = 0');
+
+  const rows = await env.DB.prepare(
+    `SELECT ${CONTENT_COLUMNS} FROM content WHERE ${filters.join(' AND ')}
+     ORDER BY updated_at DESC, id DESC LIMIT 400`
+  )
+    .bind(...bindings)
+    .all();
+  return { items: rows.results.map(toPublicItem) };
+}
+
+function galleryPayload(body) {
+  const title = clean(body.title, 160);
+  const image = clean(body.image_url || body.image, 600);
+  const alt = clean(body.alt_text || body.alt, 240);
+  if (!title || !image) return { error: 'A title and an image are required.' };
+  const category = findCategory(body.category)?.name || 'Gallery';
+  return {
+    title,
+    slug:
+      clean(body.slug, 160)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') ||
+      title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') ||
+      `image-${Date.now()}`,
+    image,
+    // Alt text matters for accessibility and image SEO, so fall back to the
+    // title rather than storing an empty string.
+    alt: alt || `${title} — Musfiq R. Farhan official gallery`,
+    category,
+    subcategory: findSubcategory(category, body.subcategory) || '',
+    caption: clean(body.caption, 240),
+    published: body.published === 0 || body.published === false ? 0 : 1,
+    sortOrder: toInt(body.sort_order, 0)
+  };
+}
 
 export default {
   async fetch(request, env) {
-    const origin = originFor(request); const url = new URL(request.url); const path = url.pathname; const method = request.method;
-    if (method === 'OPTIONS') return new Response(null, { status: 204, headers: responseHeaders(origin) });
+    const origin = originFor(request);
+    const url = new URL(request.url);
+    const { pathname: path } = url;
+    const method = request.method;
+
+    if (method === 'OPTIONS') return preflight(origin);
+
     try {
-      if (path === '/health') return json({ ok: true, service: 'MRF-API', time: new Date().toISOString() }, 200, origin);
-      if (path === '/api/public/home' && method === 'GET') return json(await publicHome(env), 200, origin);
-      if (path === '/api/public/gallery' && method === 'GET') return json(await publicGallery(env), 200, origin);
-      if (path === '/api/public/category' && method === 'GET') { const category = clean(url.searchParams.get('category'), 80); const subcategory = clean(url.searchParams.get('subcategory'), 80); if (!category) return json({ error: 'Category is required.' }, 400, origin); const items = subcategory ? await env.DB.prepare('SELECT * FROM content WHERE published=1 AND category=? AND subcategory=? ORDER BY COALESCE(published_at, created_at) DESC, id DESC').bind(category, subcategory).all() : await env.DB.prepare('SELECT * FROM content WHERE published=1 AND category=? ORDER BY COALESCE(published_at, created_at) DESC, id DESC').bind(category).all(); const gallery = subcategory ? await env.DB.prepare('SELECT * FROM gallery WHERE published=1 AND category=? ORDER BY sort_order ASC, updated_at DESC').bind(category).all() : await env.DB.prepare('SELECT * FROM gallery WHERE published=1 AND category=? ORDER BY sort_order ASC, updated_at DESC').bind(category).all(); return json({ category, subcategory, items: items.results.map(rowToContent), gallery: gallery.results }, 200, origin); }
-      if (path === '/api/public/sitemap' && method === 'GET') { const result = await env.DB.prepare("SELECT canonical_url AS loc, modified_at AS lastmod FROM content WHERE published=1 AND indexable=1 AND canonical_url IS NOT NULL ORDER BY modified_at DESC").all(); return json({ urls: result.results }, 200, origin); }
-      const publicContentMatch = path.match(/^\/api\/public\/content\/([a-z0-9-]+)$/); if (publicContentMatch && method === 'GET') { const row = await env.DB.prepare('SELECT * FROM content WHERE slug=? AND published=1 LIMIT 1').bind(publicContentMatch[1]).first(); return row ? json(rowToContent(row), 200, origin) : json({ error: 'Content not found.' }, 404, origin); }
-      if (path === '/api/public/reviews' && method === 'GET') return json(await publicReviews(env, clean(url.searchParams.get('slug'), 180)), 200, origin);
-      if (path === '/api/public/reviews' && method === 'POST') { const body = await readJson(request); const name = clean(body.name, 80); const review = clean(body.body, 500); const rating = Number(body.rating); const contentSlug = clean(body.content_slug, 180) || null; if (!name || !review || !Number.isInteger(rating) || rating < 1 || rating > 5) return json({ error: 'Name, note, and a rating from 1 to 5 are required.' }, 400, origin); if (contentSlug) { const content = await env.DB.prepare('SELECT id FROM content WHERE slug=? AND published=1 LIMIT 1').bind(contentSlug).first(); if (!content) return json({ error: 'Content page not found.' }, 404, origin); } await env.DB.prepare('INSERT INTO reviews(name, rating, body, content_slug, approved) VALUES (?, ?, ?, ?, 0)').bind(name, rating, review, contentSlug).run(); return json({ ok: true, message: 'Review submitted for approval.' }, 201, origin); }
-      if (path === '/api/admin/login' && method === 'POST') { const body = await readJson(request); if (!env.ADMIN_USER_NAME || !env.ADMIN_PASSWORD || body.username !== env.ADMIN_USER_NAME || body.password !== env.ADMIN_PASSWORD) return json({ error: 'Invalid credentials.' }, 401, origin); return json({ token: await makeToken(env, env.ADMIN_USER_NAME) }, 200, origin); }
-      if (path.startsWith('/api/admin/')) { if (!(await requireAdmin(request, env))) return json({ error: 'Unauthorized.' }, 401, origin); }
-      if (path === '/api/admin/content' && method === 'GET') { const result = await env.DB.prepare('SELECT * FROM content ORDER BY updated_at DESC, id DESC').all(); return json({ items: result.results.map(rowToContent) }, 200, origin); }
-      if (path === '/api/admin/gallery' && method === 'GET') { const result = await env.DB.prepare('SELECT * FROM gallery ORDER BY sort_order ASC, updated_at DESC').all(); return json({ items: result.results }, 200, origin); }
-      if (path === '/api/admin/gallery' && method === 'POST') { const body = await readJson(request); const title = clean(body.title, 160); const image = clean(body.image_url || body.image, 600); const alt = clean(body.alt_text || body.alt, 240); if (!title || !image || !alt) return json({ error: 'Title, image URL, and alt text are required.' }, 400, origin); const row = await env.DB.prepare('INSERT INTO gallery(title,slug,image_url,alt_text,category,caption,published,sort_order,updated_at) VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *').bind(title, slugify(body.slug || title), image, alt, clean(body.category, 80) || 'Archive', clean(body.caption, 240), body.published === 0 ? 0 : 1, Number(body.sort_order || 0)).first(); return json(row, 201, origin); }
-      if (path === '/api/admin/content' && method === 'POST') { const body = await readJson(request); const normalized = normalizeContent(body); if (normalized.error) return json({ error: normalized.error }, 400, origin); const result = await env.DB.prepare('INSERT INTO content(type,title,slug,image,video_url,attachment_url,category,subcategory,year,description,seo_title,meta_description,keywords,author_name,canonical_url,og_image,body,published_at,modified_at,duration,embed_url,thumbnail_url,indexable,published,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *').bind(normalized.type, normalized.title, normalized.slug, normalized.image, normalized.videoUrl, normalized.attachmentUrl, normalized.category, normalized.subcategory, normalized.year, normalized.description, normalized.seoTitle, normalized.metaDescription, normalized.keywords, normalized.authorName, normalized.canonicalUrl, normalized.ogImage, normalized.body, normalized.publishedAt, normalized.modifiedAt, normalized.duration, normalized.embedUrl, normalized.thumbnailUrl, normalized.indexable, normalized.published).first(); return json(rowToContent(result), 201, origin); }
-      const galleryMatch = path.match(/^\/api\/admin\/gallery\/(\d+)$/); if (galleryMatch) { const id = Number(galleryMatch[1]); if (method === 'DELETE') { await env.DB.prepare('DELETE FROM gallery WHERE id=?').bind(id).run(); return json({ ok: true }, 200, origin); } if (method === 'PATCH') { const body = await readJson(request); const title = clean(body.title, 160); const image = clean(body.image_url || body.image, 600); const alt = clean(body.alt_text || body.alt, 240); if (!title || !image || !alt) return json({ error: 'Title, image URL, and alt text are required.' }, 400, origin); const row = await env.DB.prepare('UPDATE gallery SET title=?, slug=?, image_url=?, alt_text=?, category=?, caption=?, published=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *').bind(title, slugify(body.slug || title), image, alt, clean(body.category, 80) || 'Archive', clean(body.caption, 240), body.published === 0 ? 0 : 1, Number(body.sort_order || 0), id).first(); return row ? json(row, 200, origin) : json({ error: 'Gallery item not found.' }, 404, origin); } }
-      const contentMatch = path.match(/^\/api\/admin\/content\/(\d+)$/); if (contentMatch) { const id = Number(contentMatch[1]); if (method === 'DELETE') { await env.DB.prepare('DELETE FROM content WHERE id=?').bind(id).run(); return json({ ok: true }, 200, origin); } if (method === 'PUT') { const body = await readJson(request); const normalized = normalizeContent(body); if (normalized.error) return json({ error: normalized.error }, 400, origin); const current = await env.DB.prepare('SELECT slug FROM content WHERE id=?').bind(id).first(); if (!current) return json({ error: 'Content not found.' }, 404, origin); normalized.slug = current.slug; const result = await env.DB.prepare('UPDATE content SET type=?, title=?, slug=?, image=?, video_url=?, attachment_url=?, category=?, subcategory=?, year=?, description=?, seo_title=?, meta_description=?, keywords=?, author_name=?, canonical_url=?, og_image=?, body=?, published_at=?, modified_at=?, duration=?, embed_url=?, thumbnail_url=?, indexable=?, published=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *').bind(normalized.type, normalized.title, normalized.slug, normalized.image, normalized.videoUrl, normalized.attachmentUrl, normalized.category, normalized.subcategory, normalized.year, normalized.description, normalized.seoTitle, normalized.metaDescription, normalized.keywords, normalized.authorName, normalized.canonicalUrl, normalized.ogImage, normalized.body, normalized.publishedAt, normalized.modifiedAt, normalized.duration, normalized.embedUrl, normalized.thumbnailUrl, normalized.indexable, normalized.published, id).first(); return result ? json(rowToContent(result), 200, origin) : json({ error: 'Content not found.' }, 404, origin); } }
-      if (path === '/api/admin/reviews' && method === 'GET') { const result = await env.DB.prepare('SELECT * FROM reviews ORDER BY approved ASC, created_at DESC').all(); return json({ reviews: result.results }, 200, origin); }
-      const reviewMatch = path.match(/^\/api\/admin\/reviews\/(\d+)$/); if (reviewMatch && method === 'PATCH') { const body = await readJson(request); await env.DB.prepare('UPDATE reviews SET approved=? WHERE id=?').bind(body.approved ? 1 : 0, Number(reviewMatch[1])).run(); return json({ ok: true }, 200, origin); }
-      if (path === '/api/admin/metrics' && method === 'GET') { const metrics = await adminMetrics(env); const gallery = await env.DB.prepare('SELECT COUNT(*) AS count FROM gallery').first(); return json({ ...metrics, gallery: Number(gallery?.count || 0) }, 200, origin); }
-      if (path === '/api/admin/media' && method === 'POST') { const form = await request.formData(); const file = form.get('file'); if (!(file instanceof File)) return json({ error: 'A file is required.' }, 400, origin); const max = 250 * 1024 * 1024; if (file.size > max) return json({ error: 'Files must be 250 MB or smaller.' }, 413, origin); const key = mediaKeyFor(file.name); await env.MEDIA.put(key, file.stream(), { httpMetadata: { contentType: file.type || 'application/octet-stream', contentDisposition: `inline; filename="${clean(file.name, 120)}"` } }); const publicUrl = `${url.origin}/media/${key}`; await env.DB.prepare('INSERT INTO media(object_key,original_name,content_type,size,public_url) VALUES(?,?,?,?,?)').bind(key, clean(file.name, 180), file.type || 'application/octet-stream', file.size, publicUrl).run(); return json({ ok: true, key, url: publicUrl }, 201, origin); }
-      if (path.startsWith('/media/') && method === 'GET') { const key = decodeURIComponent(path.slice('/media/'.length)); const object = await env.MEDIA.get(key); if (!object) return text('Not found', 404); const headers = new Headers(); object.writeHttpMetadata(headers); headers.set('etag', object.httpEtag); headers.set('cache-control', 'public, max-age=31536000, immutable'); return new Response(object.body, { headers }); }
-      return json({ error: 'Not found.' }, 404, origin);
-    } catch (error) { console.error(error); return json({ error: 'Unexpected API error.' }, 500, origin); }
+      // ---------------------------------------------------------------- public
+      if (path === '/health') {
+        return json({ ok: true, service: 'MRF-API', time: new Date().toISOString() }, { origin });
+      }
+
+      if (path === '/api/public/taxonomy' && method === 'GET') {
+        return json({ categories: CATEGORIES, kinds: KINDS, rails: HOME_RAILS }, {
+          origin,
+          cache: 'public, max-age=3600'
+        });
+      }
+
+      if (path === '/api/public/home' && method === 'GET') {
+        return json(await publicHome(env), { origin });
+      }
+
+      if (path === '/api/public/export' && method === 'GET') {
+        return json(await exportAll(env), { origin, cache: 'public, max-age=60' });
+      }
+
+      if (path === '/api/public/gallery' && method === 'GET') {
+        return json(await publicGallery(env, url), { origin });
+      }
+
+      if (path === '/api/public/category' && method === 'GET') {
+        const category = findCategory(url.searchParams.get('category'));
+        if (!category) return fail('Unknown category.', 404, origin);
+        const subcategory = findSubcategory(category.name, url.searchParams.get('subcategory'));
+        const items = await listPublished(env, {
+          category: category.name,
+          subcategory: subcategory || undefined,
+          limit: Math.min(toInt(url.searchParams.get('limit'), 48), 100),
+          offset: toInt(url.searchParams.get('offset'), 0)
+        });
+        const gallery = await env.DB.prepare(
+          'SELECT * FROM gallery WHERE published=1 AND category=? ORDER BY sort_order ASC, updated_at DESC LIMIT 60'
+        )
+          .bind(category.name)
+          .all();
+        return json(
+          {
+            category: category.name,
+            category_slug: category.slug,
+            subcategory,
+            subcategories: category.subcategories,
+            blurb: category.blurb,
+            items,
+            gallery: gallery.results
+          },
+          { origin }
+        );
+      }
+
+      const publicContent = path.match(/^\/api\/public\/content\/([a-z0-9-]+)$/);
+      if (publicContent && method === 'GET') {
+        const item = await getPublishedBySlug(env, publicContent[1]);
+        if (!item) return fail('Content not found.', 404, origin);
+        const related = await listRelated(env, item);
+        return json({ item, related }, { origin });
+      }
+
+      if (path === '/api/public/reviews' && method === 'GET') return publicReviews(env, origin, url);
+      if (path === '/api/public/reviews' && method === 'POST') {
+        return submitReview(env, origin, await readJson(request));
+      }
+
+      if (path === '/api/public/love-notes' && method === 'GET') return publicNotes(env, origin, url);
+      if (path === '/api/public/love-notes' && method === 'POST') {
+        return submitNote(request, env, origin, await readJson(request));
+      }
+      if (path === '/api/public/love-notes/marquee' && method === 'GET') return marqueeNotes(env, origin);
+
+      const heartMatch = path.match(/^\/api\/public\/love-notes\/(\d+)\/heart$/);
+      if (heartMatch && method === 'POST') return heartNote(env, origin, Number(heartMatch[1]));
+
+      if (path === '/sitemap.xml' && method === 'GET') {
+        const data = await exportAll(env);
+        return xml(fullSitemap({ items: data.items, gallery: data.gallery }), origin);
+      }
+
+      if (path.startsWith('/media/') && method === 'GET') {
+        return serveMedia(request, env, decodeURIComponent(path.slice('/media/'.length)));
+      }
+
+      // ----------------------------------------------------------------- auth
+      if (path === '/api/admin/login' && method === 'POST') {
+        const body = await readJson(request);
+        if (!credentialsMatch(env, body)) return fail('Invalid credentials.', 401, origin);
+        return json({ token: await createToken(env, env.ADMIN_USER_NAME) }, { origin, cache: 'no-store' });
+      }
+
+      if (path.startsWith('/api/admin/') && !(await isAdmin(request, env))) {
+        return fail('Unauthorized.', 401, origin);
+      }
+
+      // ---------------------------------------------------------------- admin
+      if (path === '/api/admin/metrics' && method === 'GET') {
+        return json(await adminMetrics(env), { origin, cache: 'no-store' });
+      }
+
+      if (path === '/api/admin/content' && method === 'GET') {
+        return json(await adminContentList(env, url), { origin, cache: 'no-store' });
+      }
+
+      if (path === '/api/admin/content' && method === 'POST') {
+        const row = normalizeContent(await readJson(request));
+        if (row.error) return fail(row.error, 400, origin);
+        row.slug = await uniqueSlug(env, row.slug);
+        row.path = `/${findCategory(row.category)?.slug || 'archive'}/${row.slug}/`;
+        row.canonicalUrl = `https://www.musfiqrfarhan.blog${row.path}`;
+        const created = await env.DB.prepare(INSERT_SQL).bind(...bindValues(row)).first();
+        return json(toPublicItem(created), { status: 201, origin, cache: 'no-store' });
+      }
+
+      const contentId = path.match(/^\/api\/admin\/content\/(\d+)$/);
+      if (contentId) {
+        const id = Number(contentId[1]);
+        if (method === 'DELETE') {
+          await env.DB.prepare('DELETE FROM content WHERE id = ?').bind(id).run();
+          return json({ ok: true }, { origin, cache: 'no-store' });
+        }
+        if (method === 'PUT') {
+          const existing = await env.DB.prepare('SELECT * FROM content WHERE id = ?').bind(id).first();
+          if (!existing) return fail('Content not found.', 404, origin);
+          const row = normalizeContent(await readJson(request), existing);
+          if (row.error) return fail(row.error, 400, origin);
+          const updated = await env.DB.prepare(UPDATE_SQL).bind(...bindValues(row), id).first();
+          return json(toPublicItem(updated), { origin, cache: 'no-store' });
+        }
+        if (method === 'PATCH') {
+          // Quick toggles from the content list: publish / hide / reorder.
+          const body = await readJson(request);
+          const fields = [];
+          const bindings = [];
+          if ('published' in body) {
+            fields.push('published = ?');
+            bindings.push(body.published ? 1 : 0);
+          }
+          if ('indexable' in body) {
+            fields.push('indexable = ?');
+            bindings.push(body.indexable ? 1 : 0);
+          }
+          if ('sort_order' in body) {
+            fields.push('sort_order = ?');
+            bindings.push(toInt(body.sort_order, 0));
+          }
+          if (!fields.length) return fail('Nothing to update.', 400, origin);
+          fields.push('updated_at = CURRENT_TIMESTAMP');
+          const updated = await env.DB.prepare(
+            `UPDATE content SET ${fields.join(', ')} WHERE id = ? RETURNING *`
+          )
+            .bind(...bindings, id)
+            .first();
+          return updated
+            ? json(toPublicItem(updated), { origin, cache: 'no-store' })
+            : fail('Content not found.', 404, origin);
+        }
+      }
+
+      if (path === '/api/admin/gallery' && method === 'GET') {
+        const rows = await env.DB.prepare(
+          'SELECT * FROM gallery ORDER BY sort_order ASC, updated_at DESC LIMIT 400'
+        ).all();
+        return json({ items: rows.results }, { origin, cache: 'no-store' });
+      }
+
+      if (path === '/api/admin/gallery' && method === 'POST') {
+        const payload = galleryPayload(await readJson(request));
+        if (payload.error) return fail(payload.error, 400, origin);
+        const row = await env.DB.prepare(
+          `INSERT INTO gallery(title, slug, image_url, alt_text, category, caption, published, sort_order, updated_at)
+           VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *`
+        )
+          .bind(
+            payload.title,
+            payload.slug,
+            payload.image,
+            payload.alt,
+            payload.category,
+            payload.caption,
+            payload.published,
+            payload.sortOrder
+          )
+          .first();
+        return json(row, { status: 201, origin, cache: 'no-store' });
+      }
+
+      const galleryId = path.match(/^\/api\/admin\/gallery\/(\d+)$/);
+      if (galleryId) {
+        const id = Number(galleryId[1]);
+        if (method === 'DELETE') {
+          await env.DB.prepare('DELETE FROM gallery WHERE id = ?').bind(id).run();
+          return json({ ok: true }, { origin, cache: 'no-store' });
+        }
+        if (method === 'PATCH') {
+          const payload = galleryPayload(await readJson(request));
+          if (payload.error) return fail(payload.error, 400, origin);
+          const row = await env.DB.prepare(
+            `UPDATE gallery SET title=?, slug=?, image_url=?, alt_text=?, category=?, caption=?,
+             published=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *`
+          )
+            .bind(
+              payload.title,
+              payload.slug,
+              payload.image,
+              payload.alt,
+              payload.category,
+              payload.caption,
+              payload.published,
+              payload.sortOrder,
+              id
+            )
+            .first();
+          return row ? json(row, { origin, cache: 'no-store' }) : fail('Gallery item not found.', 404, origin);
+        }
+      }
+
+      if (path === '/api/admin/media' && method === 'GET') return listMedia(env, origin, url);
+      if (path === '/api/admin/media' && method === 'POST') return uploadSingle(request, env, origin);
+      if (path === '/api/admin/media/multipart/start' && method === 'POST') {
+        return startMultipart(request, env, origin, await readJson(request));
+      }
+      if (path === '/api/admin/media/multipart/part' && method === 'PUT') {
+        return uploadPart(request, env, origin, url);
+      }
+      if (path === '/api/admin/media/multipart/complete' && method === 'POST') {
+        return completeMultipart(request, env, origin, await readJson(request));
+      }
+      if (path === '/api/admin/media/multipart/abort' && method === 'POST') {
+        return abortMultipart(env, origin, await readJson(request));
+      }
+      const mediaId = path.match(/^\/api\/admin\/media\/(\d+)$/);
+      if (mediaId && method === 'DELETE') return deleteMedia(env, origin, Number(mediaId[1]));
+
+      if (path === '/api/admin/reviews' && method === 'GET') return adminReviews(env, origin);
+      const reviewId = path.match(/^\/api\/admin\/reviews\/(\d+)$/);
+      if (reviewId && method === 'PATCH') {
+        return updateReview(env, origin, Number(reviewId[1]), await readJson(request));
+      }
+      if (reviewId && method === 'DELETE') return deleteReview(env, origin, Number(reviewId[1]));
+
+      if (path === '/api/admin/love-notes' && method === 'GET') return adminNotes(env, origin);
+      const noteId = path.match(/^\/api\/admin\/love-notes\/(\d+)$/);
+      if (noteId && method === 'PATCH') {
+        return updateNote(env, origin, Number(noteId[1]), await readJson(request));
+      }
+      if (noteId && method === 'DELETE') return deleteNote(env, origin, Number(noteId[1]));
+
+      if (path === '/robots.txt') {
+        return plain('User-agent: *\nAllow: /\nSitemap: https://www.musfiqrfarhan.blog/sitemap.xml\n');
+      }
+
+      return fail('Not found.', 404, origin);
+    } catch (error) {
+      console.error('MRF-API error', error);
+      return fail('Unexpected API error.', 500, origin);
+    }
   }
 };
