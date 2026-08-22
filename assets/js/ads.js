@@ -60,13 +60,17 @@ function insertBefore(node, ad) {
 function setupEntry() {
   const body = document.querySelector('[data-entry-body]');
   if (!body) return false;
-  if (body.querySelector('.ad-slot') || document.querySelector('.article__aside .ad-slot')) return true;
   const firstBreak = body.querySelector('p, h2, h3');
-  insertAfter(firstBreak || body.firstElementChild || body, frameAd(ADS.inline, 'inline'));
+  if (!body.querySelector('.ad-slot--inline')) {
+    insertAfter(firstBreak || body.firstElementChild || body, frameAd(ADS.inline, 'inline'));
+  }
   const aside = document.querySelector('.article__aside');
-  if (aside) aside.append(frameAd(ADS.tallRail, 'tall-rail'), frameAd(ADS.mediumRail, 'medium-rail'));
-  body.append(frameAd(ADS.mobile, 'mobile'), frameAd(ADS.tablet, 'tablet'), nativeAd());
-  return true;
+  if (aside && !aside.querySelector('.ad-slot--tall-rail')) aside.append(frameAd(ADS.tallRail, 'tall-rail'));
+  if (aside && !aside.querySelector('.ad-slot--medium-rail')) aside.append(frameAd(ADS.mediumRail, 'medium-rail'));
+  if (!body.querySelector('.ad-slot--mobile')) body.append(frameAd(ADS.mobile, 'mobile'));
+  if (!body.querySelector('.ad-slot--tablet')) body.append(frameAd(ADS.tablet, 'tablet'));
+  if (!body.querySelector('.ad-slot--native')) body.append(nativeAd());
+  return Boolean(body.querySelector('.ad-slot') || aside?.querySelector('.ad-slot'));
 }
 
 function setupListing() {
