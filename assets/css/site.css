@@ -1890,8 +1890,39 @@ p {
 .ad-slot--tablet { width: min(468px, 100%); min-height: 60px; }
 .ad-slot--mobile { width: min(320px, 100%); min-height: 50px; }
 .ad-slot--native { width: 100%; min-height: 180px; }
+.ad-slot--smartlink { width: min(100%, 420px); min-height: 52px; }
 .ad-slot--tall-rail,
 .ad-slot--medium-rail { width: 160px; min-height: 300px; }
+
+.ad-slot iframe {
+  display: block;
+  border: 0;
+  max-width: 100%;
+}
+
+.ad-slot__native-container {
+  width: 100%;
+  min-height: 150px;
+}
+
+.ad-smartlink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.ad-smartlink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
 .ad-slot--tall-rail { min-height: 600px; }
 
 .article__aside .ad-slot { margin: 1rem auto; }
