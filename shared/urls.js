@@ -16,6 +16,7 @@ export const SITE_ORIGIN = 'https://www.musfiqrfarhan.blog';
 export const SITE_NAME = 'Musfiq R. Farhan Official';
 export const PERSON_NAME = 'Musfiq R. Farhan';
 export const WHATSAPP_CHANNEL = 'https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X';
+export const X_PROFILE = 'https://x.com/musfiqrofficial';
 
 /** Reserved top-level paths that a category slug must never collide with. */
 export const RESERVED_PATHS = new Set([

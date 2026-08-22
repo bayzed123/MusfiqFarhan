@@ -8,7 +8,7 @@
  */
 
 import { CATEGORIES, NAV_GROUPS, findCategory } from '../../shared/taxonomy.js';
-import { PERSON_NAME, SITE_NAME, WHATSAPP_CHANNEL, categoryPath, STATIC_PATHS } from '../../shared/urls.js';
+import { PERSON_NAME, SITE_NAME, WHATSAPP_CHANNEL, X_PROFILE, categoryPath, STATIC_PATHS } from '../../shared/urls.js';
 
 const esc = (value) =>
   String(value ?? '').replace(/[&<>'"]/g, (char) =>
@@ -36,6 +36,8 @@ export const ICONS = {
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>',
   instagram:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  x:
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3l-4.9-6.4L6.4 22H3.3l7.3-8.4L2.8 2h6.4l4.4 5.8L18.9 2zm-1.1 17.8h1.7L8.3 4H6.5z"/></svg>',
   whatsapp:
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a13 13 0 0 1-5.6-4.9c-.4-.6-.9-1.5-.9-2.4 0-.9.5-1.4.7-1.6.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.7c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6a9 9 0 0 0 3.8 3.1c.3.1.5.1.6 0l.8-.9c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.1.1.6 0 1z"/></svg>',
   imdb: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6h20v12H2zm2.6 2.4v7.2h1.6V8.4zm3 0v7.2h1.4v-4l.7 4h1l.7-4.1v4.1h1.4V8.4h-2.1l-.5 3-.5-3zm6.4 0v7.2h2.3c1.1 0 1.7-.5 1.7-1.6v-4c0-1.1-.6-1.6-1.7-1.6zm1.6 1.2h.3c.3 0 .5.1.5.5v3.8c0 .4-.2.5-.5.5h-.3z"/></svg>',
@@ -47,6 +49,7 @@ const SOCIAL_LINKS = [
   { label: 'YouTube', href: 'https://youtube.com/@musfiqrfarhan', icon: 'youtube' },
   { label: 'Facebook', href: 'https://www.facebook.com/Musfiqrfarhanofficial/', icon: 'facebook' },
   { label: 'Instagram', href: 'https://www.instagram.com/musfiqfarhan', icon: 'instagram' },
+  { label: 'X', href: X_PROFILE, icon: 'x' },
   { label: 'WhatsApp channel', href: WHATSAPP_CHANNEL, icon: 'whatsapp' },
   { label: 'IMDb', href: 'https://www.imdb.com/name/nm11068428/bio/', icon: 'imdb' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/musfiqrfarhanofficial', icon: 'linkedin' }
