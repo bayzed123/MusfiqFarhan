@@ -799,6 +799,121 @@ p {
   gap: 0.75rem;
 }
 
+.hero__official {
+  max-width: 43rem;
+  margin-top: 1.1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.hero__official-heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.hero__official-rule {
+  width: 1.35rem;
+  height: 2px;
+  background: var(--brand-bright);
+}
+
+.hero__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  margin-left: 0.2rem;
+  padding: 0.2rem 0.46rem;
+  border: 1px solid rgba(120, 219, 164, 0.35);
+  border-radius: 999px;
+  color: #9de7bd;
+  font-size: 0.56rem;
+  letter-spacing: 0.07em;
+}
+
+.hero__verified span {
+  display: grid;
+  width: 0.88rem;
+  height: 0.88rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #35b875;
+  color: #07150e;
+  font-size: 0.62rem;
+  line-height: 1;
+}
+
+.hero__official-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  margin-top: 0.65rem;
+}
+
+.hero__official-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.36rem;
+  min-height: 2rem;
+  padding: 0.28rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  background: rgba(8, 9, 12, 0.36);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.hero__official-links a:hover,
+.hero__official-links a:focus-visible {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.hero__official-links img {
+  display: block;
+  width: 1.08rem;
+  height: 1.08rem;
+  object-fit: contain;
+  border-radius: 0.22rem;
+}
+
+.hero__official-links a:nth-child(2) img,
+.hero__official-links a:nth-child(3) img {
+  width: 1.35rem;
+  height: 0.82rem;
+  border-radius: 0.16rem;
+}
+
+.hero__official-note {
+  max-width: 38rem;
+  margin: 0.58rem 0 0;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .hero__official-links {
+    gap: 0.32rem;
+  }
+
+  .hero__official-links a {
+    font-size: 0.65rem;
+    padding-inline: 0.46rem;
+  }
+}
+
 /* -------------------------------------------------------------------- rails */
 
 .section {

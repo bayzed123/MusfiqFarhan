@@ -32,11 +32,28 @@ function heroMarkup(item) {
         <span>${esc(item.category || '')}</span>
       </div>
       ${item.description ? `<p class="hero__lede">${esc(item.description)}</p>` : ''}
-      <div class="hero__actions">
-        <a class="button button--primary" href="${attr(href)}">${watchable ? '▶ Watch now' : 'Read the story'}</a>
-        <a class="button button--ghost" href="/c/recent-releases/">Browse recent releases</a>
-      </div>
-    </div>`;
+        <div class="hero__actions">
+          <a class="button button--primary" href="${attr(href)}">${watchable ? '▶ Watch now' : 'Read the story'}</a>
+          <a class="button button--ghost" href="/c/recent-releases/">Browse recent releases</a>
+        </div>
+        <div class="hero__official" aria-label="Official profiles and professional references">
+          <div class="hero__official-heading">
+            <span class="hero__official-rule" aria-hidden="true"></span>
+            <span>Official profiles</span>
+            <span class="hero__verified" title="Profile link verified by the official site"><span aria-hidden="true">✓</span> Verified links</span>
+          </div>
+          <div class="hero__official-links">
+            <a href="https://www.instagram.com/musfiqfarhan?igsh=MWxxeWI3aTkzbHM5cQ==" target="_blank" rel="noopener noreferrer" aria-label="Instagram official profile"><img src="/assets/img/social-instagram.png" alt="" width="24" height="24"> <span>Instagram</span></a>
+            <a href="https://www.imdb.com/name/nm11068428/bio/" target="_blank" rel="noopener noreferrer" aria-label="IMDb profile"><img src="/assets/img/social-imdb.png" alt="" width="34" height="20"> <span>IMDb</span></a>
+            <a href="https://youtube.com/@musfiqrfarhan?si=gG4wQxD6qsIpVZCZ" target="_blank" rel="noopener noreferrer" aria-label="YouTube official channel"><img src="/assets/img/social-youtube.png" alt="" width="28" height="20"> <span>YouTube</span></a>
+            <a href="https://whatsapp.com/channel/0029VbBdG03HQbS1bTrVHF1X" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp official channel"><img src="/assets/img/social-whatsapp.png" alt="" width="24" height="24"> <span>WhatsApp</span></a>
+            <a href="https://www.crunchbase.com/person/musfiq-r-farhan" target="_blank" rel="noopener noreferrer" aria-label="Crunchbase profile"><img src="/assets/img/social-crunchbase.png" alt="" width="24" height="24"> <span>Crunchbase</span></a>
+            <a href="https://www.linkedin.com/in/musfiqrfarhanofficial" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn official profile"><img src="/assets/img/social-linkedin.png" alt="" width="24" height="24"> <span>LinkedIn</span></a>
+            <a href="https://x.com/musfiqrofficial" target="_blank" rel="noopener noreferrer" aria-label="X official profile"><img src="/assets/img/social-x.png" alt="" width="24" height="24"> <span>X</span></a>
+          </div>
+          <p class="hero__official-note">Public identity references for Musfiq R. Farhan, Bangladeshi actor and storyteller.</p>
+        </div>
+      </div>`;
 }
 
 function posterStripMarkup(items) {
