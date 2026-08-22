@@ -83,7 +83,7 @@ async function injectShellEverywhere() {
 
 /* ------------------------------------------------------------- page shells */
 
-function pageShell({ lang = 'en', head, bodyAttrs = '', main, scripts }) {
+function pageShell({ lang = 'en', head, bodyAttrs = '', main, scripts, schema = '' }) {
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -92,6 +92,7 @@ function pageShell({ lang = 'en', head, bodyAttrs = '', main, scripts }) {
 ${head}
   <!--shell:head:start--><!--shell:head:end-->
   <!--shell:schema:start--><!--shell:schema:end-->
+${schema}
 </head>
 <body${bodyAttrs}>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -112,8 +113,8 @@ ${scripts}
 `;
 }
 
-function seoHead({ title, description, canonical, image, type = 'website', extra = '', indexable = true }) {
-  const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/hero_red-1280.webp'}`;
+function seoHead({ title, description, canonical, image, imageAlt = title, type = 'website', extra = '', indexable = true }) {
+  const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/og-card.jpg'}`;
   // An item marked non-indexable must say so in the HTML source. Correcting
   // it from JavaScript afterwards is too late: a crawler can index the page
   // before the script runs.
@@ -129,12 +130,89 @@ function seoHead({ title, description, canonical, image, type = 'website', extra
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:image" content="${esc(absoluteImage)}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${esc(imageAlt)}">
   <meta property="og:site_name" content="${esc(SITE_NAME)}">
+  <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${esc(absoluteImage)}">
+  <meta name="twitter:image:alt" content="${esc(imageAlt)}">
 ${extra}`;
+}
+
+function jsonLdTag(graph) {
+  return `  <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
+}
+
+function collectionSchema({ canonical, title, description, items }) {
+  return jsonLdTag([
+    {
+      '@type': 'CollectionPage',
+      '@id': `${canonical}#webpage`,
+      url: canonical,
+      name: title,
+      description,
+      isPartOf: { '@id': `${SITE_ORIGIN}/#website` },
+      about: { '@id': `${SITE_ORIGIN}/#person` },
+      mainEntity: {
+        '@type': 'ItemList',
+        numberOfItems: items.length,
+        itemListElement: items.slice(0, 30).map((item, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.title,
+          url: `${SITE_ORIGIN}${item.path || contentPath(item)}`
+        }))
+      }
+    }
+  ]);
+}
+
+function contentSchema({ item, canonical, title, description, image, isVideo }) {
+  const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/og-card.jpg'}`;
+  const entity = isVideo
+    ? {
+        '@type': 'VideoObject',
+        '@id': `${canonical}#video`,
+        name: title,
+        description,
+        thumbnailUrl: [absoluteImage],
+        uploadDate: item.published_at,
+        contentUrl: item.attachment_url || item.video_url || undefined,
+        embedUrl: item.embed_url || undefined,
+        duration: item.duration || undefined,
+        isFamilyFriendly: true,
+        publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+        author: { '@id': `${SITE_ORIGIN}/#person` },
+        mainEntityOfPage: canonical
+      }
+    : {
+        '@type': 'Article',
+        '@id': `${canonical}#article`,
+        headline: title,
+        description,
+        image: [absoluteImage],
+        datePublished: item.published_at,
+        dateModified: item.modified_at || item.published_at,
+        author: { '@id': `${SITE_ORIGIN}/#person` },
+        publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+        mainEntityOfPage: canonical,
+        inLanguage: 'en'
+      };
+  return jsonLdTag([
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_ORIGIN}/` },
+        { '@type': 'ListItem', position: 2, name: item.category, item: `${SITE_ORIGIN}${categoryPath(item.category)}` },
+        { '@type': 'ListItem', position: 3, name: title, item: canonical }
+      ]
+    },
+    entity
+  ]);
 }
 
 async function writePage(relativePath, html) {
@@ -237,7 +315,8 @@ ${categoryCards(matching)}
           }),
           bodyAttrs: ` data-category="${esc(category.name)}"${sub ? ` data-subcategory="${esc(sub)}"` : ''}`,
           main,
-          scripts: '  <script type="module" src="/assets/js/category.js"></script>'
+          scripts: '  <script type="module" src="/assets/js/category.js"></script>',
+          schema: collectionSchema({ canonical, title: `${label} | ${SITE_NAME}`, description, items: matching })
         })
       );
       count += 1;
@@ -328,7 +407,15 @@ ${renderMarkdown(item.body)}
         }),
         bodyAttrs: ` data-slug="${esc(item.slug)}" data-category="${esc(item.category)}"`,
         main,
-        scripts: '  <script type="module" src="/assets/js/entry.js"></script>'
+        scripts: '  <script type="module" src="/assets/js/entry.js"></script>',
+        schema: contentSchema({
+          item,
+          canonical,
+          title: item.seo_title || `${item.title} | ${SITE_NAME}`,
+          description,
+          image: item.og_image || item.image,
+          isVideo
+        })
       })
     );
     count += 1;

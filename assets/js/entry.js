@@ -157,9 +157,19 @@ export async function initEntry() {
   // after the page was generated.
   document.title = item.seo_title || `${item.title} | ${SITE.name}`;
   setMeta('meta[name="description"]', 'content', item.meta_description || item.description);
-  setMeta('link[rel="canonical"]', 'href', item.canonical_url || `${SITE.origin}${item.path}`);
+  const canonical = `${SITE.origin}${item.path}`;
+  const absoluteImage = mediaUrl(item.og_image || item.image, SITE.fallbackImage);
+  const imageUrl = absoluteImage.startsWith('http') ? absoluteImage : `${SITE.origin}${absoluteImage}`;
+  setMeta('link[rel="canonical"]', 'href', canonical);
+  setMeta('meta[property="og:url"]', 'content', canonical);
   setMeta('meta[property="og:title"]', 'content', item.seo_title || item.title);
   setMeta('meta[property="og:description"]', 'content', item.meta_description || item.description);
+  setMeta('meta[property="og:image"]', 'content', imageUrl);
+  setMeta('meta[property="og:image:alt"]', 'content', item.seo_title || item.title);
+  setMeta('meta[name="twitter:title"]', 'content', item.seo_title || item.title);
+  setMeta('meta[name="twitter:description"]', 'content', item.meta_description || item.description);
+  setMeta('meta[name="twitter:image"]', 'content', imageUrl);
+  setMeta('meta[name="twitter:image:alt"]', 'content', item.seo_title || item.title);
   if (item.indexable === 0) setMeta('meta[name="robots"]', 'content', 'noindex,follow');
 
   const playerHost = $('[data-entry-player]');
