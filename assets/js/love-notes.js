@@ -109,14 +109,24 @@ export async function initLoveNotePage() {
     status.dataset.state = '';
     status.textContent = 'Sending your note…';
     try {
+      let avatarUrl = '';
+      const avatarFile = form.querySelector('[name="avatar_file"]')?.files?.[0];
+      if (avatarFile) {
+        status.textContent = 'Uploading your profile photo…';
+        const upload = await api.uploadLoveNoteAvatar(avatarFile);
+        avatarUrl = upload.url || '';
+      }
+      status.textContent = 'Sending your note…';
       const result = await api.submitLoveNote({
         name: values.name,
         message: values.message,
         city: values.city,
-        avatar_url: values.avatar_url,
+        avatar_url: avatarUrl,
         website: values.website
       });
       form.reset();
+      const hiddenAvatar = form.querySelector('[name="avatar_url"]');
+      if (hiddenAvatar) hiddenAvatar.value = '';
       status.dataset.state = 'success';
       status.textContent = result.message || 'Thank you. Your note will appear once it is approved.';
     } catch (error) {

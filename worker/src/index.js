@@ -30,7 +30,8 @@ import {
   serveMedia,
   startMultipart,
   uploadPart,
-  uploadSingle
+  uploadSingle,
+  uploadLoveNoteAvatar
 } from './lib/media.js';
 import { adminNotes, deleteNote, heartNote, marqueeNotes, publicNotes, submitNote, updateNote } from './lib/notes.js';
 import { adminReviews, deleteReview, publicReviews, submitReview, updateReview } from './lib/reviews.js';
@@ -288,6 +289,9 @@ export default {
       if (path === '/api/public/love-notes' && method === 'GET') return publicNotes(env, origin, url);
       if (path === '/api/public/love-notes' && method === 'POST') {
         return submitNote(request, env, origin, await readJson(request));
+      }
+      if (path === '/api/public/love-notes/avatar' && method === 'POST') {
+        return uploadLoveNoteAvatar(request, env, origin);
       }
       if (path === '/api/public/love-notes/marquee' && method === 'GET') return marqueeNotes(env, origin);
 

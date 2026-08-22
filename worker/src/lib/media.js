@@ -75,6 +75,34 @@ export async function uploadSingle(request, env, origin) {
   });
 }
 
+export const LOVE_NOTE_AVATAR_LIMIT = 5 * 1024 * 1024;
+const AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+export async function uploadLoveNoteAvatar(request, env, origin) {
+  const form = await request.formData();
+  const file = form.get('file');
+  if (!(file instanceof File)) return fail('Choose a profile image to upload.', 400, origin);
+  const contentType = (file.type || '').toLowerCase();
+  if (!AVATAR_TYPES.has(contentType)) {
+    return fail('Profile images must be JPG, PNG, or WebP files.', 415, origin);
+  }
+  if (file.size < 1 || file.size > LOVE_NOTE_AVATAR_LIMIT) {
+    return fail('Profile images must be smaller than 5 MB.', 413, origin);
+  }
+
+  const key = `love-notes/${mediaKeyFor(file.name)}`;
+  await env.MEDIA.put(key, file.stream(), {
+    httpMetadata: {
+      contentType,
+      cacheControl: 'public, max-age=31536000, immutable',
+      contentDisposition: 'inline'
+    }
+  });
+  const url = publicUrlFor(env, request.url, key);
+  await recordMedia(env, { key, name: file.name, contentType, size: file.size, url });
+  return json({ ok: true, url, size: file.size, media_kind: 'image' }, { status: 201, origin });
+}
+
 export async function startMultipart(request, env, origin, body) {
   const name = clean(body.name, 180);
   if (!name) return fail('A file name is required.', 400, origin);

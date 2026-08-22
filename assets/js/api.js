@@ -53,5 +53,10 @@ export const api = {
     request(`/api/public/love-notes?limit=${limit}&offset=${offset}`),
   loveMarquee: () => cachedGet('/api/public/love-notes/marquee'),
   submitLoveNote: (payload) => request('/api/public/love-notes', { method: 'POST', body: payload }),
+  uploadLoveNoteAvatar: (file) => {
+    const body = new FormData();
+    body.append('file', file);
+    return request('/api/public/love-notes/avatar', { method: 'POST', body });
+  },
   heartNote: (id) => request(`/api/public/love-notes/${id}/heart`, { method: 'POST' })
 };
