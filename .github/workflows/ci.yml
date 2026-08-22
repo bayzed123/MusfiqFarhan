@@ -34,6 +34,18 @@ jobs:
       - name: Build pages and sitemaps from the fixture
         run: npm run build:fixture
 
+      # The same checks the deploy runs, in the same order. Without these a
+      # pull request went green and the deploy that followed it failed on a
+      # routing assertion no PR check covered — twice.
+      - name: Verify canonical content routing
+        run: node scripts/test-routing.mjs
+
+      - name: Verify Love Notes form and avatar upload
+        run: node scripts/test-love-notes.mjs
+
+      - name: Verify admin gallery pipeline routing
+        run: node scripts/test-admin-media-routing.mjs
+
       - name: Run the suite
         run: npx playwright test
 
