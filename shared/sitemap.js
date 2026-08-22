@@ -41,6 +41,7 @@ function urlEntry({ loc, lastmod, changefreq, priority, extra = '' }) {
 
 function wrap(entries, namespaces = '') {
   return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"${namespaces}>
 ${entries.join('\n')}
 </urlset>
@@ -174,6 +175,7 @@ export function sitemapIndex(origin = SITE_ORIGIN, lastmod = new Date().toISOStr
     'sitemap-images.xml'
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${files
   .map(
@@ -194,6 +196,7 @@ export function fullSitemap({ items = [], gallery = [], origin = SITE_ORIGIN } =
     .replace(/^[\s\S]*?<urlset[^>]*>\n?/, '')
     .replace(/<\/urlset>\s*$/, '');
   return `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
   xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
