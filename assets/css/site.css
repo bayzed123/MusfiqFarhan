@@ -1579,17 +1579,25 @@ p {
 }
 
 .star-input {
+  /* Positioned so the visually hidden radios below cannot escape the row and
+     stretch the page — `.field input { width: 100% }` otherwise applies to
+     them and pushes the document a few pixels wider than the viewport. */
+  position: relative;
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-end;
   gap: 0.15rem;
 }
 
-.star-input input {
+.star-input input[type='radio'] {
   position: absolute;
-  opacity: 0;
+  left: 0;
+  bottom: 0;
   width: 1px;
   height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
 }
 
 .star-input label {
@@ -1859,17 +1867,21 @@ p {
 }
 
 /* --------------------------------------------------------------- ad slots */
+/* --------------------------------------------------------------------- ads */
+
 .ad-slot {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  max-width: 100%;
   margin: clamp(1.5rem, 4vw, 2.75rem) auto;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.025);
   overflow: hidden;
+  /* Reserve the box before the iframe loads so nothing shifts underneath. */
   contain: layout paint;
 }
 
@@ -1883,65 +1895,93 @@ p {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
-.ad-slot--inline { width: min(300px, 100%); min-height: 250px; }
-.ad-slot--leaderboard { width: min(728px, 100%); min-height: 90px; }
-.ad-slot--tablet { width: min(468px, 100%); min-height: 60px; }
-.ad-slot--mobile { width: min(320px, 100%); min-height: 50px; }
-.ad-slot--native { width: 100%; min-height: 180px; }
-.ad-slot--smartlink { width: min(100%, 420px); min-height: 52px; }
-.ad-slot--tall-rail,
-.ad-slot--medium-rail { width: 160px; min-height: 300px; }
-
-.ad-slot iframe {
+.ad-slot__frame {
   display: block;
   border: 0;
   max-width: 100%;
 }
 
-.ad-slot__native-container {
+.ad-slot__native {
   width: 100%;
   min-height: 150px;
 }
 
-.ad-smartlink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+/*
+ * Sizing is driven by data-ad-role, not the slot name, and the breakpoints
+ * match the ones ads.js uses to pick a size — so the space reserved in CSS is
+ * the space the banner actually occupies.
+ */
+.ad-slot[data-ad-role='banner'] {
+  width: min(320px, 100%);
+  min-height: 50px;
 }
 
-.ad-smartlink:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+@media (min-width: 500px) {
+  .ad-slot[data-ad-role='banner'] {
+    width: min(468px, 100%);
+    min-height: 60px;
+  }
 }
-.ad-slot--tall-rail { min-height: 600px; }
+
+@media (min-width: 760px) {
+  .ad-slot[data-ad-role='banner'] {
+    width: min(728px, 100%);
+    min-height: 90px;
+  }
+}
+
+.ad-slot[data-ad-role='rectangle'] {
+  width: min(300px, 100%);
+  min-height: 250px;
+}
+
+.ad-slot[data-ad-role='rail'] {
+  width: 160px;
+  min-height: 600px;
+  margin-inline: auto;
+}
+
+.ad-slot[data-ad-role='rail-short'] {
+  width: 160px;
+  min-height: 300px;
+  margin-inline: auto;
+}
+
+/* Native units fill their column, but capped so one dropped straight into the
+   page after a grid does not run edge to edge past the layout gutter. */
+.ad-slot[data-ad-role='native'] {
+  width: min(100%, 920px);
+  min-height: 180px;
+}
+
+/* A unit sitting between grid cards spans the row rather than squeezing
+   into one column, so the surrounding layout keeps its rhythm. */
+.ad-slot--in-grid {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: min(100%, 728px);
+}
+
+/* The blog list and note wall are single columns; keep units inline there. */
+.post-list > .ad-slot,
+.note-wall > .ad-slot {
+  break-inside: avoid;
+}
 
 .article__aside .ad-slot { margin: 1rem auto; }
 .article__body > .ad-slot { clear: both; }
 
-@media (min-width: 960px) {
-  .ad-slot--mobile,
-  .ad-slot--tablet { display: none; }
-  .article__aside .ad-slot--medium-rail { display: none; }
-}
-
-@media (max-width: 959px) {
-  .ad-slot--leaderboard,
-  .ad-slot--tall-rail,
-  .ad-slot--medium-rail { display: none; }
+/* The rail unit only exists on wide screens; the placer never inserts it below
+   1080px, and this keeps it out of the way if a narrow reload finds one. */
+@media (max-width: 1079px) {
+  .ad-slot[data-ad-role='rail'],
+  .ad-slot[data-ad-role='rail-short'] { display: none; }
 }
 
 @media (max-width: 560px) {
-  .ad-slot--tablet { display: none; }
   .ad-slot { margin-block: 1.25rem; }
 }
 

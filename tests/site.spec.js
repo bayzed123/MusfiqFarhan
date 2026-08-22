@@ -203,11 +203,7 @@ test.describe('public site', () => {
       '/gallery/',
       '/love-notes/',
       '/robots.txt',
-      '/sitemap.xml',
-      '/sitemap-pages.xml',
-      '/sitemap-categories.xml',
-      '/sitemap-content.xml',
-      '/sitemap-images.xml'
+      '/sitemap.xml'
     ];
     for (const route of routes) {
       const response = await request.get(route);
@@ -215,10 +211,30 @@ test.describe('public site', () => {
     }
   });
 
-  test('the sitemap index points at the individual sitemaps', async ({ request }) => {
+  test('one sitemap at the root holds every url', async ({ request }) => {
     const xml = await (await request.get('/sitemap.xml')).text();
-    for (const file of ['sitemap-pages.xml', 'sitemap-categories.xml', 'sitemap-content.xml']) {
-      expect(xml).toContain(file);
+    // A single <urlset>, not an index that farms the URLs out to other files.
+    expect(xml).toContain('<urlset');
+    expect(xml).not.toContain('<sitemapindex');
+    expect(xml).toContain('https://www.musfiqrfarhan.blog/');
+    expect(xml).toContain('https://www.musfiqrfarhan.blog/watch/');
+    expect(xml).toContain('https://www.musfiqrfarhan.blog/blog/');
+    expect(xml).toContain('https://www.musfiqrfarhan.blog/c/new-natok/');
+    // Images and videos ride along in the same document.
+    expect(xml).toContain('sitemap-image/1.1');
+    expect(xml).toContain('sitemap-video/1.1');
+    expect(xml).toContain('<image:loc>');
+    expect(xml).toContain('<video:content_loc>');
+
+    // The split files a previous build wrote must be gone, so Search Console
+    // is not left following dead references.
+    for (const stale of [
+      '/sitemap-pages.xml',
+      '/sitemap-categories.xml',
+      '/sitemap-content.xml',
+      '/sitemap-images.xml'
+    ]) {
+      expect((await request.get(stale)).status(), stale).toBe(404);
     }
   });
 
@@ -257,10 +273,12 @@ test.describe('public site', () => {
 test.describe('published item pages', () => {
   /** @returns {Promise<string[]>} site-relative paths of every indexed item */
   async function itemPaths(request) {
-    const xml = await (await request.get('/sitemap-content.xml')).text();
+    const xml = await (await request.get('/sitemap.xml')).text();
     return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
       .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
-      .filter((path) => !path.startsWith('/c/') && path !== '/');
+      .filter((path) => path.endsWith('/') && path !== '/')
+      .filter((path) => !path.startsWith('/c/'))
+      .filter((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
   }
 
   test('every item page carries its own canonical, meta and social tags', async ({ request }) => {
@@ -349,7 +367,7 @@ test.describe('published item pages', () => {
     test.skip(!response.ok(), 'the non-indexable fixture item is not part of this build');
     const html = await response.text();
     expect(html).toMatch(/<meta name="robots" content="noindex/);
-    const sitemap = await (await request.get('/sitemap-content.xml')).text();
+    const sitemap = await (await request.get('/sitemap.xml')).text();
     expect(sitemap, 'a noindex page must stay out of the sitemap').not.toContain(
       'press-feature-noindex'
     );
@@ -358,11 +376,111 @@ test.describe('published item pages', () => {
   test('a hosted video page offers a real player source', async ({ request }) => {
     const response = await request.get('/new-natok/tor-preme-pagol/');
     test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
-    const sitemap = await (await request.get('/sitemap-content.xml')).text();
+    const sitemap = await (await request.get('/sitemap.xml')).text();
     // The R2-hosted natok must reach the video sitemap as a content_loc,
     // which is the case that used to fail validation entirely.
     expect(sitemap).toContain('<video:content_loc>');
     expect(sitemap).toContain('<video:thumbnail_loc>');
+  });
+});
+
+/**
+ * Ad units are injected by assets/js/ads.js rather than written into any
+ * page, so new posts pick them up with no extra work. These guard the two
+ * things that silently break: the units not appearing where they should, and
+ * a unit appearing where it must not.
+ */
+test.describe('advertising', () => {
+  /** Stub the two Adsterra hosts so nothing leaves the machine. */
+  async function stubAdHosts(page) {
+    await page.route('**://*.highrevenueformat.com/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/javascript', body: '' })
+    );
+    await page.route('**://*.profitableratecpmnetwork.com/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/javascript', body: '' })
+    );
+  }
+
+  /** Load a page with ads live, scroll it, and report the slots that mounted. */
+  async function slotsOn(page, path) {
+    await mockPublicApi(page);
+    await stubAdHosts(page);
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(600);
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 500) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 40));
+      }
+    });
+    await page.waitForTimeout(600);
+    return page.$$eval('.ad-slot', (nodes) => nodes.map((node) => node.dataset.adSlot));
+  }
+
+  test('every post gets a middle unit without the post asking for one', async ({
+    page,
+    request
+  }) => {
+    const response = await request.get('/new-natok/tor-preme-pagol/');
+    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
+    expect(await response.text(), 'no ad markup is baked into the page').not.toContain('ad-slot');
+
+    const slots = await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    expect(slots, 'a unit above the article').toContain('under-player');
+    expect(slots, 'a unit in the middle of the article').toContain('in-article');
+    expect(slots, 'a unit after the article').toContain('after-article');
+  });
+
+  test('the hubs, gallery and category pages carry units too', async ({ page }) => {
+    expect(await slotsOn(page, '/watch/')).toEqual(
+      expect.arrayContaining(['under-stage', 'after-grid'])
+    );
+    expect(await slotsOn(page, '/blog/')).toEqual(expect.arrayContaining(['after-list']));
+    // The interleaved gallery unit only appears once there are enough images
+    // to space it out, so the guaranteed one is the unit under the grid.
+    expect(await slotsOn(page, '/gallery/')).toEqual(
+      expect.arrayContaining(['under-gallery'])
+    );
+    expect(await slotsOn(page, '/c/new-natok/')).toEqual(
+      expect.arrayContaining(['after-category'])
+    );
+  });
+
+  test('each banner runs in its own sandboxed frame and there is one native container', async ({
+    page
+  }) => {
+    await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    const frames = await page.$$eval('.ad-slot__frame', (nodes) =>
+      nodes.map((node) => node.getAttribute('sandbox') || '')
+    );
+    expect(frames.length, 'banners are rendered').toBeGreaterThan(0);
+    for (const sandbox of frames) {
+      // Adsterra sets a global window.atOptions, so two banners in one
+      // document overwrite each other; and without this the frame could
+      // reach back into the page.
+      expect(sandbox).not.toContain('allow-same-origin');
+    }
+    // The native unit's script looks the container up by an exact id, so a
+    // second one on the page would never fill.
+    await expect(page.locator('#container-95ccad5ad2296df12234714b8e6904cf')).toHaveCount(1);
+  });
+
+  test('the dashboard and error page stay ad-free', async ({ page }) => {
+    for (const path of ['/admin/', '/404.html']) {
+      await stubAdHosts(page);
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.waitForTimeout(600);
+      await expect(page.locator('.ad-slot'), path).toHaveCount(0);
+    }
+  });
+
+  test('an ad-filled post page still does not scroll sideways on a phone', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 780 });
+    await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    const overflows = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth + 2
+    );
+    expect(overflows, 'the post page overflows horizontally').toBeFalsy();
   });
 });
 
@@ -517,11 +635,19 @@ async function mockPublicApi(page) {
   );
   await page.route('**/api/public/**', (route) => {
     const path = new URL(route.request().url()).pathname;
+    const slug = path.split('/').filter(Boolean).pop();
     const body = path.endsWith('/marquee')
       ? { notes: fixture.notes, count: fixture.notes.length }
       : path.endsWith('/love-notes')
         ? { notes: fixture.notes, count: fixture.notes.length, hearts: 0 }
-        : { items: fixture.items, gallery: fixture.gallery };
+        : path.includes('/reviews')
+          ? { reviews: [], count: 0, average: 0 }
+          : path.includes('/content/')
+            ? {
+                item: fixture.items.find((entry) => entry.slug === slug) || fixture.items[0],
+                related: fixture.items.slice(0, 4)
+              }
+            : { items: fixture.items, gallery: fixture.gallery };
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
