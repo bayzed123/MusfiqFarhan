@@ -692,6 +692,65 @@ test.describe('dashboard', () => {
     await expect(page.locator('[data-content-rows]')).not.toContainText(doomed);
   });
 
+  /**
+   * Changing a post's picture used to mean: open the media library, copy a
+   * URL, come back to the post, paste it into a text box — with nothing on
+   * screen confirming which image was set.
+   */
+  test('a post cover image can be swapped from the post itself', async ({ page }) => {
+    const sent = [];
+    await mockAdminApi(page, sent);
+    await signIn(page);
+
+    await page.click('.nav-btn[data-view="content"]');
+    await expect(page.locator('.row')).not.toHaveCount(0);
+    await page.locator('.row [data-edit]').first().click();
+    await expect(page.locator('[data-composer-heading]')).toContainText('Editing:');
+
+    // The cover the post already has is shown, not just its URL in a box.
+    const preview = page.locator('[data-cover-preview]');
+    await expect(preview).toBeVisible();
+    await expect(preview).toHaveAttribute('src', '/assets/img/doob-poster-828.webp');
+    await expect(page.locator('[data-cover-empty]')).toBeHidden();
+
+    // Swap it for another file already in the library.
+    await page.click('[data-cover-library]');
+    await expect(page.locator('.picker')).toBeVisible();
+    await page.locator('[data-picker-choose="/assets/img/musfiq-profile-1-960.webp"]').click();
+    await expect(page.locator('.picker')).toHaveCount(0);
+
+    await expect(page.locator('#c-image')).toHaveValue('/assets/img/musfiq-profile-1-960.webp');
+    await expect(preview).toHaveAttribute('src', '/assets/img/musfiq-profile-1-960.webp');
+
+    // And it is the new image that gets saved.
+    await page.click('[data-composer-form] button[type=submit]');
+    await expect.poll(() => sent.some((call) => call.method === 'PUT')).toBeTruthy();
+    expect(sent.find((call) => call.method === 'PUT').body.image).toBe(
+      '/assets/img/musfiq-profile-1-960.webp'
+    );
+  });
+
+  test('the cover image can be removed and the picker dismissed', async ({ page }) => {
+    await mockAdminApi(page);
+    await signIn(page);
+
+    await page.click('.nav-btn[data-view="content"]');
+    await expect(page.locator('.row')).not.toHaveCount(0);
+    await page.locator('.row [data-edit]').first().click();
+
+    // Escape closes the picker without changing anything.
+    await page.click('[data-cover-library]');
+    await expect(page.locator('.picker')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.picker')).toHaveCount(0);
+    await expect(page.locator('#c-image')).toHaveValue('/assets/img/doob-poster-828.webp');
+
+    await page.click('[data-cover-clear]');
+    await expect(page.locator('#c-image')).toHaveValue('');
+    await expect(page.locator('[data-cover-preview]')).toBeHidden();
+    await expect(page.locator('[data-cover-empty]')).toBeVisible();
+  });
+
   test('approving a note flips the button to Unapprove', async ({ page }) => {
     await mockAdminApi(page);
     await signIn(page);
@@ -823,6 +882,16 @@ async function mockAdminApi(page, sent = []) {
       published_at: '2026-04-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
     }
   ];
+  let media = [
+    {
+      id: 1, original_name: 'doob-poster.webp', media_kind: 'image',
+      public_url: '/assets/img/doob-poster-828.webp', size: 41000
+    },
+    {
+      id: 2, original_name: 'eid-portrait.webp', media_kind: 'image',
+      public_url: '/assets/img/musfiq-profile-1-960.webp', size: 73000
+    }
+  ];
   let notes = [
     { id: 1, name: 'Nusrat', message: 'Every natok feels like it was written for us.',
       city: 'Dhaka', avatar_url: '', hearts: 12, approved: 0, pinned: 0,
@@ -888,6 +957,16 @@ async function mockAdminApi(page, sent = []) {
         review.id === id ? { ...review, approved: body?.approved ? 1 : 0 } : review
       );
       return reply({ ok: true });
+    }
+
+    if (path === '/api/admin/media' && method === 'GET') return reply({ items: media });
+    if (path === '/api/admin/media' && method === 'POST') {
+      const uploaded = {
+        id: nextId++, original_name: 'uploaded-cover.webp', media_kind: 'image',
+        public_url: '/assets/img/hero_red-828.webp', size: 12000
+      };
+      media = [uploaded, ...media];
+      return reply({ ...uploaded, url: uploaded.public_url }, 201);
     }
 
     if (path.endsWith('/love-notes') && method === 'GET') return reply({ notes });
