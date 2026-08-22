@@ -19,9 +19,22 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { SHELL_REGIONS } from './lib/shell.mjs';
-import { CATEGORIES, findCategory } from '../shared/taxonomy.js';
+import {
+  CATEGORIES,
+  canonicalPair,
+  findCategory,
+  isMirrorPair,
+  itemInPair
+} from '../shared/taxonomy.js';
 import { renderMarkdown } from '../shared/markdown.js';
-import { SITE_NAME, SITE_ORIGIN, categoryPath, contentPath } from '../shared/urls.js';
+import {
+  SITE_NAME,
+  SITE_ORIGIN,
+  categoryListingPath,
+  categoryPath,
+  contentPath,
+  hasCategoryHub
+} from '../shared/urls.js';
 import { fullSitemap } from '../shared/sitemap.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -253,10 +266,19 @@ async function buildCategoryPages(items) {
     );
 
     for (const { sub, label } of targets) {
-      const matching = items.filter(
-        (item) => item.category === category.name && (!sub || item.subcategory === sub)
-      );
-      const canonical = `${SITE_ORIGIN}${categoryPath(category.name, sub)}`;
+      // Cross-tagged: "Eid Special" is a category and a subcategory of five
+      // others, so an item filed under either position belongs on this page.
+      const matching = items.filter((item) => itemInPair(item, category.name, sub));
+
+      // A section must have exactly one indexed URL. Two cases produce a
+      // second one, and both resolve the same way: the page still works, and
+      // it names the canonical URL rather than competing with it.
+      //   1. Two categories that list each other describe one intersection.
+      //   2. Gallery and Blog have a hub, so /c/gallery/ mirrors /gallery/.
+      const pairOwner = isMirrorPair(category.name, sub) ? canonicalPair(category.name, sub) : null;
+      const hub = !sub && hasCategoryHub(category.name) ? categoryPath(category.name) : '';
+      const elsewhere = hub || (pairOwner ? categoryPath(pairOwner.category, pairOwner.subcategory) : '');
+      const canonical = `${SITE_ORIGIN}${elsewhere || categoryListingPath(category.name, sub)}`;
       const description = sub
         ? `${category.blurb} Browse the ${sub} set from the official Musfiq R. Farhan archive.`
         : `${category.blurb} Browse every ${category.name} entry in the official Musfiq R. Farhan archive.`;
@@ -278,6 +300,13 @@ async function buildCategoryPages(items) {
       </nav>
       <h1>${esc(sub || category.name)}</h1>
       <p>${esc(description)}</p>
+      ${
+        elsewhere
+          ? `<p class="muted">The main page for this set is <a href="${elsewhere}">${esc(
+              hub ? category.name : `${pairOwner.category} · ${pairOwner.subcategory}`
+            )}</a>.</p>`
+          : ''
+      }
       <div class="chip-row">
         <a class="chip${sub ? '' : ' is-active'}" href="${categoryPath(category.name)}">All</a>
         ${chips}
@@ -299,13 +328,14 @@ ${categoryCards(matching)}
     <div data-category-gallery></div>`;
 
       await writePage(
-        categoryPath(category.name, sub),
+        categoryListingPath(category.name, sub),
         pageShell({
           head: seoHead({
             title: `${label} | ${SITE_NAME}`,
             description,
             canonical,
-            image: matching[0]?.image
+            image: matching[0]?.image,
+            indexable: !elsewhere
           }),
           bodyAttrs: ` data-category="${esc(category.name)}"${sub ? ` data-subcategory="${esc(sub)}"` : ''}`,
           main,

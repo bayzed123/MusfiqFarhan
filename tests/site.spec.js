@@ -2,6 +2,9 @@ import { readFileSync } from 'node:fs';
 
 import { expect, test } from '@playwright/test';
 
+import { CATEGORIES, canonicalPair, isMirrorPair } from '../shared/taxonomy.js';
+import { categoryListingPath, categoryPath, categoryUrl } from '../shared/urls.js';
+
 const CATEGORY_SLUGS = [
   'premium',
   'gallery',
@@ -59,8 +62,11 @@ test.describe('public site', () => {
   test('navigation is in the HTML source, not injected by script', async ({ request }) => {
     const html = await (await request.get('/')).text();
     expect(html).toContain('class="primary-nav"');
-    for (const slug of CATEGORY_SLUGS) {
-      expect(html, `nav is missing /c/${slug}/`).toContain(`href="/c/${slug}/"`);
+    for (const category of CATEGORIES) {
+      // Gallery and Blog link to their hubs, every other category to its
+      // /c/ listing — one destination per section, whichever menu you use.
+      const href = categoryPath(category.name);
+      expect(html, `nav is missing ${href}`).toContain(`href="${href}"`);
     }
   });
 
@@ -69,12 +75,80 @@ test.describe('public site', () => {
       const response = await request.get(`/c/${slug}/`);
       expect(response.ok(), `/c/${slug}/`).toBeTruthy();
       const html = await response.text();
-      expect(html).toContain(`<link rel="canonical" href="https://www.musfiqrfarhan.blog/c/${slug}/">`);
+      // Gallery and Blog have hubs, so their /c/ listing names the hub as
+      // canonical instead of itself.
+      const canonical = categoryUrl(slug);
+      expect(html).toContain(`<link rel="canonical" href="${canonical}">`);
     }
     for (const path of ['/c/new-natok/eid-special/', '/c/gallery/portraits/', '/c/blog/biography-journey/']) {
       const response = await request.get(path);
       expect(response.ok(), path).toBeTruthy();
     }
+  });
+
+  /**
+   * Every page the taxonomy promises has to be a real page, not a 404 and not
+   * an empty shell. This walks all sixteen categories and each of their
+   * subcategories rather than spot-checking three of them.
+   */
+  test('every taxonomy page renders a heading, its chips and an item grid', async ({ request }) => {
+    for (const category of CATEGORIES) {
+      const targets = ['', ...category.subcategories];
+      for (const sub of targets) {
+        // Always exercise the generated /c/ listing; the hub pages for
+        // Gallery and Blog are covered by their own tests.
+        const path = categoryListingPath(category.name, sub);
+        const response = await request.get(path);
+        expect(response.ok(), `${path} must resolve`).toBeTruthy();
+
+        const html = await response.text();
+        expect(html, `${path} heading`).toContain(`<h1>${sub || category.name}`.replace('&', '&amp;'));
+        expect(html, `${path} item grid`).toContain('data-category-items');
+        expect(html, `${path} subcategory chips`).toContain('chip-row');
+        expect(html, `${path} loads the category controller`).toContain('/assets/js/category.js');
+      }
+    }
+  });
+
+  /**
+   * Nine of the sixteen names are both a category and someone else's
+   * subcategory. A post filed New Natok / Eid Special belongs on both
+   * listings; matching only the primary category left the second one empty.
+   */
+  test('a cross-tagged post appears on both of its sections', async ({ request }) => {
+    const natok = await (await request.get('/c/new-natok/')).text();
+    const eid = await (await request.get('/c/eid-special/')).text();
+    test.skip(!natok.includes('Tor Preme Pagol'), 'the fixture natok is not part of this build');
+
+    expect(eid, 'the Eid Special listing must carry the natok filed under it').toContain(
+      'Tor Preme Pagol'
+    );
+    expect(eid).not.toContain('Nothing published in this category yet');
+  });
+
+  /**
+   * Where two categories list each other, both URLs describe the same set.
+   * Both stay reachable, but only one is indexed.
+   */
+  test('mirrored category urls point at one canonical page', async ({ request }) => {
+    let checked = 0;
+    for (const category of CATEGORIES) {
+      for (const sub of category.subcategories) {
+        const path = categoryListingPath(category.name, sub);
+        const html = await (await request.get(path)).text();
+        const owner = canonicalPair(category.name, sub);
+
+        if (isMirrorPair(category.name, sub)) {
+          const target = `https://www.musfiqrfarhan.blog${categoryPath(owner.category, owner.subcategory)}`;
+          expect(html, `${path} must not be indexed`).toContain('content="noindex,follow"');
+          expect(html, `${path} canonical`).toContain(`<link rel="canonical" href="${target}">`);
+          checked += 1;
+        } else {
+          expect(html, `${path} must be indexable`).toContain('content="index,follow');
+        }
+      }
+    }
+    expect(checked, 'five pairs list each other').toBe(5);
   });
 
   test('the four hubs are plain links and Categories is the only menu', async ({ page }) => {
@@ -165,6 +239,21 @@ test.describe('public site', () => {
     await expect(page.locator('#note-message')).toBeVisible();
     await expect(page.locator('[data-note-wall]')).toBeVisible();
     await expect(page.locator('[data-note-total]')).toBeVisible();
+  });
+
+  test('the home page carries the fan love notes, not just the ticker', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    const section = page.locator('[data-home-notes]');
+    await expect(section).toBeVisible();
+    await expect(section.locator('.note')).not.toHaveCount(0);
+    // The count and the way through to the wall both have to be there.
+    await expect(section.getByRole('link', { name: /read them all/i })).toHaveAttribute(
+      'href',
+      '/love-notes/'
+    );
+    await expect(section.getByRole('link', { name: /write your own love note/i })).toBeVisible();
   });
 
   test('the love-note ticker is present on every page', async ({ page }) => {
@@ -594,6 +683,24 @@ test.describe('dashboard', () => {
     await expect.poll(() => sent.some((call) => call.method === 'DELETE')).toBeTruthy();
     await expect(page.locator('.row')).not.toHaveCount(0);
     await expect(page.locator('[data-content-rows]')).not.toContainText(doomed);
+  });
+
+  test('approving a note flips the button to Unapprove', async ({ page }) => {
+    await mockAdminApi(page);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="notes"]');
+
+    const button = page.locator('[data-note-approve]').first();
+    await expect(button).toHaveText(/Approve/);
+    await expect(page.locator('.note-card .tag--draft')).toBeVisible();
+
+    await button.click();
+
+    // The list reloads from the API, so this only passes if the moderation
+    // endpoint actually returns the approved flag it just wrote.
+    await expect(page.locator('[data-note-approve]').first()).toHaveText(/Unapprove/);
+    await expect(page.locator('.note-card .tag--live')).toBeVisible();
+    await expect(page.locator('.note-card .tag--draft')).toHaveCount(0);
   });
 
   test('love notes and ratings can be moderated', async ({ page }) => {

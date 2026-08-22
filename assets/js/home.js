@@ -11,6 +11,7 @@ import { SITE } from './config.js';
 import { $, attr, esc, formatDate, mediaUrl, render, starMarkup } from './dom.js';
 import { cardMarkup, initRails, railMarkup } from './cards.js';
 import { initRatings } from './rating.js';
+import { initHomeNotes } from './love-notes.js';
 
 function aboutHeroMarkup() {
   return `<div class="about-hero__media" aria-hidden="true"></div>
@@ -131,6 +132,9 @@ export async function initHome() {
 
   initRails();
   initRatings();
+  // The fan wall is the point of the site for Musfiq, so it gets a real
+  // section on the home page rather than only the ticker at the top.
+  initHomeNotes();
 }
 
 initHome();

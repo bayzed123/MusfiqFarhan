@@ -57,6 +57,62 @@ function noteMarkup(note, hearted) {
   </article>`;
 }
 
+/**
+ * The love-note strip on the home page.
+ *
+ * The ticker at the very top is a glance; this is the section a visitor
+ * actually reads, and the one Musfiq sees first when he opens the site.
+ * Hearts work here exactly as they do on the wall.
+ */
+export async function initHomeNotes() {
+  const host = $('[data-home-notes]');
+  if (!host) return;
+
+  let data;
+  try {
+    data = await api.loveNotes(6, 0);
+  } catch {
+    host.remove();
+    return;
+  }
+
+  if (!data.notes?.length) {
+    host.remove();
+    return;
+  }
+
+  const hearted = heartedSet();
+  host.innerHTML = `<div class="section__head">
+      <div>
+        <h2 class="section__title" id="home-notes-title">From the fans</h2>
+        <p class="section__blurb">${data.count} love ${
+          data.count === 1 ? 'note' : 'notes'
+        } written for Musfiq — he reads every one.</p>
+      </div>
+      <a class="section__link" href="/love-notes/">Read them all →</a>
+    </div>
+    <div class="note-wall note-wall--home">
+      ${data.notes.map((note) => noteMarkup(note, hearted.has(String(note.id)))).join('')}
+    </div>
+    <p class="home-notes__cta">
+      <a class="button button--primary" href="/love-notes/">Write your own love note</a>
+    </p>`;
+
+  on(host, 'click', async (event) => {
+    const button = event.target.closest('[data-heart]');
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+      const result = await api.heartNote(button.dataset.heart);
+      button.querySelector('[data-heart-count]').textContent = result.hearts;
+      button.classList.add('is-active');
+      rememberHeart(String(button.dataset.heart));
+    } catch {
+      button.disabled = false;
+    }
+  });
+}
+
 export async function initLoveNotePage() {
   const wall = $('[data-note-wall]');
   const form = $('[data-note-form]');

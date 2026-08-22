@@ -4,8 +4,8 @@
  * listings, and the image + video extensions Google uses for rich results.
  */
 
-import { CATEGORIES } from './taxonomy.js';
-import { SITE_ORIGIN, categoryUrl, contentUrl, STATIC_PATHS } from './urls.js';
+import { CATEGORIES, isMirrorPair } from './taxonomy.js';
+import { SITE_ORIGIN, categoryUrl, contentUrl, hasCategoryHub, STATIC_PATHS } from './urls.js';
 
 function esc(value) {
   return String(value ?? '').replace(/[<>&'"]/g, (char) =>
@@ -71,15 +71,22 @@ export function pagesSitemap(origin = SITE_ORIGIN, lastmod = new Date().toISOStr
 export function categoriesSitemap(origin = SITE_ORIGIN, lastmod = new Date().toISOString()) {
   const entries = [];
   for (const category of CATEGORIES) {
-    entries.push(
-      urlEntry({
-        loc: categoryUrl(category.name, '', origin),
-        lastmod: isoDate(lastmod),
-        changefreq: 'daily',
-        priority: '0.8'
-      })
-    );
+    // Gallery and Blog are listed by pagesSitemap as their hubs; adding
+    // /c/gallery/ here as well would put one section in twice.
+    if (!hasCategoryHub(category.name)) {
+      entries.push(
+        urlEntry({
+          loc: categoryUrl(category.name, '', origin),
+          lastmod: isoDate(lastmod),
+          changefreq: 'daily',
+          priority: '0.8'
+        })
+      );
+    }
     for (const sub of category.subcategories) {
+      // Where two categories list each other the intersection has two URLs.
+      // Only the canonical one belongs in the sitemap; the mirror is noindex.
+      if (isMirrorPair(category.name, sub)) continue;
       entries.push(
         urlEntry({
           loc: categoryUrl(category.name, sub, origin),
@@ -189,14 +196,30 @@ ${files
 `;
 }
 
-/** Single-file sitemap, used by the Worker's own /sitemap.xml route. */
+/** Strip the wrapper so a sub-document's <url> blocks can be concatenated. */
+function unwrap(doc) {
+  return doc.replace(/^[\s\S]*?<urlset[^>]*>\n?/, '').replace(/<\/urlset>\s*$/, '');
+}
+
+/**
+ * Single-file sitemap, used by the Worker's own /sitemap.xml route.
+ *
+ * Every URL must appear exactly once. That was free while these were four
+ * separate files, but merged into one document /gallery/ arrives twice —
+ * as a plain page and again carrying its image list. The richer entry wins.
+ */
 export function fullSitemap({ items = [], gallery = [], origin = SITE_ORIGIN } = {}) {
+  const imageEntries = unwrap(imagesSitemap(gallery, origin));
+  const claimed = new Set([...imageEntries.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
+
   const merged = [pagesSitemap(origin), categoriesSitemap(origin), contentSitemap(items, origin)]
-    .map((doc) => doc.replace(/^[\s\S]*?<urlset[^>]*>\n?/, '').replace(/<\/urlset>\s*$/, ''))
-    .join('');
-  const imageEntries = imagesSitemap(gallery, origin)
-    .replace(/^[\s\S]*?<urlset[^>]*>\n?/, '')
-    .replace(/<\/urlset>\s*$/, '');
+    .map(unwrap)
+    .join('')
+    .replace(/ {2}<url>[\s\S]*?<\/url>\n/g, (block) => {
+      const loc = block.match(/<loc>([^<]+)<\/loc>/)?.[1];
+      return loc && claimed.has(loc) ? '' : block;
+    });
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"

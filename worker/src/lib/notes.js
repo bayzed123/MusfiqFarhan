@@ -98,11 +98,22 @@ export async function heartNote(env, origin, id) {
   return json({ ok: true, hearts: Number(row.hearts) }, { origin, cache: 'no-store' });
 }
 
+/**
+ * The moderation shape. `toPublicNote` deliberately omits `approved` — a
+ * visitor is only ever sent approved notes — but the dashboard needs it to
+ * draw the Approved/Waiting badge and to label the button Approve or
+ * Unapprove. Without it every note read as unapproved, so the button never
+ * changed after a successful approve.
+ */
+function toAdminNote(row) {
+  return { ...toPublicNote(row), approved: Number(row.approved || 0) };
+}
+
 export async function adminNotes(env, origin) {
   const rows = await env.DB.prepare(
     'SELECT * FROM love_notes ORDER BY approved ASC, pinned DESC, created_at DESC LIMIT 300'
   ).all();
-  return json({ notes: rows.results.map(toPublicNote) }, { origin, cache: 'no-store' });
+  return json({ notes: rows.results.map(toAdminNote) }, { origin, cache: 'no-store' });
 }
 
 export async function updateNote(env, origin, id, body) {
@@ -125,7 +136,7 @@ export async function updateNote(env, origin, id, body) {
   const row = await env.DB.prepare(`UPDATE love_notes SET ${fields.join(', ')} WHERE id = ? RETURNING *`)
     .bind(...bindings, id)
     .first();
-  return row ? json(toPublicNote(row), { origin }) : fail('Note not found.', 404, origin);
+  return row ? json(toAdminNote(row), { origin }) : fail('Note not found.', 404, origin);
 }
 
 export async function deleteNote(env, origin, id) {

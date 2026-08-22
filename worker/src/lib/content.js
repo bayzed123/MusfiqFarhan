@@ -164,16 +164,26 @@ const RATING_JOIN = `LEFT JOIN (
 
 const PUBLISHED_ORDER = 'ORDER BY c.sort_order DESC, COALESCE(c.published_at, c.created_at) DESC, c.id DESC';
 
+/**
+ * Match a taxonomy name in either position.
+ *
+ * Nine names are both a category and someone else's subcategory, so an item
+ * filed New Natok / Eid Special belongs on /c/new-natok/ and on
+ * /c/eid-special/ alike. Matching `c.category` alone is what left the second
+ * page empty after a publish.
+ */
+const TAGGED = '(c.category = ? OR c.subcategory = ?)';
+
 export async function listPublished(env, { category, subcategory, kind, type, limit = 24, offset = 0 } = {}) {
   const filters = ['c.published = 1'];
   const bindings = [];
   if (category) {
-    filters.push('c.category = ?');
-    bindings.push(category);
+    filters.push(TAGGED);
+    bindings.push(category, category);
   }
   if (subcategory) {
-    filters.push('c.subcategory = ?');
-    bindings.push(subcategory);
+    filters.push(TAGGED);
+    bindings.push(subcategory, subcategory);
   }
   if (kind) {
     filters.push('c.kind = ?');

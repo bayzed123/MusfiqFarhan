@@ -1708,6 +1708,17 @@ p {
   padding-inline: var(--gutter);
 }
 
+/* On the home page the wall is a taste of the fan page, not the whole of it:
+   six notes in wider columns so the section stays short. */
+.note-wall--home {
+  columns: 3 300px;
+}
+
+.home-notes__cta {
+  padding-inline: var(--gutter);
+  margin-top: 1.25rem;
+}
+
 .note {
   break-inside: avoid;
   margin-bottom: 1rem;
