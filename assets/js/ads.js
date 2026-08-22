@@ -28,8 +28,6 @@ function frameAd(config, name) {
   options.textContent = `window.atOptions = ${JSON.stringify({ key: config.key, format: 'iframe', height: config.height, width: config.width, params: {} })};`;
   const invoke = document.createElement('script');
   invoke.src = `https://www.highrevenueformat.com/${config.key}/invoke.js`;
-  // These tags read the global atOptions object; keep initialization ordered so
-  // one slot cannot overwrite another slot's dimensions before its script reads them.
   invoke.async = false;
   invoke.dataset.adNetwork = 'highrevenueformat';
   slot.append(options, invoke);
@@ -62,12 +60,11 @@ function insertBefore(node, ad) {
 function setupEntry() {
   const body = document.querySelector('[data-entry-body]');
   if (!body) return false;
+  if (body.querySelector('.ad-slot') || document.querySelector('.article__aside .ad-slot')) return true;
   const firstBreak = body.querySelector('p, h2, h3');
-  insertAfter(firstBreak || body.firstElementChild, frameAd(ADS.inline, 'inline'));
+  insertAfter(firstBreak || body.firstElementChild || body, frameAd(ADS.inline, 'inline'));
   const aside = document.querySelector('.article__aside');
-  if (aside) {
-    aside.append(frameAd(ADS.tallRail, 'tall-rail'), frameAd(ADS.mediumRail, 'medium-rail'));
-  }
+  if (aside) aside.append(frameAd(ADS.tallRail, 'tall-rail'), frameAd(ADS.mediumRail, 'medium-rail'));
   body.append(frameAd(ADS.mobile, 'mobile'), frameAd(ADS.tablet, 'tablet'), nativeAd());
   return true;
 }
@@ -75,6 +72,7 @@ function setupEntry() {
 function setupListing() {
   const grid = document.querySelector('[data-category-items], [data-gallery-grid]');
   if (!grid) return false;
+  if (grid.closest('section')?.parentElement?.querySelector('.ad-slot')) return true;
   const section = grid.closest('section') || grid.parentElement;
   insertAfter(section, frameAd(ADS.leaderboard, 'leaderboard'));
   insertAfter(section?.nextElementSibling || section, frameAd(ADS.tablet, 'tablet'));
@@ -87,6 +85,7 @@ function setupStaticPage() {
   const article = document.querySelector('.article');
   const main = document.querySelector('main');
   if (!main || !article) return false;
+  if (article.parentElement?.querySelector('.ad-slot')) return true;
   insertAfter(article, frameAd(ADS.tablet, 'tablet'));
   insertAfter(article.nextElementSibling || article, frameAd(ADS.mobile, 'mobile'));
   insertAfter(article.nextElementSibling?.nextElementSibling || article, nativeAd());
@@ -94,12 +93,23 @@ function setupStaticPage() {
 }
 
 function initAds() {
-  if (isExcluded() || document.documentElement.dataset.adsReady) return;
-  document.documentElement.dataset.adsReady = 'true';
-  if (setupEntry() || setupListing() || setupStaticPage()) return;
-  const main = document.querySelector('main');
-  if (main) insertBefore(main.lastElementChild, nativeAd());
+  if (isExcluded() || document.documentElement.dataset.adsReady) return true;
+  const placed = setupEntry() || setupListing() || setupStaticPage();
+  if (placed) document.documentElement.dataset.adsReady = 'true';
+  return placed;
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => idle(initAds), { once: true });
-else idle(initAds);
+function scheduleAds() {
+  if (isExcluded() || document.documentElement.dataset.adsReady) return;
+  idle(initAds);
+}
+
+if (!isExcluded()) {
+  document.addEventListener('DOMContentLoaded', scheduleAds, { once: true });
+  window.addEventListener('load', scheduleAds, { once: true });
+  const observer = new MutationObserver(() => {
+    if (initAds()) observer.disconnect();
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  scheduleAds();
+}
