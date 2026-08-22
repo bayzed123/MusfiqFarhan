@@ -301,7 +301,7 @@ ${renderMarkdown(item.body)}
     <div data-entry-related></div>`;
 
     await writePage(
-      contentPath(item),
+      item.path || contentPath(item),
       pageShell({
         head: seoHead({
           title: item.seo_title || `${item.title} | ${SITE_NAME}`,
