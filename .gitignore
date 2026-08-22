@@ -1,0 +1,25 @@
+node_modules/
+package-lock.json
+test-results/
+playwright-report/
+.DS_Store
+
+# Item pages are generated from live API data at build time and uploaded
+# straight to Pages — they are never committed. Listing the category slugs
+# here also stops `npm run build:fixture` from checking in sample content.
+/premium/
+/gallery/*/
+/poster-release/
+/behind-the-scenes/
+/new-teaser/
+/new-natok/
+/short-clips/
+/blog/
+/press/
+/lifestyle-fashion/
+/wallpapers/
+/biography-journey/
+/natok-telefilm/
+/recent-releases/
+/popular/
+/eid-special/

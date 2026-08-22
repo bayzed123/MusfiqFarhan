@@ -1,110 +1,140 @@
-# Automated GitHub Pages CMS for Musfiq R. Farhan's Official Website
+# Musfiq R. Farhan — Official Website
 
-This repository implements an automated Content Management System (CMS) for Musfiq R. Farhan's official GitHub Pages website. The system is designed to streamline content updates by automatically processing Markdown (`.md`) and YAML (`.yml`/`.yaml`) files from designated content folders and injecting their data into the `index.html` file. This ensures that the website always displays the latest information without manual HTML editing.
+The official site of Musfiq R. Farhan: natok, teasers, posters, gallery, blog
+and the fan love-note wall, published from a private studio dashboard.
 
-## Content Folder Structure
+- **Live site:** https://www.musfiqrfarhan.blog
+- **Dashboard:** https://www.musfiqrfarhan.blog/admin/ (noindex, password protected)
+- **API:** Cloudflare Worker `mrf-api` with D1 (content) and R2 (media)
 
-The website's dynamic content is sourced from the following six folders in the repository root. Each folder corresponds to a specific section of the website:
-
-1.  `recent-releases`: Contains information about Musfiq R. Farhan's latest released projects.
-2.  `the-media-hub`: Houses data for a broader collection of media projects.
-3.  `latest-coming-soon`: Details for upcoming projects, typically featuring the most prominent next release.
-4.  `premiering-2026`: Content related to projects scheduled for premiere in 2026.
-5.  `exclusive-bts-stills`: Markdown files referencing URLs for exclusive behind-the-scenes images.
-6.  `newsroom`: Articles and press releases related to Musfiq R. Farhan's career and achievements.
-
-## How to Add/Update Content
-
-To update the website, simply add new Markdown (`.md`) or YAML (`.yml`, `.yaml`) files, or modify existing ones, within the relevant content folders. Each file should contain **YAML frontmatter** at the top, defining the structured data for that content item.
-
-Upon a `push` to the `main` branch affecting any of these content folders or the `update_index.py` script, a GitHub Actions workflow will automatically trigger. This workflow executes the `update_index.py` script, which reads your content files, processes them, and updates the `index.html` file accordingly. The updated `index.html` is then committed and pushed back to the repository, making your changes live on GitHub Pages.
-
-### Example Markdown File with YAML Frontmatter
-
-Here's an example of a Markdown file you might use in the `recent-releases` or `the-media-hub` folder. The script expects specific keys for proper rendering.
-
-**File:** `recent-releases/new-project-title.md`
-
-```markdown
 ---
-title: "New Project Title"
-url: "https://youtu.be/YOUR_YOUTUBE_VIDEO_ID"
-tag: "New Release"
-cast: ["Musfiq R Farhan", "Another Actor"]
----
+
+## How it fits together
+
+```
+GitHub Pages (static)          Cloudflare Worker (mrf-api)
+┌───────────────────────┐      ┌──────────────────────────┐
+│ pre-rendered pages    │─────▶│ /api/public/*   read     │
+│ /assets/js/*  (ESM)   │      │ /api/admin/*    write    │
+│ /admin/  dashboard    │─────▶│ /media/*        R2 files │
+└───────────────────────┘      └───────────┬──────────────┘
+            ▲                              │
+            │  scripts/build-site.mjs      ▼
+            └──────────────────────  D1 (content, gallery,
+               reads /api/public/export     reviews, love_notes)
 ```
 
-**Explanation of Fields:**
+Pages are **pre-rendered at build time** so search engines and first-time
+visitors get real HTML, then the same page **refreshes itself from the API**,
+so anything published in the dashboard appears immediately without waiting
+for a rebuild.
 
-*   `title`: The title of the project (e.g., "New Project Title").
-*   `url`: The YouTube URL of the video. The script automatically extracts the video ID.
-*   `tag`: A short tag to categorize the release (e.g., "New Release", "Featured").
-*   `cast`: (Optional) A list of cast members. This is used for sections like 'Latest Coming Soon'.
+## Repository layout
 
-For `exclusive-bts-stills`:
+| Path | What it holds |
+| --- | --- |
+| `shared/taxonomy.js` | The 16 categories, their subcategories, and the admin content kinds. **The single source of truth** — the Worker, the site and the dashboard all read it. |
+| `shared/urls.js` | URL rules, slug generation, media/embed detection. |
+| `shared/sitemap.js` | Sitemap XML generation, used by both the Worker and the build. |
+| `worker/src/` | The API: `index.js` routes, `lib/` for auth, content, media, notes, reviews. |
+| `worker/migrations/` | D1 schema migrations, applied automatically on deploy. |
+| `assets/css/` | `site.css` (public) and `admin.css` (dashboard). |
+| `assets/js/` | Public site modules. `assets/js/admin/` is the dashboard. |
+| `scripts/build-site.mjs` | Generates pages, category listings, sitemaps and the shared shell. |
+| `scripts/lib/shell.mjs` | Header, navigation, CTA, footer and site-wide schema markup. |
+| `tests/site.spec.js` | Playwright suite, run before and after every deploy. |
+| `content-archive/` | Legacy markdown from the pre-2026 site, kept for reference only. |
 
-**File:** `exclusive-bts-stills/bts-session-2.md`
+## URLs
 
-```markdown
----
-title: "Behind The Scenes - Session 2"
-images:
-  - url: "https://i.postimg.cc/YOUR_IMAGE_URL_1.jpg"
-    alt: "BTS Image 1"
-  - url: "https://i.postimg.cc/YOUR_IMAGE_URL_2.jpg"
-    alt: "BTS Image 2"
----
+Every item gets one permanent, human-readable URL, fixed on first publish and
+never regenerated when a title is edited:
+
+| Kind | Pattern | Example |
+| --- | --- | --- |
+| Item | `/<category>/<slug>/` | `/new-natok/tor-preme-pagol/` |
+| Category | `/c/<category>/` | `/c/new-natok/` |
+| Subcategory | `/c/<category>/<subcategory>/` | `/c/new-natok/eid-special/` |
+| Gallery | `/gallery/` | |
+| Love notes | `/love-notes/` | |
+
+## Publishing
+
+1. Sign in at `/admin/`.
+2. **Publish something** → pick what it is (poster, short video, behind the
+   scenes, natok teaser, full natok, image gallery, lifestyle, friends adda,
+   blog post, funny clip, press, wallpaper, biography, hero banner). The kind
+   sets the storage type, category and subcategory, so an item can never land
+   outside the navigation.
+3. Drop the file in. Images fill the cover field, videos fill the video field.
+   Anything over 80 MB uploads in 10 MB parts with progress and retries, so a
+   full-length natok completes.
+4. The slug, SEO title and meta description write themselves from the title
+   until you type over them. The panel on the right scores the entry and shows
+   the Google preview.
+5. **Save and publish**, or save as a draft.
+
+Ratings and love notes are moderated: they only go live after approval under
+**Love notes** and **Ratings**.
+
+## Local development
+
+```bash
+npm install                # Playwright only; the site itself has no bundler
+npm run build              # generate pages, sitemaps and the shell from the API
+npm run build:fixture      # same, from scripts/fixtures/sample-export.json
+npm run serve              # http://127.0.0.1:4173
+npm test                   # Playwright against whatever is currently built
+npm run verify             # build:fixture + the full suite (works offline)
+npm run test:live          # the same suite against production
 ```
 
-For `newsroom`:
+Use `npm run verify` when you cannot reach the Worker: it builds real item
+pages from the committed fixture so the item-page, canonical, rating and
+sitemap tests all have something to run against. Sample content is never
+committed — only CI's real build publishes item pages.
 
-**File:** `newsroom/new-award-announcement.md`
+`npm run build` reads `MRF_API_URL` (default: the production Worker). If the
+API cannot be reached it rebuilds the shell, the category pages and the
+sitemaps, and leaves the existing item pages alone rather than shipping an
+empty site.
 
-```markdown
----
-title: "Musfiq R. Farhan Wins Prestigious Award"
-date: "2026-05-21"
-summary: "Musfiq R. Farhan has been honored with the 'Best Actor' award at the annual film festival for his outstanding performance in 'Project X'."
-url: "https://example.com/news/award-article"
----
+### Worker
+
+```bash
+npm run migrate            # apply D1 migrations
+npm run deploy:worker      # deploy mrf-api
 ```
 
-## Safety Mechanisms: Ensuring Your Website Never Breaks
+Secrets `ADMIN_USER_NAME` and `ADMIN_PASSWORD` are set by CI from repository
+secrets. Optional Worker var `MEDIA_PUBLIC_BASE` serves R2 files from a custom
+domain instead of the Worker origin.
 
-The `update_index.py` script is engineered with robust fail-safes and best practices to prevent the website from breaking or displaying blank content, even under unexpected conditions. This was a critical requirement given past issues, and the following mechanisms are in place:
+## Deployment
 
-1.  **Graceful YAML Frontmatter Parsing:**
-    *   The `parse_frontmatter` function uses `PyYAML`'s `yaml.safe_load()` method, which is designed to safely parse YAML content, preventing arbitrary code execution and handling malformed YAML gracefully. If a file's frontmatter is invalid or missing, it defaults to an empty dictionary, ensuring the script doesn't crash and can continue processing other files.
-    *   It also attempts to parse the entire file as YAML if no explicit frontmatter markers (`---`) are found, providing flexibility.
+`.github/workflows/deploy.yml` runs on push to `main`, on demand, and every
+six hours:
 
-2.  **Robust Folder and File Handling:**
-    *   The `process_folders` function explicitly checks if each content folder (`recent-releases`, `the-media-hub`, etc.) exists using `os.path.exists()`. If a folder is missing, it is simply skipped, preventing file system errors.
-    *   It iterates through files, only processing those ending with `.md`, `.yml`, or `.yaml`. Other files are ignored, preventing unexpected data from being processed.
-    *   If a content file is empty or contains no valid data after parsing, it is skipped, ensuring no empty or malformed data is injected into the HTML.
+1. Apply D1 migrations and deploy the Worker (skipped on the scheduled run).
+2. Build the static site and **run the Playwright suite against the build** —
+   a failing build is never published.
+3. Publish to GitHub Pages.
+4. Re-run the suite against the live site.
 
-3.  **Safe JavaScript Data Injection (`json.dumps`):**
-    *   For sections like "Recent Releases" and "The Media Hub," which rely on JavaScript objects (`videosData`) embedded directly in `index.html`, the script uses Python's `json.dumps()` function. This guarantees that the data is converted into a **syntactically correct JSON string**, which is then directly inserted into the JavaScript section of `index.html`. This prevents JavaScript errors that could arise from improperly formatted data.
-    *   If no new video data is found for a category, the script ensures that the existing `videosData` structure remains intact, preventing the carousel from going blank.
+The scheduled run exists so items published in the dashboard get their
+pre-rendered page and sitemap entry without a code change.
 
-4.  **Targeted HTML Updates with Injection Markers:**
-    *   Instead of attempting to re-parse and rewrite the entire `index.html` using a full HTML parser like BeautifulSoup for all sections (which can sometimes alter original formatting or script tags), the script employs a more precise method for dynamic sections like "Exclusive BTS Stills" and "Newsroom."
-    *   It uses **HTML comments as injection markers** (`<!-- BTS_STILLS_INJECTION_START -->`, `<!-- BTS_STILLS_INJECTION_END -->`, etc.). The script finds these markers using regular expressions and replaces *only the content between them* with the newly generated HTML. This approach ensures that:
-        *   The surrounding HTML structure, CSS, and JavaScript outside these specific content blocks remain untouched.
-        *   The risk of accidentally breaking the website's layout or functionality due to parser-induced changes is minimized.
+## SEO notes
 
-5.  **Conditional Content Rendering:**
-    *   The script only attempts to update a section if it finds valid data for that section from the content folders. If a folder is empty or its files contain no usable data, the corresponding section in `index.html` will retain its previous content or remain as it was, rather than being cleared or broken.
-
-By combining these strategies, the automated CMS provides a highly resilient and safe method for updating your GitHub Pages website, ensuring a consistent and functional user interface at all times.
-
-## GitHub Actions Workflow (`.github/workflows/update-website.yml`)
-
-The automation is orchestrated by a GitHub Actions workflow. This workflow is triggered on every `push` to the `main` branch if changes are detected in any of the content folders or the `update_index.py` script itself. It performs the following steps:
-
-1.  **Checkout repository:** Fetches the latest code.
-2.  **Set up Python:** Configures the Python environment.
-3.  **Install dependencies:** Installs `pyyaml` and `beautifulsoup4`.
-4.  **Run content update script:** Executes `update_index.py` to generate the new `index.html`.
-5.  **Commit and push changes:** If `index.html` has changed, the workflow automatically commits the updated file using the `github-actions[bot]` user and pushes it back to the `main` branch. This step is configured to prevent Git push/rejected errors by using the `GITHUB_TOKEN` with appropriate permissions.
-
-This setup ensures a fully automated, continuous deployment pipeline for your website's content.
+- Every page ships its own title, meta description, canonical URL, Open Graph
+  and Twitter tags in the HTML source.
+- Site-wide `Person` / `Organization` / `WebSite` schema is on every page under
+  stable `@id`s; item pages add `Article` or `VideoObject` plus
+  `BreadcrumbList`; `AggregateRating` is only emitted once real ratings exist.
+- `sitemap.xml` is an index over pages, categories, content (with image and
+  video extensions) and gallery images. Submit the index in Search Console.
+- Navigation is in the HTML source, not injected by script, so all 16
+  categories and their subcategories are crawlable without JavaScript.
+- Images carry `width`/`height`, the hero is preloaded as responsive WebP, and
+  video players are click-to-play so no third-party iframe loads on first
+  paint.
