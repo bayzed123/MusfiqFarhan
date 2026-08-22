@@ -255,7 +255,9 @@ async function buildItemPages(items) {
     const category = findCategory(item.category);
     if (!category) continue;
 
-    const canonical = item.canonical_url || `${SITE_ORIGIN}${contentPath(item)}`;
+    const canonical = item.path
+      ? `${SITE_ORIGIN}${item.path}`
+      : item.canonical_url || `${SITE_ORIGIN}${contentPath(item)}`;
     const description = item.meta_description || item.description || `${item.title} — ${SITE_NAME}.`;
     const isVideo = item.type === 'video';
     const poster = item.thumbnail_url || item.image || '/assets/img/hero_red-1280.webp';

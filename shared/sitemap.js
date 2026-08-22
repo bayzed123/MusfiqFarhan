@@ -95,7 +95,9 @@ export function contentSitemap(items = [], origin = SITE_ORIGIN) {
   const entries = items
     .filter((item) => Number(item.published) === 1 && Number(item.indexable) !== 0)
     .map((item) => {
-      const loc = item.canonical_url || contentUrl(item, origin);
+      const loc = item.path
+        ? `${origin}${item.path}`
+        : item.canonical_url || contentUrl(item, origin);
       const image = absolute(item.og_image || item.image, origin);
       const parts = [];
       if (image) {
