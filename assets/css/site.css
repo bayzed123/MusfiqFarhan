@@ -2094,3 +2094,326 @@ p {
   justify-content: center;
   padding: 1.5rem var(--gutter) 0;
 }
+
+/* ==========================================================================
+   Watch hub — poster grid with an inline player stage above it
+   ========================================================================== */
+
+.stage {
+  display: grid;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+  padding: 0 var(--gutter) clamp(1.5rem, 4vw, 2.5rem);
+  scroll-margin-top: 5rem;
+}
+
+@media (min-width: 960px) {
+  .stage {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  }
+}
+
+.stage[hidden] {
+  display: none;
+}
+
+.stage__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-float);
+}
+
+.stage__frame iframe,
+.stage__frame video {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.stage__title {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  margin: 0.35rem 0 0.6rem;
+}
+
+.stage__lede {
+  color: var(--ink-soft);
+  margin-bottom: 1.25rem;
+}
+
+.stage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.vgrid {
+  display: grid;
+  gap: clamp(0.9rem, 2vw, 1.35rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  padding-inline: var(--gutter);
+}
+
+.vcard {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+
+.vcard:hover,
+.vcard:focus-within {
+  transform: translateY(-4px);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-card);
+}
+
+/* The poster is the play button, so the whole thumbnail is one large target. */
+.vcard__play {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.vcard__play img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+
+.vcard:hover .vcard__play img {
+  transform: scale(1.06);
+}
+
+.vcard__badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 0.24rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(8, 9, 12, 0.8);
+  backdrop-filter: blur(6px);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.vcard__time {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 5px;
+  background: rgba(8, 9, 12, 0.85);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+.vcard__icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.vcard__icon svg {
+  width: 54px;
+  height: 54px;
+  padding: 0.85rem;
+  border-radius: 50%;
+  background: rgba(225, 29, 46, 0.92);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s var(--ease);
+}
+
+.vcard__play:hover .vcard__icon svg,
+.vcard__play:focus-visible .vcard__icon svg {
+  transform: scale(1.12);
+}
+
+.vcard__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.85rem 0.95rem 1rem;
+  flex: 1;
+}
+
+.vcard__title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.32;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vcard__meta {
+  font-size: 0.76rem;
+  color: var(--ink-faint);
+}
+
+.vcard__link {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.vcard__link:hover {
+  color: var(--brand-bright);
+}
+
+/* ==========================================================================
+   Blog hub — a reading list rather than a card wall
+   ========================================================================== */
+
+.post-list {
+  display: grid;
+  gap: 1rem;
+  padding-inline: var(--gutter);
+  max-width: 920px;
+}
+
+.post-row {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: start;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.post-row:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .post-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.post-row__cover {
+  display: block;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.post-row__cover img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.post-row__title {
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  margin: 0.2rem 0 0.4rem;
+}
+
+.post-row__excerpt {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  font-size: 0.76rem;
+  color: var(--ink-faint);
+}
+
+/* The four main destinations sit above the category list in the drawer. */
+.drawer__hubs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.drawer__hubs a {
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.drawer__hubs a:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* One Categories panel instead of four menus: columns of grouped categories. */
+.mega--wide {
+  width: min(940px, 92vw);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem 1.25rem;
+}
+
+.mega__col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.mega__label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand-bright);
+  padding: 0 0.6rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.4rem;
+}
+
+.mega__col .mega__group + .mega__group {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 1180px) {
+  .mega--wide {
+    width: min(720px, 90vw);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Keep the blog section heading aligned with its reading column. */
+.post-list-head {
+  max-width: calc(920px + var(--gutter) * 2);
+}

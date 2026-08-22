@@ -24,6 +24,7 @@ export const RESERVED_PATHS = new Set([
   'admin',
   'api',
   'c',
+  'watch',
   'gallery',
   'love-notes',
   'search',
@@ -83,6 +84,8 @@ export function categoryUrl(category, subcategory = '', origin = SITE_ORIGIN) {
 
 export const STATIC_PATHS = {
   home: '/',
+  watch: '/watch/',
+  blog: '/blog/',
   gallery: '/gallery/',
   loveNotes: '/love-notes/',
   about: '/about.html',

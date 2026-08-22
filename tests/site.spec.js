@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { expect, test } from '@playwright/test';
 
 const CATEGORY_SLUGS = [
@@ -75,11 +77,65 @@ test.describe('public site', () => {
     }
   });
 
-  test('the desktop mega menu opens on click', async ({ page }) => {
+  test('the four hubs are plain links and Categories is the only menu', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    await page.locator('.primary-nav .nav-link').first().click();
+
+    // The destinations people actually want should navigate on one tap.
+    for (const [label, href] of [
+      ['Watch', '/watch/'],
+      ['Blog', '/blog/'],
+      ['Gallery', '/gallery/'],
+      ['Love notes', '/love-notes/']
+    ]) {
+      await expect(page.locator(`.primary-nav a.nav-link:text-is("${label}")`)).toHaveAttribute(
+        'href',
+        href
+      );
+    }
+    // Exactly one dropdown, so nothing is named twice in the bar.
+    await expect(page.locator('.primary-nav [data-nav-item]')).toHaveCount(1);
+    await page.locator('.primary-nav button.nav-link').click();
     await expect(page.locator('.nav-item.is-open .mega')).toBeVisible();
+  });
+
+  test('the watch hub lists videos and plays one without leaving the page', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/watch/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('h1')).toHaveText('Watch');
+    await expect(page.locator('[data-watch-filters] .chip')).not.toHaveCount(0);
+    const cards = page.locator('.vcard');
+    await expect(cards).not.toHaveCount(0);
+
+    // The player is closed until a poster is tapped: no third-party frame on load.
+    await expect(page.locator('[data-watch-stage]')).toBeHidden();
+    await page.locator('[data-play]').first().click();
+    await expect(page.locator('[data-watch-stage]')).toBeVisible();
+    await expect(page.locator('.stage__frame video, .stage__frame iframe')).toHaveCount(1);
+    await expect(page).toHaveURL(/\/watch\/$/);
+
+    await page.locator('[data-stage-close]').click();
+    await expect(page.locator('[data-watch-stage]')).toBeHidden();
+  });
+
+  test('a watch filter narrows the grid', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/watch/', { waitUntil: 'domcontentloaded' });
+    const all = await page.locator('.vcard').count();
+    await page.locator('[data-watch-filters] .chip', { hasText: 'Teasers' }).click();
+    await expect(page.locator('[data-watch-filters] .chip.is-active')).toHaveText('Teasers');
+    expect(await page.locator('.vcard').count()).toBeLessThanOrEqual(all);
+  });
+
+  test('the blog hub lists articles separately from video', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/blog/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('h1')).toHaveText('Blog');
+    await expect(page.locator('[data-blog-filters] .chip')).not.toHaveCount(0);
+    await expect(page.locator('.post-row')).not.toHaveCount(0);
+    // Every row links to its own page.
+    await expect(page.locator('.post-row__title a').first()).toHaveAttribute('href', /^\/.+\/$/);
+    await expect(page.locator('.vcard')).toHaveCount(0);
   });
 
   test('the mobile drawer opens and expands a category', async ({ page }) => {
@@ -93,7 +149,7 @@ test.describe('public site', () => {
 
   test('no page scrolls sideways on a phone', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
-    for (const path of ['/', '/c/new-natok/', '/gallery/', '/love-notes/', '/about.html']) {
+    for (const path of ['/', '/watch/', '/blog/', '/c/new-natok/', '/gallery/', '/love-notes/']) {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       const overflows = await page.evaluate(
         () => document.documentElement.scrollWidth > window.innerWidth + 2
@@ -142,6 +198,8 @@ test.describe('public site', () => {
       '/privacy-policy.html',
       '/editorial-standards.html',
       '/terms-of-service.html',
+      '/watch/',
+      '/blog/',
       '/gallery/',
       '/love-notes/',
       '/robots.txt',
@@ -183,7 +241,7 @@ test.describe('public site', () => {
   test('no page reports a script error', async ({ page }) => {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    for (const path of ['/', '/c/new-natok/', '/gallery/', '/love-notes/', '/404.html']) {
+    for (const path of ['/', '/watch/', '/blog/', '/c/new-natok/', '/gallery/', '/404.html']) {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await page.waitForTimeout(400);
     }
@@ -447,6 +505,30 @@ test.describe('dashboard', () => {
     await expect(page.locator('#c-seo-title')).toHaveValue('My own title');
   });
 });
+
+/**
+ * The hubs read /api/public/export. The hermetic beforeEach blocks every
+ * off-origin request, so serve that one endpoint from the same fixture the
+ * static build uses — the page and the build then agree on the content.
+ */
+async function mockPublicApi(page) {
+  const fixture = JSON.parse(
+    readFileSync(new URL('../scripts/fixtures/sample-export.json', import.meta.url), 'utf8')
+  );
+  await page.route('**/api/public/**', (route) => {
+    const path = new URL(route.request().url()).pathname;
+    const body = path.endsWith('/marquee')
+      ? { notes: fixture.notes, count: fixture.notes.length }
+      : path.endsWith('/love-notes')
+        ? { notes: fixture.notes, count: fixture.notes.length, hearts: 0 }
+        : { items: fixture.items, gallery: fixture.gallery };
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(body)
+    });
+  });
+}
 
 /** Sign in to the dashboard. Assumes mockAdminApi() is already installed. */
 async function signIn(page) {
