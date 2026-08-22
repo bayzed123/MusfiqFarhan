@@ -13,7 +13,7 @@
  * left in place, so a transient API outage never ships an empty site.
  */
 
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,13 +22,7 @@ import { SHELL_REGIONS } from './lib/shell.mjs';
 import { CATEGORIES, findCategory } from '../shared/taxonomy.js';
 import { renderMarkdown } from '../shared/markdown.js';
 import { SITE_NAME, SITE_ORIGIN, categoryPath, contentPath } from '../shared/urls.js';
-import {
-  categoriesSitemap,
-  contentSitemap,
-  imagesSitemap,
-  pagesSitemap,
-  sitemapIndex
-} from '../shared/sitemap.js';
+import { fullSitemap } from '../shared/sitemap.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API_BASE = (process.env.MRF_API_URL || 'https://mrf-api.gadget02030.workers.dev').replace(/\/$/, '');
@@ -427,15 +421,19 @@ ${renderMarkdown(item.body)}
 
 async function buildSitemaps(items, gallery) {
   const now = new Date().toISOString();
-  const files = {
-    'sitemap.xml': sitemapIndex(SITE_ORIGIN, now),
-    'sitemap-pages.xml': pagesSitemap(SITE_ORIGIN, now),
-    'sitemap-categories.xml': categoriesSitemap(SITE_ORIGIN, now),
-    'sitemap-content.xml': contentSitemap(items, SITE_ORIGIN),
-    'sitemap-images.xml': imagesSitemap(gallery, SITE_ORIGIN)
-  };
-  for (const [name, body] of Object.entries(files)) {
-    await writeFile(path.join(ROOT, name), body);
+  // One sitemap at the root holding every URL — pages, categories, posts,
+  // videos and gallery images — rather than an index pointing at four files.
+  await writeFile(path.join(ROOT, 'sitemap.xml'), fullSitemap({ items, gallery, origin: SITE_ORIGIN }));
+
+  // Remove the split files a previous build wrote, so nothing stale is served
+  // and Search Console is not left following dead sitemap references.
+  for (const stale of [
+    'sitemap-pages.xml',
+    'sitemap-categories.xml',
+    'sitemap-content.xml',
+    'sitemap-images.xml'
+  ]) {
+    await rm(path.join(ROOT, stale), { force: true });
   }
 
   await writeFile(
@@ -453,7 +451,7 @@ Allow: /
 Sitemap: ${SITE_ORIGIN}/sitemap.xml
 `
   );
-  log(`wrote ${Object.keys(files).length} sitemap file(s) and robots.txt`);
+  log('wrote sitemap.xml and robots.txt');
 }
 
 /* ------------------------------------------------------------------- main */
