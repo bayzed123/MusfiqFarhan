@@ -340,14 +340,16 @@ export function findSubcategory(categoryValue, subValue) {
  */
 export function resolvePlacement({ kind, category, subcategory } = {}) {
   const preset = findKind(kind);
-  const resolvedCategory = findCategory(category) || (preset ? findCategory(preset.category) : null);
+  // A selected publishing kind is a pipeline contract, not a hint. This
+  // prevents a poster, teaser, biography chapter, or blog post from being
+  // filed into a different top-level section by stale/manual form values.
+  const resolvedCategory = preset ? findCategory(preset.category) : findCategory(category);
   if (!resolvedCategory) {
     return { ok: false, error: 'Pick a category from the official list.' };
   }
-  const resolvedSub =
-    findSubcategory(resolvedCategory.name, subcategory) ||
-    (preset ? findSubcategory(resolvedCategory.name, preset.subcategory) : '') ||
-    resolvedCategory.subcategories[0];
+  const requestedSub = findSubcategory(resolvedCategory.name, subcategory);
+  const presetSub = preset ? findSubcategory(resolvedCategory.name, preset.subcategory) : '';
+  const resolvedSub = preset ? presetSub || resolvedCategory.subcategories[0] : requestedSub || resolvedCategory.subcategories[0];
   return {
     ok: true,
     category: resolvedCategory.name,

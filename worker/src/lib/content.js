@@ -62,9 +62,7 @@ export function resolveMedia({ type, videoUrl, attachmentUrl, image, embedUrl })
 export function normalizeContent(body, existing = null) {
   const preset = findKind(body.kind);
   const requestedType = clean(body.type, 20).toLowerCase();
-  const type = CONTENT_TYPES.includes(requestedType)
-    ? requestedType
-    : preset?.type || '';
+  const type = preset?.type || (CONTENT_TYPES.includes(requestedType) ? requestedType : '');
 
   const title = clean(body.title, 160);
   if (!type) return { error: 'Choose a content type or a preset.' };
@@ -96,7 +94,7 @@ export function normalizeContent(body, existing = null) {
 
   const row = {
     type,
-    kind: clean(body.kind, 40) || placement.kind || '',
+    kind: preset?.id || placement.kind || clean(body.kind, 40) || '',
     title,
     slug,
     category: placement.category,

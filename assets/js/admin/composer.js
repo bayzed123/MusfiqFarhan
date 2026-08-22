@@ -411,7 +411,17 @@ export function initComposer(root, { onSave } = {}) {
   });
 
   $('[data-category]', root).addEventListener('change', (event) => {
-    $('[data-subcategory]', root).innerHTML = subcategoryOptions(event.target.value);
+    const form = $('[data-composer-form]', root);
+    const preset = findKind(form.dataset.kind);
+    if (!form.id.value && preset) {
+      // New items use a dedicated publishing pipeline. Reassert its canonical
+      // destination instead of allowing a stale/manual category to misfile it.
+      event.target.value = preset.category;
+      $('[data-subcategory]', root).innerHTML = subcategoryOptions(preset.category, preset.subcategory);
+      toast(`${preset.label} items are routed to ${preset.category}.`);
+    } else {
+      $('[data-subcategory]', root).innerHTML = subcategoryOptions(event.target.value);
+    }
     refresh(root);
   });
 

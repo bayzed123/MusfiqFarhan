@@ -9,7 +9,8 @@
     "build:fixture": "MRF_EXPORT_FILE=scripts/fixtures/sample-export.json node scripts/build-site.mjs",
     "serve": "npx --yes http-server . -p 4173 -c-1",
     "test": "playwright test",
-    "verify": "npm run build:fixture && playwright test",
+    "test:routing": "node scripts/test-routing.mjs",
+    "verify": "npm run build:fixture && npm run test:routing && playwright test",
     "test:live": "PLAYWRIGHT_BASE_URL=https://www.musfiqrfarhan.blog playwright test",
     "deploy:worker": "wrangler deploy --config wrangler.toml",
     "migrate": "wrangler d1 migrations apply MRF-API --remote --config wrangler.toml"

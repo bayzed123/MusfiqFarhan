@@ -75,6 +75,11 @@ jobs:
           npm install --no-save @playwright/test@1.55.0
           npx playwright install --with-deps chromium
 
+      # Verify taxonomy routing before the browser suite. A mismatch here
+      # must block publication rather than silently misfile an item.
+      - name: Verify canonical content routing
+        run: node scripts/test-routing.mjs
+
       # Verify the built output before it is published, so a broken build
       # never reaches the live site.
       - name: Verify the build
