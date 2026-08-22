@@ -28,7 +28,9 @@ function frameAd(config, name) {
   options.textContent = `window.atOptions = ${JSON.stringify({ key: config.key, format: 'iframe', height: config.height, width: config.width, params: {} })};`;
   const invoke = document.createElement('script');
   invoke.src = `https://www.highrevenueformat.com/${config.key}/invoke.js`;
-  invoke.async = true;
+  // These tags read the global atOptions object; keep initialization ordered so
+  // one slot cannot overwrite another slot's dimensions before its script reads them.
+  invoke.async = false;
   invoke.dataset.adNetwork = 'highrevenueformat';
   slot.append(options, invoke);
   return slot;
