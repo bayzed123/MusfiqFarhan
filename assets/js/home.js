@@ -12,6 +12,22 @@ import { $, attr, esc, formatDate, mediaUrl, render, starMarkup } from './dom.js
 import { cardMarkup, initRails, railMarkup } from './cards.js';
 import { initRatings } from './rating.js';
 
+function aboutHeroMarkup() {
+  return `<div class="about-hero__media" aria-hidden="true"></div>
+    <div class="about-hero__inner">
+      <p class="hero__eyebrow">Official biography</p>
+      <h1 class="about-hero__title">Musfiq R Farhan</h1>
+      <div class="about-hero__copy">
+        <p>Musfiq R. Farhan is a Bangladeshi actor, radio jockey whose work moves between intimate character stories and the energy of contemporary entertainment. He is widely known to audiences as RJ Farhan, and his natok and telefilm work reaches viewers across Bangladesh and the wider Bengali-speaking world.</p>
+        <p><strong>The work</strong><br>From natok and telefilm to music videos, radio and digital storytelling, Musfiq’s work is shaped by character, rhythm and a close relationship with the audience. This official site gathers releases, posters, interviews, behind-the-scenes notes and selected archive moments in one place.</p>
+      </div>
+      <div class="about-hero__actions">
+        <a class="button button--primary" href="/about.html">Read the full story</a>
+        <a class="button button--ghost" href="/c/blog/">Explore the blog</a>
+      </div>
+    </div>`;
+}
+
 function heroMarkup(item) {
   if (!item) return '';
   const image = mediaUrl(item.image || item.og_image, SITE.fallbackImage);
@@ -84,7 +100,8 @@ export async function initHome() {
     return;
   }
 
-  if (data.featured) render('[data-hero]', heroMarkup(data.featured));
+  render('[data-hero]', aboutHeroMarkup());
+  if (data.featured) render('[data-featured-story]', heroMarkup(data.featured));
 
   const posterSection = $('[data-posters]');
   if (posterSection) {

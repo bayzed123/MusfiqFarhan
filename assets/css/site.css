@@ -292,6 +292,31 @@ p {
 }
 
 @media (max-width: 720px) {
+  .about-hero {
+    min-height: auto;
+    align-items: flex-end;
+    padding-top: 8rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .about-hero__media {
+    background-position: 62% center;
+  }
+
+  .about-hero__title {
+    max-width: none;
+    font-size: clamp(2.8rem, 14vw, 4.6rem);
+  }
+
+  .about-hero__copy {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  .hero--release {
+    min-height: 520px;
+  }
+
   .love-strip__label span:not(.love-strip__count) {
     display: none;
   }
@@ -893,6 +918,79 @@ p {
   width: 1.35rem;
   height: 0.82rem;
   border-radius: 0.16rem;
+}
+
+.about-hero {
+  min-height: clamp(660px, 88vh, 920px);
+  align-items: center;
+  padding-top: 9rem;
+  padding-bottom: clamp(4rem, 8vw, 7rem);
+}
+
+.about-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(8, 9, 12, 0.94) 0%, rgba(8, 9, 12, 0.72) 42%, rgba(8, 9, 12, 0.2) 100%),
+    linear-gradient(0deg, rgba(8, 9, 12, 0.9) 0%, rgba(8, 9, 12, 0.1) 55%, rgba(8, 9, 12, 0.68) 100%),
+    url('/assets/hero_red.png') center / cover no-repeat;
+  filter: saturate(0.92) contrast(1.06);
+}
+
+.about-hero__inner {
+  width: 100%;
+  max-width: 800px;
+}
+
+.about-hero__title {
+  max-width: 10ch;
+  margin-bottom: 1.4rem;
+  color: #ffcf33;
+  animation: about-title-colors 4s steps(1, end) infinite;
+  text-wrap: balance;
+}
+
+.about-hero__copy {
+  max-width: 62ch;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.75;
+}
+
+.about-hero__copy p {
+  margin: 0 0 1rem;
+}
+
+.about-hero__copy strong {
+  color: #fff;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.about-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+.hero--release {
+  min-height: clamp(420px, 58vh, 640px);
+  margin-top: clamp(2rem, 5vw, 4rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes about-title-colors {
+  0%, 24.99% { color: #ffcf33; }
+  25%, 49.99% { color: #63d391; }
+  50%, 74.99% { color: #ff5261; }
+  75%, 100% { color: #5db7ff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-hero__title { animation: none; color: #ffcf33; }
 }
 
 .hero__official-note {
