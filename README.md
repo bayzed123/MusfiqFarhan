@@ -3,8 +3,8 @@
 The official site of Musfiq R. Farhan: natok, teasers, posters, gallery, blog
 and the fan love-note wall, published from a private studio dashboard.
 
-- **Live site:** https://www.musfiqrfarhan.blog
-- **Dashboard:** https://www.musfiqrfarhan.blog/admin/ (noindex, password protected)
+- **Live site:** www.musfiqrfarhan.blog
+- **Dashboard:** www.musfiqrfarhan.blog/admin/ (noindex, password protected)
 - **API:** Cloudflare Worker `mrf-api` with D1 (content) and R2 (media)
 
 ---
