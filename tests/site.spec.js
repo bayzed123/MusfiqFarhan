@@ -417,15 +417,30 @@ test.describe('advertising', () => {
     return page.$$eval('.ad-slot', (nodes) => nodes.map((node) => node.dataset.adSlot));
   }
 
+  /**
+   * A real published post, taken from the sitemap. CI builds from the live
+   * API, so a hardcoded slug is a page that may not exist there — and every
+   * ad assertion then passes vacuously against a 404.
+   */
+  async function somePost(request) {
+    const xml = await (await request.get('/sitemap.xml')).text();
+    return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+      .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
+      .filter((path) => path.endsWith('/') && path !== '/')
+      .filter((path) => !path.startsWith('/c/'))
+      .find((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
+  }
+
   test('every post gets a middle unit without the post asking for one', async ({
     page,
     request
   }) => {
-    const response = await request.get('/new-natok/tor-preme-pagol/');
-    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
+    const post = await somePost(request);
+    test.skip(!post, 'this build has no published posts');
+    const response = await request.get(post);
     expect(await response.text(), 'no ad markup is baked into the page').not.toContain('ad-slot');
 
-    const slots = await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    const slots = await slotsOn(page, post);
     expect(slots, 'a unit above the article').toContain('under-player');
     expect(slots, 'a unit in the middle of the article').toContain('in-article');
     expect(slots, 'a unit after the article').toContain('after-article');
@@ -449,7 +464,9 @@ test.describe('advertising', () => {
   test('each banner runs in its own sandboxed frame and there is one native container', async ({
     page
   }) => {
-    await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    // The watch hub is served from the fixture, so it carries both a banner
+    // and a native unit whatever content the build happens to hold.
+    await slotsOn(page, '/watch/');
     const frames = await page.$$eval('.ad-slot__frame', (nodes) =>
       nodes.map((node) => node.getAttribute('sandbox') || '')
     );
@@ -474,9 +491,14 @@ test.describe('advertising', () => {
     }
   });
 
-  test('an ad-filled post page still does not scroll sideways on a phone', async ({ page }) => {
+  test('an ad-filled post page still does not scroll sideways on a phone', async ({
+    page,
+    request
+  }) => {
+    const post = await somePost(request);
+    test.skip(!post, 'this build has no published posts');
     await page.setViewportSize({ width: 390, height: 780 });
-    await slotsOn(page, '/new-natok/tor-preme-pagol/');
+    await slotsOn(page, post);
     const overflows = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth + 2
     );
