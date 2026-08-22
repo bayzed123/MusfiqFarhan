@@ -226,7 +226,8 @@ export function headAssetsHtml() {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=Noto+Sans+Bengali:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=Noto+Sans+Bengali:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
-  <link rel="stylesheet" href="/assets/css/site.css">`;
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script defer src="/assets/js/ads.js"></script>`;
 }
 
 /**
