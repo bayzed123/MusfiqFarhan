@@ -268,6 +268,42 @@ export const KINDS = [
     subcategory: 'Popular',
     accepts: 'any',
     hint: 'The large banner at the very top of the homepage.'
+  },
+  {
+    id: 'natok-telefilm',
+    label: 'Natok & telefilm archive',
+    type: 'video',
+    category: 'Natok & Telefilm',
+    subcategory: 'New Natok',
+    accepts: 'video',
+    hint: 'A complete archive item for the Natok & Telefilm section.'
+  },
+  {
+    id: 'popular',
+    label: 'Popular highlight',
+    type: 'post',
+    category: 'Popular',
+    subcategory: 'Recent Releases',
+    accepts: 'any',
+    hint: 'A highlighted item routed directly to Popular.'
+  },
+  {
+    id: 'recent-releases',
+    label: 'Recent release',
+    type: 'post',
+    category: 'Recent Releases',
+    subcategory: 'Popular',
+    accepts: 'any',
+    hint: 'A newly published item routed directly to Recent Releases.'
+  },
+  {
+    id: 'eid-special',
+    label: 'Eid special',
+    type: 'post',
+    category: 'Eid Special',
+    subcategory: 'Recent Releases',
+    accepts: 'any',
+    hint: 'A festival or Eid item routed directly to Eid Special.'
   }
 ];
 
