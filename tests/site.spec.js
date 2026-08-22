@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { expect, test } from '@playwright/test';
 
-import { CATEGORIES, canonicalPair, isMirrorPair } from '../shared/taxonomy.js';
+import { CATEGORIES, canonicalPair, categorySlug, isMirrorPair } from '../shared/taxonomy.js';
 import { categoryListingPath, categoryPath, categoryUrl } from '../shared/urls.js';
 
 const CATEGORY_SLUGS = [
@@ -422,11 +422,18 @@ test.describe('published item pages', () => {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       const category = await page.evaluate(() => document.body.dataset.category);
       expect(category, `${path} declares no category`).toBeTruthy();
-      const crumb = page.locator('.breadcrumb a[href^="/c/"]');
-      await expect(crumb, `${path} has no category breadcrumb`).toHaveCount(1);
-      const href = await crumb.getAttribute('href');
-      // The URL's first segment is the category, so the breadcrumb must agree.
-      expect(href.replace('/c/', '').replace(/\/$/, '')).toBe(path.split('/').filter(Boolean)[0]);
+
+      // The breadcrumb points at the category's canonical URL, which is the
+      // hub for Gallery and Blog and the /c/ listing for the rest — the same
+      // destination every other link on the site uses.
+      const expected = categoryPath(category);
+      const crumb = page.locator(`.breadcrumb a[href="${expected}"]`);
+      await expect(crumb, `${path} has no breadcrumb to ${expected}`).toHaveCount(1);
+
+      // The URL's first segment is the category slug, so the two must agree.
+      expect(categorySlug(category), `${path} sits outside its category`).toBe(
+        path.split('/').filter(Boolean)[0]
+      );
     }
   });
 
