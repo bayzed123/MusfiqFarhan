@@ -1,284 +1,285 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/premium/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/premium/popular/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/premium/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/gallery/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/gallery/portraits/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/gallery/posters/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/gallery/behind-the-scenes/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/gallery/wallpapers/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/poster-release/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/poster-release/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/poster-release/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/behind-the-scenes/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/behind-the-scenes/studio-notes/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/behind-the-scenes/making-of/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/new-teaser/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/new-teaser/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/new-natok/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/new-natok/natok-telefilm/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/new-natok/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/short-clips/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/short-clips/natok-telefilm/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/blog/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/blog/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/blog/biography-journey/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/press/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/press/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/lifestyle-fashion/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/lifestyle-fashion/fashion/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/lifestyle-fashion/portraits/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/wallpapers/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/wallpapers/portraits/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/wallpapers/archive/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/biography-journey/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/biography-journey/biography/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/biography-journey/career-journey/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/natok-telefilm/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/natok-telefilm/new-natok/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/natok-telefilm/short-clips/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/recent-releases/popular/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/recent-releases/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/popular/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/popular/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/popular/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/eid-special/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/eid-special/recent-releases/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://www.musfiqrfarhan.blog/c/eid-special/popular/</loc>
-    <lastmod>2026-08-21T23:37:17.392Z</lastmod>
+    <lastmod>2026-08-22T13:52:53.158Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>

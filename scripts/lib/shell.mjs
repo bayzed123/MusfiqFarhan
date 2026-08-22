@@ -87,16 +87,21 @@ function megaMenu(group) {
         </div>`;
     })
     .join('');
-  return `<div class="mega" role="group" aria-label="${esc(group.label)} categories">${columns}</div>`;
+  return columns;
 }
 
 export function headerHtml() {
-  const navItems = NAV_GROUPS.map(
-    (group, index) => `<div class="nav-item" data-nav-item>
-        <button class="nav-link" type="button" aria-expanded="false" aria-controls="mega-${index}">
-          ${esc(group.label)}${ICONS.chevron}
-        </button>
-        <div id="mega-${index}">${megaMenu(group)}</div>
+  /*
+   * Four plain destinations carry almost all the traffic, so they are links
+   * rather than menus. The sixteen categories live behind a single
+   * "Categories" dropdown — previously they were four separate menus, one of
+   * which was also called "Watch", which read as two different things with
+   * the same name.
+   */
+  const categoryColumns = NAV_GROUPS.map(
+    (group) => `<div class="mega__col">
+        <p class="mega__label">${esc(group.label)}</p>
+        ${megaMenu(group)}
       </div>`
   ).join('');
 
@@ -107,9 +112,18 @@ export function headerHtml() {
       <span class="brand__name">MRF</span><span class="brand__tag">OFFICIAL</span>
     </a>
     <nav class="primary-nav" aria-label="Main">
-      ${navItems}
+      <a class="nav-link" href="${STATIC_PATHS.watch}">Watch</a>
+      <a class="nav-link" href="${STATIC_PATHS.blog}">Blog</a>
       <a class="nav-link" href="${STATIC_PATHS.gallery}">Gallery</a>
       <a class="nav-link" href="${STATIC_PATHS.loveNotes}">Love notes</a>
+      <div class="nav-item" data-nav-item>
+        <button class="nav-link" type="button" aria-expanded="false" aria-controls="mega-categories">
+          Categories${ICONS.chevron}
+        </button>
+        <div id="mega-categories">
+          <div class="mega mega--wide" role="group" aria-label="All categories">${categoryColumns}</div>
+        </div>
+      </div>
     </nav>
     <div class="header-actions">
       <button class="icon-button" type="button" data-search-open aria-label="Search the archive">${ICONS.search}</button>
@@ -128,6 +142,12 @@ export function headerHtml() {
     </div>
     <div class="drawer__body">
       <a class="button button--primary button--block" href="${STATIC_PATHS.loveNotes}" style="margin-bottom:1rem">Leave a love note</a>
+      <div class="drawer__hubs">
+        <a href="${STATIC_PATHS.watch}">Watch</a>
+        <a href="${STATIC_PATHS.blog}">Blog</a>
+        <a href="${STATIC_PATHS.gallery}">Gallery</a>
+        <a href="${STATIC_PATHS.loveNotes}">Love notes</a>
+      </div>
       ${CATEGORIES.map(
         (category, index) => `<div class="accordion">
           <button class="accordion__trigger" type="button" aria-expanded="false" aria-controls="drawer-panel-${index}">
@@ -196,6 +216,8 @@ export function footerHtml() {
       <h2>Official</h2>
       <ul>
         <li><a href="${STATIC_PATHS.about}">About</a></li>
+        <li><a href="${STATIC_PATHS.watch}">Watch</a></li>
+        <li><a href="${STATIC_PATHS.blog}">Blog</a></li>
         <li><a href="${STATIC_PATHS.gallery}">Gallery</a></li>
         <li><a href="${STATIC_PATHS.loveNotes}">Love notes</a></li>
         <li><a href="${STATIC_PATHS.contact}">Contact &amp; press</a></li>

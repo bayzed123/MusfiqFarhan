@@ -1,0 +1,48 @@
+name: PR checks
+
+# The deploy workflow only runs on main, so without this a pull request gets
+# no verification at all and a break is found after merging. This builds the
+# site from the committed fixture — no API needed, so it cannot be flaky
+# because the Worker is briefly unreachable — and runs the full suite.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Build pages and sitemaps from the fixture
+        run: npm run build:fixture
+
+      - name: Run the suite
+        run: npx playwright test
+
+      - name: Save the report when something fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
