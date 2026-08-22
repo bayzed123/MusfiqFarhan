@@ -13,7 +13,7 @@ const ADS = {
   native: { key: '95ccad5ad2296df12234714b8e6904cf' }
 };
 
-const EXCLUDED = /^(?:\/?|\/404(?:\.html)?\/?|\/admin(?:\/|$)|\/sitemap[^/]*\.xml$|\/robots\.txt$)/i;
+const EXCLUDED = /^(?:\/$|\/404(?:\.html)?\/?$|\/admin(?:\/|$)|\/sitemap[^/]*\.xml$|\/robots\.txt$)/i;
 const isExcluded = () => EXCLUDED.test(window.location.pathname);
 const idle = (callback) => (window.requestIdleCallback ? window.requestIdleCallback(callback, { timeout: 1800 }) : window.setTimeout(callback, 500));
 
