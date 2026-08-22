@@ -80,11 +80,21 @@ export async function submitReview(env, origin, body) {
   return json({ ok: true, message: 'Thank you. Your rating is waiting for approval.' }, { status: 201, origin });
 }
 
+/**
+ * The moderation shape. `toPublicReview` omits `approved` because a visitor
+ * only ever sees approved ratings, but the dashboard needs it for the badge
+ * and to label the button Approve or Unapprove — without it every rating read
+ * as unapproved and the button never changed after approving.
+ */
+function toAdminReview(row) {
+  return { ...toPublicReview(row), approved: Number(row.approved || 0) };
+}
+
 export async function adminReviews(env, origin) {
   const rows = await env.DB.prepare(
     'SELECT * FROM reviews ORDER BY approved ASC, created_at DESC LIMIT 300'
   ).all();
-  return json({ reviews: rows.results.map(toPublicReview) }, { origin, cache: 'no-store' });
+  return json({ reviews: rows.results.map(toAdminReview) }, { origin, cache: 'no-store' });
 }
 
 export async function updateReview(env, origin, id, body) {

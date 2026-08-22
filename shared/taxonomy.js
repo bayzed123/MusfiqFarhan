@@ -370,6 +370,54 @@ export function findSubcategory(categoryValue, subValue) {
 }
 
 /**
+ * Does this item belong on the listing for `name`?
+ *
+ * Nine of the sixteen names are both a category and someone else's
+ * subcategory — "Eid Special" is a section of its own *and* a subcategory of
+ * New Natok, Premium, Poster Release, Popular and Recent Releases. An item
+ * filed New Natok / Eid Special therefore belongs on both listings. Matching
+ * only the primary category is what left those pages empty.
+ */
+export function itemInCategory(item, name) {
+  const wanted = findCategory(name)?.name;
+  if (!wanted || !item) return false;
+  return item.category === wanted || item.subcategory === wanted;
+}
+
+/** Items shown at /c/<a>/<b>/ — everything tagged with both names. */
+export function itemInPair(item, a, b) {
+  return itemInCategory(item, a) && (!b || itemInCategory(item, b));
+}
+
+/**
+ * Two categories can list each other: New Natok has a "Natok & Telefilm"
+ * subcategory and Natok & Telefilm has a "New Natok" one. Both URLs then
+ * describe the same intersection, which is duplicate content. The pair whose
+ * category is declared first in CATEGORIES owns the canonical URL; the mirror
+ * still resolves for anyone who follows it, but says so in its head.
+ *
+ * @returns {{category: string, subcategory: string}|null} the canonical
+ *   ordering, or null when this pair is not mirrored.
+ */
+export function canonicalPair(categoryValue, subValue) {
+  const category = findCategory(categoryValue);
+  const sub = findSubcategory(category?.name, subValue);
+  if (!category || !sub) return null;
+  const mirror = findCategory(sub);
+  if (!mirror || !mirror.subcategories.includes(category.name)) return null;
+
+  const order = CATEGORIES.indexOf(category) <= CATEGORIES.indexOf(mirror);
+  const [owner, member] = order ? [category, mirror] : [mirror, category];
+  return { category: owner.name, subcategory: member.name };
+}
+
+/** True when this URL is the mirror half of a pair and should not be indexed. */
+export function isMirrorPair(categoryValue, subValue) {
+  const canonical = canonicalPair(categoryValue, subValue);
+  return Boolean(canonical) && canonical.category !== findCategory(categoryValue)?.name;
+}
+
+/**
  * Resolve whatever the admin (or an older record) supplied into a valid
  * category/subcategory pair. Falling back through the kind preset is what
  * stops an upload from disappearing into an unknown category.

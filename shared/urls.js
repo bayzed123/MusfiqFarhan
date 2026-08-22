@@ -71,11 +71,36 @@ export function contentUrl(item, origin = SITE_ORIGIN) {
   return `${origin}${contentPath(item)}`;
 }
 
-export function categoryPath(category, subcategory = '') {
+/**
+ * Two categories have a richer hub of their own — /gallery/ and /blog/ — and
+ * the header links those. Left alone, the Categories menu would send people
+ * to /c/gallery/ instead: one section, two URLs, two pages competing for the
+ * same query. The hub wins; the /c/ listing stays reachable but points at it.
+ */
+const CATEGORY_HUBS = new Map([
+  ['gallery', '/gallery/'],
+  ['blog', '/blog/']
+]);
+
+/** Where the /c/ listing for a category is written. Always under /c/. */
+export function categoryListingPath(category, subcategory = '') {
   const cat = categorySlug(category);
   if (!cat) return '/';
   const sub = subcategory ? subcategorySlug(subcategory) : '';
   return sub ? `/c/${cat}/${sub}/` : `/c/${cat}/`;
+}
+
+/** The URL to link to and to index for a category — its hub where it has one. */
+export function categoryPath(category, subcategory = '') {
+  const cat = categorySlug(category);
+  if (!cat) return '/';
+  if (!subcategory && CATEGORY_HUBS.has(cat)) return CATEGORY_HUBS.get(cat);
+  return categoryListingPath(category, subcategory);
+}
+
+/** True when this category's canonical home is a hub rather than /c/<slug>/. */
+export function hasCategoryHub(category) {
+  return CATEGORY_HUBS.has(categorySlug(category));
 }
 
 export function categoryUrl(category, subcategory = '', origin = SITE_ORIGIN) {
