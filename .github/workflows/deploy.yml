@@ -83,6 +83,9 @@ jobs:
       - name: Verify Love Notes form and avatar upload
         run: node scripts/test-love-notes.mjs
 
+      - name: Verify admin gallery pipeline routing
+        run: node scripts/test-admin-media-routing.mjs
+
       # Verify the built output before it is published, so a broken build
       # never reaches the live site.
       - name: Verify the build

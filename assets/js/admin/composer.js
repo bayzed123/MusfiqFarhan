@@ -388,6 +388,25 @@ async function save(root, { asDraft = false } = {}) {
     // Form values are strings, and sending a stringly-typed duplicate is an
     // easy way for a caller to end up comparing "91" against 91.
     const { id, ...payload } = values;
+    // Gallery and wallpaper images belong to the dedicated gallery table. The
+    // content table intentionally rejects type=gallery, so never send these
+    // pipelines through /api/admin/content.
+    if (!id && values.type === 'gallery') {
+      const gallery = await adminApi.createGalleryItem({
+        title: values.title,
+        image_url: values.image,
+        alt_text: values.description || values.title,
+        caption: values.description,
+        category: values.category,
+        subcategory: values.subcategory,
+        published: values.published,
+        sort_order: values.sort_order
+      });
+      toast(values.published ? 'Added to the gallery.' : 'Saved as a gallery draft.');
+      fillComposer(root, null);
+      onSaved(gallery);
+      return;
+    }
     const saved = id
       ? await adminApi.updateContent(id, payload)
       : await adminApi.createContent(payload);
