@@ -11,7 +11,7 @@
 import { CATEGORIES, KINDS, findCategory, findKind } from '../../../shared/taxonomy.js';
 import { SITE } from '../config.js';
 import { adminApi } from './api.js';
-import { $, esc, makeDropzone, slugify, toast, uploadRow } from './ui.js';
+import { $, esc, makeDropzone, pickFromLibrary, slugify, toast, uploadRow } from './ui.js';
 
 const AUTO = { seoTitle: true, metaDescription: true, slug: true };
 
@@ -105,8 +105,22 @@ export function composerMarkup() {
               <input id="c-video" name="video_url" type="text" inputmode="url" maxlength="600" placeholder="https://youtu.be/… or /media/clip.mp4">
             </div>
             <div class="field">
-              <label for="c-image">Cover image URL</label>
-              <input id="c-image" name="image" type="text" inputmode="url" maxlength="600" placeholder="https://… or /assets/poster.webp">
+              <label for="c-image">Cover image</label>
+              <div class="cover" data-cover>
+                <div class="cover__frame">
+                  <img class="cover__image" data-cover-preview alt="Current cover image" hidden>
+                  <p class="cover__empty" data-cover-empty>No cover image yet</p>
+                </div>
+                <div class="cover__actions">
+                  <button class="btn btn--ghost btn--sm" type="button" data-cover-upload>Upload a new one</button>
+                  <button class="btn btn--ghost btn--sm" type="button" data-cover-library>Pick from library</button>
+                  <button class="btn btn--ghost btn--sm" type="button" data-cover-clear hidden>Remove</button>
+                </div>
+              </div>
+              <div data-cover-progress></div>
+              <input id="c-image" name="image" type="text" inputmode="url" maxlength="600"
+                placeholder="https://… or /assets/poster.webp" aria-describedby="c-image-hint">
+              <small id="c-image-hint">Change the picture with the buttons above, or paste a URL here.</small>
             </div>
             <div class="field" style="margin-bottom:0">
               <label for="c-attachment">Extra file URL <small>poster download, PDF, anything else</small></label>
@@ -262,6 +276,19 @@ function paintSeo(root, values) {
       <span style="font-size:.74rem;color:var(--ink-faint)">${esc(values.description || '')}</span>
     </div>
   </div>`;
+
+  paintCover(root, values.image);
+}
+
+/** Show the cover image that is set, so a swap is visible before saving. */
+function paintCover(root, url) {
+  const preview = $('[data-cover-preview]', root);
+  if (!preview) return;
+  const has = Boolean(url);
+  if (has && preview.getAttribute('src') !== url) preview.setAttribute('src', url);
+  preview.hidden = !has;
+  $('[data-cover-empty]', root).hidden = has;
+  $('[data-cover-clear]', root).hidden = !has;
 }
 
 /* ----------------------------------------------------------------- wiring */
@@ -483,7 +510,71 @@ export function initComposer(root, { onSave } = {}) {
     }
   });
 
+  initCoverControls(root, form);
+
   fillComposer(root, null);
+}
+
+/**
+ * Change a post's picture from the post itself.
+ *
+ * Before this the only route was: open the media library, copy a URL, come
+ * back, paste it into a text box — with nothing on screen showing which image
+ * was actually set. These three buttons cover the whole job, and the preview
+ * above them shows the result straight away.
+ */
+function initCoverControls(root, form) {
+  const setImage = (url) => {
+    form.image.value = url;
+    refresh(root);
+  };
+
+  // One hidden input for the "upload a new one" button. It sits outside the
+  // button because an input inside a button is not valid markup.
+  const chooser = document.createElement('input');
+  chooser.type = 'file';
+  chooser.accept = 'image/*';
+  chooser.hidden = true;
+  root.appendChild(chooser);
+
+  chooser.addEventListener('change', async () => {
+    const file = chooser.files?.[0];
+    chooser.value = '';
+    if (!file) return;
+
+    const row = uploadRow($('[data-cover-progress]', root), file.name);
+    try {
+      const result = await adminApi.uploadFile(file, row.progress);
+      row.done();
+      if (result.media_kind !== 'image') {
+        toast('That file is not an image — the cover was left as it was.', 'error');
+        return;
+      }
+      setImage(result.url);
+      toast('Cover image updated. Save the post to publish it.');
+    } catch (error) {
+      row.fail(error.message);
+      toast(error.message, 'error');
+    }
+  });
+
+  $('[data-cover-upload]', root).addEventListener('click', () => chooser.click());
+
+  $('[data-cover-library]', root).addEventListener('click', async () => {
+    const url = await pickFromLibrary({
+      title: 'Choose a cover image',
+      kind: 'image',
+      load: () => adminApi.listMedia()
+    });
+    if (!url) return;
+    setImage(url);
+    toast('Cover image updated. Save the post to publish it.');
+  });
+
+  $('[data-cover-clear]', root).addEventListener('click', () => {
+    setImage('');
+    toast('Cover image removed.');
+  });
 }
 
 export function composerCurrent() {
