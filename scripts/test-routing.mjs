@@ -25,11 +25,13 @@ const routes = [
   ['New Teaser', '/c/new-teaser/'],
   ['Short Clips', '/c/short-clips/'],
   ['Natok & Telefilm', '/c/natok-telefilm/'],
-  ['Gallery', '/c/gallery/'],
+  ['Gallery', '/gallery/'],
   ['Poster Release', '/c/poster-release/'],
   ['Wallpapers', '/c/wallpapers/'],
   ['Lifestyle & Fashion', '/c/lifestyle-fashion/'],
-  ['Blog', '/c/blog/'],
+  // Gallery and Blog have their own hub, which is the URL every link and
+  // the sitemap use; /c/gallery/ and /c/blog/ are canonical to it.
+  ['Blog', '/blog/'],
   ['Press', '/c/press/'],
   ['Biography & Journey', '/c/biography-journey/'],
   ['Behind the Scenes', '/c/behind-the-scenes/'],
