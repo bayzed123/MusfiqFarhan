@@ -417,6 +417,22 @@ test.describe('public site', () => {
     expect(body).toContain('Sitemap: https://www.musfiqrfarhan.blog/sitemap.xml');
   });
 
+  test('the mark and the full name open and close every page', async ({ page }) => {
+    await page.goto('/');
+
+    const header = page.locator('.site-header .brand__mark');
+    const footer = page.locator('.site-footer .footer-brand img');
+    for (const mark of [header, footer]) {
+      await expect(mark).toHaveAttribute('src', '/assets/mrf-mark.svg');
+      // A missing file still lays out at the width/height attributes, so the
+      // only way to know the mark actually arrived is to ask the decoder.
+      expect(await mark.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
+    }
+
+    await expect(page.locator('.site-header .brand__name')).toHaveText('MUSFIQ R. FARHAN');
+    await expect(page.locator('.site-footer .footer-brand__name')).toHaveText('MUSFIQ R. FARHAN');
+  });
+
   test('images declare dimensions so the layout does not jump', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const missing = await page.$$eval('main img, header img', (nodes) =>

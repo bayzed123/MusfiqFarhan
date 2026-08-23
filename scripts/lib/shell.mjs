@@ -108,8 +108,11 @@ export function headerHtml() {
   return `<header class="site-header" data-header>
   <div class="site-header__bar">
     <a class="brand" href="/" aria-label="${esc(SITE_NAME)} home">
-      <img src="/assets/mrf-mark.svg" alt="" width="34" height="34">
-      <span class="brand__name">MRF</span><span class="brand__tag">OFFICIAL</span>
+      <img class="brand__mark" src="/assets/mrf-mark.svg" alt="" width="38" height="38">
+      <span class="brand__words">
+        <span class="brand__name">${esc(PERSON_NAME).toUpperCase()}</span>
+        <span class="brand__tag">OFFICIAL</span>
+      </span>
     </a>
     <nav class="primary-nav" aria-label="Main">
       <a class="nav-link" href="${STATIC_PATHS.watch}">Watch</a>
@@ -137,7 +140,7 @@ export function headerHtml() {
   <div class="drawer__scrim" data-drawer-close></div>
   <div class="drawer__panel" role="dialog" aria-modal="true" aria-label="Site menu">
     <div class="drawer__head">
-      <span class="brand__name">Browse</span>
+      <span class="drawer__title">Browse</span>
       <button class="icon-button" type="button" data-drawer-close aria-label="Close menu">${ICONS.close}</button>
     </div>
     <div class="drawer__body">
@@ -210,6 +213,14 @@ export function footerHtml() {
 
   // The CTA band is its own region so a page can place it inside <main>.
   return `<footer class="site-footer">
+  <div class="footer-brand">
+    <img src="/assets/mrf-mark.svg" alt="" width="64" height="64">
+    <div>
+      <p class="footer-brand__name">${esc(PERSON_NAME).toUpperCase()}</p>
+      <p class="footer-brand__tag">OFFICIAL</p>
+      <p class="footer-brand__line">Actor &middot; Radio jockey &middot; Storyteller &mdash; Dhaka, Bangladesh</p>
+    </div>
+  </div>
   <div class="footer-grid">
     ${columns}
     <div>
