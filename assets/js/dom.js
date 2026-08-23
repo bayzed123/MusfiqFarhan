@@ -104,6 +104,17 @@ export function setMeta(selector, attribute, value) {
   node.setAttribute(attribute, value);
 }
 
+/**
+ * The page's permanent URL. The canonical tag is the one place that is right
+ * on every page, including when someone arrives with ?fbclid=… appended, and
+ * it is written by the build — so schema and share links quote the same
+ * address the page declares rather than a second copy that can drift from it.
+ */
+export function canonicalUrl() {
+  const tag = document.querySelector('link[rel="canonical"]');
+  return tag?.href || window.location.href.split('#')[0];
+}
+
 /** Append a JSON-LD block. */
 export function addJsonLd(data, id = '') {
   if (id) document.getElementById(id)?.remove();

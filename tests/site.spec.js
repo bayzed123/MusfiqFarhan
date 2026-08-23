@@ -322,6 +322,37 @@ test.describe('public site', () => {
     await expect(page.locator('.wiki-colophon a[href="/"]')).toBeVisible();
   });
 
+  /**
+   * Search Console reported the profile page as "available to Google, but has
+   * issues": its works list typed every video row as a VideoObject with no
+   * description, thumbnail or upload date, for videos that play on their own
+   * pages and not on this one. The ProfilePage also still named the /wiki/
+   * address the page was drafted at.
+   */
+  test('the profile schema names this url and claims no video of its own', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/wikipedia/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-wiki-works] tbody tr').first()).toBeVisible();
+
+    const blocks = await page.$$eval('script[type="application/ld+json"]', (nodes) =>
+      nodes.map((node) => node.textContent)
+    );
+    const profile = blocks.map((block) => JSON.parse(block)).find((json) => json['@type'] === 'ProfilePage');
+    expect(profile, 'the profile page emits ProfilePage schema').toBeTruthy();
+
+    const canonical = 'https://www.musfiqrfarhan.blog/wikipedia/';
+    expect(profile.url).toBe(canonical);
+    expect(profile['@id']).toBe(`${canonical}#profile`);
+
+    // The fixture holds two video titles, so this would catch the old typing.
+    const works = profile.mainEntity.performerIn;
+    expect(works.length).toBeGreaterThan(1);
+    expect(works.map((work) => work['@type'])).toEqual(works.map(() => 'CreativeWork'));
+    expect(JSON.stringify(blocks), 'no video is declared on a page with no video').not.toContain(
+      'VideoObject'
+    );
+  });
+
   test('the profile page is linked from the footer and listed in the sitemap', async ({
     page,
     request

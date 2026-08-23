@@ -10,16 +10,7 @@
  * so the markup is in the page source; this fills it in.
  */
 
-import { $, $$, attr, esc, on } from './dom.js';
-
-/**
- * The page's permanent URL. The canonical tag is the one place that is right
- * on every page, including when someone arrives with ?fbclid=… appended.
- */
-function canonicalUrl() {
-  const tag = document.querySelector('link[rel="canonical"]');
-  return tag?.href || window.location.href.split('#')[0];
-}
+import { $, $$, attr, canonicalUrl, esc, on } from './dom.js';
 
 function pageTitle() {
   const heading = document.querySelector('[data-entry-title]')?.textContent?.trim();
