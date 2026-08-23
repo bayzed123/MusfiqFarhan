@@ -6,6 +6,7 @@
 
 import { CATEGORIES, isMirrorPair } from './taxonomy.js';
 import { SITE_ORIGIN, categoryUrl, contentUrl, hasCategoryHub, STATIC_PATHS } from './urls.js';
+import { isVideoItem, videoSitemapBlock } from './video.js';
 
 function esc(value) {
   return String(value ?? '').replace(/[<>&'"]/g, (char) =>
@@ -116,23 +117,9 @@ export function contentSitemap(items = [], origin = SITE_ORIGIN) {
           `    <image:image>\n      <image:loc>${esc(image)}</image:loc>\n      <image:title>${esc(item.title)}</image:title>\n    </image:image>`
         );
       }
-      const player = item.embed_url || item.video_url || item.attachment_url;
-      if (item.type === 'video' && player) {
-        parts.push(
-          [
-            '    <video:video>',
-            `      <video:thumbnail_loc>${esc(absolute(item.thumbnail_url || item.image, origin))}</video:thumbnail_loc>`,
-            `      <video:title>${esc(item.title)}</video:title>`,
-            `      <video:description>${esc(item.meta_description || item.description || item.title)}</video:description>`,
-            item.embed_url ? `      <video:player_loc>${esc(item.embed_url)}</video:player_loc>` : '',
-            !item.embed_url ? `      <video:content_loc>${esc(absolute(player, origin))}</video:content_loc>` : '',
-            `      <video:publication_date>${esc(isoDate(item.published_at))}</video:publication_date>`,
-            '      <video:family_friendly>yes</video:family_friendly>',
-            '    </video:video>'
-          ]
-            .filter(Boolean)
-            .join('\n')
-        );
+      if (isVideoItem(item)) {
+        const block = videoSitemapBlock(item, origin, esc);
+        if (block) parts.push(block);
       }
       return urlEntry({
         loc,
