@@ -8,7 +8,7 @@
 
 import { api } from './api.js';
 import { SITE } from './config.js';
-import { $, addJsonLd, attr, esc } from './dom.js';
+import { $, addJsonLd, attr, canonicalUrl, esc } from './dom.js';
 
 /** Sections whose items belong in a filmography, in reading order. */
 const WORK_CATEGORIES = new Set([
@@ -67,19 +67,32 @@ export async function initWiki() {
 
   // The profile describes a real person, so it says so in machine-readable
   // form too — and points at the same official accounts the fact box lists.
+  //
+  // Every entry is a CreativeWork, including the ones that happen to be
+  // videos. A VideoObject is a claim that the video is playable on the page
+  // making the claim, and it has to carry a description, a thumbnail and an
+  // upload date to be eligible for anything. Neither is true here: this is a
+  // filmography of links, and each title already declares a complete
+  // VideoObject on its own page, where the video actually plays. Claiming it
+  // twice only earned a Search Console enhancement error.
+  const canonical = canonicalUrl();
   addJsonLd(
     {
       '@context': 'https://schema.org',
       '@type': 'ProfilePage',
-      '@id': `${SITE.origin}/wiki/#profile`,
-      url: `${SITE.origin}/wiki/`,
+      '@id': `${canonical}#profile`,
+      url: canonical,
       name: 'Musfiq R. Farhan — profile, career and works',
       isPartOf: { '@id': `${SITE.origin}/#website` },
       about: { '@id': `${SITE.origin}/#person` },
+      // Typed as well as referenced: the Person node it merges with lives in
+      // a different script block, and an untyped node is a weaker claim than
+      // it needs to be for the page's one rich result.
       mainEntity: {
+        '@type': 'Person',
         '@id': `${SITE.origin}/#person`,
         performerIn: items.slice(0, 40).map((item) => ({
-          '@type': item.type === 'video' ? 'VideoObject' : 'CreativeWork',
+          '@type': 'CreativeWork',
           name: item.title,
           url: `${SITE.origin}${item.path}`,
           datePublished: item.published_at || undefined

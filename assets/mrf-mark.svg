@@ -1,1 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-labelledby="title desc"><title id="title">MRF official logo</title><desc id="desc">MRF wordmark in lime green on a dark background</desc><rect width="240" height="80" rx="12" fill="#07100f"/><path d="M22 58V22h8l12 18 12-18h8v36h-9V37L42 54h-1L31 37v21zM76 58V22h27v8H86v7h15v8H86v13zm35 0V22h12l15 20V22h9v36h-8l-19-24v24zM160 58V22h10l12 16 12-16h10v36h-9V37l-12 16h-2l-12-16v21z" fill="#b5f26d"/><circle cx="218" cy="24" r="5" fill="#ff735c"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-labelledby="mrfMarkTitle">
+  <title id="mrfMarkTitle">Musfiq R. Farhan official mark</title>
+  <!--
+    A gold medallion carrying a line portrait traced from the official
+    photograph: the hair mass, the tilted head, the laughing mouth and the
+    hand raised over one eye.
+
+    Drawn as paths rather than shipped as a cut-out photo on purpose. This
+    file is the favicon, the header mark, the footer mark and the
+    Organization logo in the page schema, so it has to stay legible at 16px
+    and stay a few kilobytes. Two solid shapes — the hair and the hand —
+    carry the silhouette at small sizes; the thin strokes only resolve once
+    the mark is large.
+
+    The portrait was traced in a 600x693 space against the source photo,
+    which is why it is placed through a transform instead of being redrawn
+    in medallion coordinates: the trace stays checkable against the
+    original.
+  -->
+  <defs>
+    <linearGradient id="mrfGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe9a8"/>
+      <stop offset=".45" stop-color="#f0b429"/>
+      <stop offset="1" stop-color="#c07d12"/>
+    </linearGradient>
+    <radialGradient id="mrfGlow" cx=".34" cy=".3" r=".75">
+      <stop offset="0" stop-color="#f0b429" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#f0b429" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="mrfDisc"><circle cx="100" cy="100" r="99"/></clipPath>
+  </defs>
+
+  <circle cx="100" cy="100" r="99" fill="#0a0b10"/>
+  <circle cx="100" cy="100" r="99" fill="url(#mrfGlow)"/>
+
+  <g clip-path="url(#mrfDisc)">
+    <g transform="translate(32 16) scale(0.255)">
+      <!-- hair -->
+      <path fill="url(#mrfGold)" d="M 30 292 C 22 240 36 188 70 144 C 106 96 160 60 220 46 C 278 32 340 38 394 66 C 448 94 480 140 492 198 C 496 216 496 230 494 242 C 464 206 428 194 388 198 C 346 204 310 224 280 250 C 244 280 198 300 150 320 C 108 336 62 330 30 292 Z"/>
+      <!-- temple, ear and jaw -->
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" d="M 492 196 C 500 214 504 234 504 248 C 526 250 546 268 548 292 C 550 316 536 340 514 350 C 522 396 512 448 490 490 C 464 540 420 582 364 608 C 328 624 296 630 264 628"/>
+      <!-- brow and closed eye -->
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" d="M 320 378 Q 368 350 418 358"/>
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" d="M 344 394 Q 388 418 432 386"/>
+      <!-- smile -->
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="M 328 512 Q 382 522 430 526"/>
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="M 344 544 Q 388 566 428 550"/>
+      <!-- the raised hand, filled so it reads in front of the hair -->
+      <path fill="#17130d" stroke="url(#mrfGold)" stroke-width="15" stroke-linejoin="round" d="M 306 332 C 308 296 292 264 262 252 Q 240 286 214 284 Q 192 316 170 314 Q 146 342 120 364 C 108 398 102 436 106 480 C 110 530 120 580 134 630 C 143 664 150 686 153 706 L 243 706 C 236 668 240 626 250 586 C 262 540 274 494 286 448 C 297 406 305 366 306 332 Z"/>
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="M 240 284 C 232 330 224 384 214 440"/>
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="M 196 314 C 188 362 180 416 172 470"/>
+      <path fill="none" stroke="url(#mrfGold)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" d="M 150 344 C 144 392 138 448 132 500"/>
+    </g>
+  </g>
+
+  <circle cx="100" cy="100" r="96" fill="none" stroke="url(#mrfGold)" stroke-width="4"/>
+  <circle cx="100" cy="100" r="99" fill="none" stroke="#f0b429" stroke-opacity=".3" stroke-width="2"/>
+</svg>

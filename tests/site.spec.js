@@ -322,6 +322,37 @@ test.describe('public site', () => {
     await expect(page.locator('.wiki-colophon a[href="/"]')).toBeVisible();
   });
 
+  /**
+   * Search Console reported the profile page as "available to Google, but has
+   * issues": its works list typed every video row as a VideoObject with no
+   * description, thumbnail or upload date, for videos that play on their own
+   * pages and not on this one. The ProfilePage also still named the /wiki/
+   * address the page was drafted at.
+   */
+  test('the profile schema names this url and claims no video of its own', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/wikipedia/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-wiki-works] tbody tr').first()).toBeVisible();
+
+    const blocks = await page.$$eval('script[type="application/ld+json"]', (nodes) =>
+      nodes.map((node) => node.textContent)
+    );
+    const profile = blocks.map((block) => JSON.parse(block)).find((json) => json['@type'] === 'ProfilePage');
+    expect(profile, 'the profile page emits ProfilePage schema').toBeTruthy();
+
+    const canonical = 'https://www.musfiqrfarhan.blog/wikipedia/';
+    expect(profile.url).toBe(canonical);
+    expect(profile['@id']).toBe(`${canonical}#profile`);
+
+    // The fixture holds two video titles, so this would catch the old typing.
+    const works = profile.mainEntity.performerIn;
+    expect(works.length).toBeGreaterThan(1);
+    expect(works.map((work) => work['@type'])).toEqual(works.map(() => 'CreativeWork'));
+    expect(JSON.stringify(blocks), 'no video is declared on a page with no video').not.toContain(
+      'VideoObject'
+    );
+  });
+
   test('the profile page is linked from the footer and listed in the sitemap', async ({
     page,
     request
@@ -415,6 +446,22 @@ test.describe('public site', () => {
     const body = await (await request.get('/robots.txt')).text();
     expect(body).toContain('Disallow: /admin/');
     expect(body).toContain('Sitemap: https://www.musfiqrfarhan.blog/sitemap.xml');
+  });
+
+  test('the mark and the full name open and close every page', async ({ page }) => {
+    await page.goto('/');
+
+    const header = page.locator('.site-header .brand__mark');
+    const footer = page.locator('.site-footer .footer-brand img');
+    for (const mark of [header, footer]) {
+      await expect(mark).toHaveAttribute('src', '/assets/mrf-mark.svg');
+      // A missing file still lays out at the width/height attributes, so the
+      // only way to know the mark actually arrived is to ask the decoder.
+      expect(await mark.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
+    }
+
+    await expect(page.locator('.site-header .brand__name')).toHaveText('MUSFIQ R. FARHAN');
+    await expect(page.locator('.site-footer .footer-brand__name')).toHaveText('MUSFIQ R. FARHAN');
   });
 
   test('images declare dimensions so the layout does not jump', async ({ page }) => {
@@ -638,6 +685,115 @@ test.describe('published item pages', () => {
     // which is the case that used to fail validation entirely.
     expect(sitemap).toContain('<video:content_loc>');
     expect(sitemap).toContain('<video:thumbnail_loc>');
+  });
+
+  /**
+   * Google drops a video from the index outright when a required field is
+   * missing, and its report names the field. Every one of these was reported
+   * missing at some point, so every one is asserted rather than sampled.
+   */
+  test('every video declares the fields Google requires to index it', async ({ request }) => {
+    const paths = await itemPaths(request);
+    test.skip(!paths.length, 'this build has no published posts');
+
+    let checked = 0;
+    for (const path of paths) {
+      const html = await (await request.get(path)).text();
+      const videos = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+        .flatMap((match) => {
+          const parsed = JSON.parse(match[1]);
+          return parsed['@graph'] || [parsed];
+        })
+        .filter((node) => node['@type'] === 'VideoObject');
+
+      for (const video of videos) {
+        checked += 1;
+        for (const field of ['name', 'description', 'uploadDate']) {
+          expect(String(video[field] || ''), `${path} · ${field}`).not.toBe('');
+        }
+        expect(video.thumbnailUrl?.[0], `${path} · thumbnailUrl`).toMatch(/^https:\/\//);
+        expect(new Date(video.uploadDate).toString(), `${path} · uploadDate parses`).not.toBe(
+          'Invalid Date'
+        );
+
+        // A watch page is not a media file. Sending one as contentUrl is the
+        // kind of wrong that reads as valid until the crawler fetches it.
+        if (video.contentUrl) {
+          expect(video.contentUrl, `${path} · contentUrl is a media file`).toMatch(
+            /\.(mp4|webm|m4v|mov|ogv)(\?|#|$)/i
+          );
+        }
+        expect(
+          Boolean(video.contentUrl || video.embedUrl),
+          `${path} · has somewhere to play`
+        ).toBe(true);
+
+        // "42:10" is what an editor types and what Google rejects.
+        if (video.duration) expect(video.duration, `${path} · duration`).toMatch(/^PT\d/);
+
+        // Originally published here, and the markup says so.
+        expect(video.license, `${path} · license`).toContain('/terms-of-service.html');
+        expect(video.acquireLicensePage, `${path} · acquireLicensePage`).toContain('/contact.html');
+        expect(video.copyrightHolder, `${path} · copyrightHolder`).toBeTruthy();
+        expect(video.creator, `${path} · creator`).toBeTruthy();
+        expect(video.publisher, `${path} · publisher`).toBeTruthy();
+      }
+    }
+    expect(checked, 'at least one video page was checked').toBeGreaterThan(0);
+  });
+
+  test('the video sitemap entries are complete and point at a real player', async ({ request }) => {
+    const xml = await (await request.get('/sitemap.xml')).text();
+    const blocks = [...xml.matchAll(/<video:video>(.*?)<\/video:video>/gs)].map((match) => match[1]);
+    test.skip(!blocks.length, 'this build has no published videos');
+
+    for (const block of blocks) {
+      const value = (tag) => block.match(new RegExp(`<video:${tag}>([^<]*)</video:${tag}>`))?.[1] || '';
+      expect(value('thumbnail_loc'), 'thumbnail_loc').toMatch(/^https:\/\//);
+      expect(value('title'), 'title').not.toBe('');
+      expect(value('description'), 'description').not.toBe('');
+      expect(
+        Boolean(value('content_loc') || value('player_loc')),
+        'content_loc or player_loc'
+      ).toBe(true);
+      expect(value('publication_date'), 'publication_date').not.toBe('');
+      expect(block, 'uploader').toContain('<video:uploader');
+    }
+  });
+
+  /**
+   * The page is served pre-rendered and then re-rendered from the API. If the
+   * two disagree about a video, whichever Google saw last is the one it keeps.
+   */
+  test('the rendered video schema matches the pre-rendered one', async ({ page, request }) => {
+    const path = '/new-teaser/doob-official-teaser/';
+    const response = await request.get(path);
+    test.skip(!response.ok(), 'the embed-video fixture item is not part of this build');
+
+    const readVideo = (html) =>
+      [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+        .flatMap((match) => {
+          const parsed = JSON.parse(match[1]);
+          return parsed['@graph'] || [parsed];
+        })
+        .find((node) => node['@type'] === 'VideoObject');
+
+    const prerendered = readVideo(await response.text());
+
+    await mockPublicApi(page);
+    await page.goto(path, { waitUntil: 'networkidle' });
+    const rendered = readVideo(
+      await page.evaluate(() =>
+        [...document.querySelectorAll('script[type="application/ld+json"]')]
+          .map((node) => `<script type="application/ld+json">${node.textContent}</script>`)
+          .join('')
+      )
+    );
+
+    expect(rendered).toBeTruthy();
+    for (const field of ['@id', 'thumbnailUrl', 'uploadDate', 'duration', 'embedUrl', 'license']) {
+      expect(rendered[field], field).toEqual(prerendered[field]);
+    }
   });
 });
 

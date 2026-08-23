@@ -36,6 +36,7 @@ import {
   hasCategoryHub
 } from '../shared/urls.js';
 import { fullSitemap } from '../shared/sitemap.js';
+import { videoSchema } from '../shared/video.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API_BASE = (process.env.MRF_API_URL || 'https://mrf-api.gadget02030.workers.dev').replace(/\/$/, '');
@@ -181,21 +182,7 @@ function collectionSchema({ canonical, title, description, items }) {
 function contentSchema({ item, canonical, title, description, image, isVideo }) {
   const absoluteImage = image?.startsWith('http') ? image : `${SITE_ORIGIN}${image || '/assets/img/og-card.jpg'}`;
   const entity = isVideo
-    ? {
-        '@type': 'VideoObject',
-        '@id': `${canonical}#video`,
-        name: title,
-        description,
-        thumbnailUrl: [absoluteImage],
-        uploadDate: item.published_at,
-        contentUrl: item.attachment_url || item.video_url || undefined,
-        embedUrl: item.embed_url || undefined,
-        duration: item.duration || undefined,
-        isFamilyFriendly: true,
-        publisher: { '@id': `${SITE_ORIGIN}/#organization` },
-        author: { '@id': `${SITE_ORIGIN}/#person` },
-        mainEntityOfPage: canonical
-      }
+    ? { ...videoSchema(item, SITE_ORIGIN), name: title, description }
     : {
         '@type': 'Article',
         '@id': `${canonical}#article`,

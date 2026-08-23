@@ -6,6 +6,7 @@
  * paint fast and avoids third-party scripts on load.
  */
 
+import { isVideoItem, videoSchema } from '../../shared/video.js';
 import { api } from './api.js';
 import { SITE } from './config.js';
 import { $, addJsonLd, attr, esc, formatDate, mediaUrl, renderBody, setMeta } from './dom.js';
@@ -96,21 +97,10 @@ function structuredData(item) {
     }
   ];
 
-  if (item.type === 'video') {
-    graph.push({
-      '@type': 'VideoObject',
-      '@id': `${url}#video`,
-      name: item.seo_title || item.title,
-      description: item.meta_description || item.description,
-      thumbnailUrl: [absoluteImage],
-      uploadDate: item.published_at,
-      contentUrl: item.attachment_url || item.video_url || undefined,
-      embedUrl: item.embed_url || undefined,
-      duration: item.duration || undefined,
-      isFamilyFriendly: true,
-      publisher: { '@id': `${SITE.origin}/#organization` },
-      author: { '@id': `${SITE.origin}/#person` }
-    });
+  if (isVideoItem(item)) {
+    // Same helper the build uses, so the pre-rendered markup and the markup
+    // this replaces it with cannot disagree about the same video.
+    graph.push(videoSchema(item, SITE.origin));
   } else {
     graph.push({
       '@type': 'Article',
