@@ -216,6 +216,7 @@ export function footerHtml() {
       <h2>Official</h2>
       <ul>
         <li><a href="${STATIC_PATHS.about}">About</a></li>
+        <li><a href="${STATIC_PATHS.wiki}">Wiki profile</a></li>
         <li><a href="${STATIC_PATHS.watch}">Watch</a></li>
         <li><a href="${STATIC_PATHS.blog}">Blog</a></li>
         <li><a href="${STATIC_PATHS.gallery}">Gallery</a></li>

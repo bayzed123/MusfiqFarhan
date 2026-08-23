@@ -56,6 +56,7 @@ export function pagesSitemap(origin = SITE_ORIGIN, lastmod = new Date().toISOStr
     { path: STATIC_PATHS.blog, priority: '0.9', changefreq: 'daily' },
     { path: STATIC_PATHS.gallery, priority: '0.8', changefreq: 'weekly' },
     { path: STATIC_PATHS.loveNotes, priority: '0.7', changefreq: 'daily' },
+    { path: STATIC_PATHS.wiki, priority: '0.7', changefreq: 'monthly' },
     { path: STATIC_PATHS.about, priority: '0.6', changefreq: 'monthly' },
     { path: STATIC_PATHS.contact, priority: '0.5', changefreq: 'yearly' },
     { path: STATIC_PATHS.editorial, priority: '0.4', changefreq: 'yearly' },

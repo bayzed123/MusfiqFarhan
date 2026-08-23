@@ -3,7 +3,22 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
 import { CATEGORIES, canonicalPair, categorySlug, isMirrorPair } from '../shared/taxonomy.js';
-import { categoryListingPath, categoryPath, categoryUrl } from '../shared/urls.js';
+import { categoryListingPath, categoryPath, categoryUrl, STATIC_PATHS } from '../shared/urls.js';
+/**
+ * Item pages, picked out of the sitemap. The hand-written pages are excluded
+ * by consulting STATIC_PATHS rather than a list kept here — adding a page
+ * used to make it look like a published post to every item-page test.
+ */
+const STATIC_PAGE_PATHS = new Set(Object.values(STATIC_PATHS));
+
+function itemPathsFrom(xml) {
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
+    .filter((path) => path.endsWith('/') && path !== '/')
+    .filter((path) => !path.startsWith('/c/'))
+    .filter((path) => !STATIC_PAGE_PATHS.has(path));
+}
+
 
 const CATEGORY_SLUGS = [
   'premium',
@@ -263,6 +278,75 @@ test.describe('public site', () => {
     }
   });
 
+  /**
+   * The reference profile borrows the encyclopedia layout readers know, but
+   * must never read as an encyclopedia's own article about him — it is his
+   * site writing about him.
+   */
+  test('the profile page reads as a reference page and says whose it is', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/wikipedia/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('h1.wiki__title')).toHaveText('Musfiq R. Farhan');
+    await expect(page.locator('.infobox')).toBeVisible();
+    await expect(page.locator('.wiki-toc')).toBeVisible();
+    await expect(page.locator('#references')).toBeVisible();
+
+    // It says plainly who maintains it, and carries no borrowed identity.
+    await expect(page.locator('.wiki__tagline')).toContainText(/official Musfiq R. Farhan website/i);
+    const html = await page.content();
+    expect(html, 'no encyclopedia branding').not.toMatch(/wikipedia\.org|wikimedia|free encyclopedia/i);
+
+    // The works table is generated from the site's own archive.
+    await expect(page.locator('[data-wiki-works] tbody tr')).not.toHaveCount(0);
+    await expect(page.locator('[data-wiki-works]')).not.toContainText('Loading the published archive');
+  });
+
+  /**
+   * This one page is deliberately standalone — no site navigation, no site
+   * footer, and none of the site stylesheet — so it reads as a reference
+   * page rather than as another screen of the site.
+   */
+  test('the profile page carries no site chrome', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/wikipedia/', { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('.site-header')).toHaveCount(0);
+    await expect(page.locator('.primary-nav')).toHaveCount(0);
+    await expect(page.locator('.site-footer')).toHaveCount(0);
+    await expect(page.locator('.love-strip')).toHaveCount(0);
+    await expect(page.locator('.cta-band')).toHaveCount(0);
+    await expect(page.locator('link[href="/assets/css/site.css"]')).toHaveCount(0);
+
+    // A page with no way back to the site it belongs to is a dead end.
+    await expect(page.locator('.wiki-colophon a[href="/"]')).toBeVisible();
+  });
+
+  test('the profile page is linked from the footer and listed in the sitemap', async ({
+    page,
+    request
+  }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.site-footer a[href="/wikipedia/"]')).toBeVisible();
+
+    const xml = await (await request.get('/sitemap.xml')).text();
+    expect(xml).toContain('https://www.musfiqrfarhan.blog/wikipedia/');
+  });
+
+  test('the capitalised url reaches the same page', async ({ page, request }) => {
+    // URLs here are case-sensitive, so /Wikipedia/ is a separate address and
+    // would otherwise 404. It redirects, and stays out of the index.
+    const response = await request.get('/Wikipedia/');
+    expect(response.ok(), '/Wikipedia/ must resolve').toBeTruthy();
+    const html = await response.text();
+    expect(html).toContain('<link rel="canonical" href="https://www.musfiqrfarhan.blog/wikipedia/">');
+    expect(html).toMatch(/content="noindex/);
+
+    await page.goto('/Wikipedia/', { waitUntil: 'domcontentloaded' });
+    await page.waitForURL('**/wikipedia/');
+    await expect(page.locator('h1.wiki__title')).toHaveText('Musfiq R. Farhan');
+  });
+
   test('the WhatsApp channel call to action is in the footer area', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const cta = page.locator('.cta-band a[href*="whatsapp.com/channel"]');
@@ -362,12 +446,7 @@ test.describe('public site', () => {
 test.describe('published item pages', () => {
   /** @returns {Promise<string[]>} site-relative paths of every indexed item */
   async function itemPaths(request) {
-    const xml = await (await request.get('/sitemap.xml')).text();
-    return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-      .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
-      .filter((path) => path.endsWith('/') && path !== '/')
-      .filter((path) => !path.startsWith('/c/'))
-      .filter((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
+    return itemPathsFrom(await (await request.get('/sitemap.xml')).text());
   }
 
   test('every item page carries its own canonical, meta and social tags', async ({ request }) => {
@@ -601,12 +680,7 @@ test.describe('advertising', () => {
    * ad assertion then passes vacuously against a 404.
    */
   async function somePost(request) {
-    const xml = await (await request.get('/sitemap.xml')).text();
-    return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-      .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
-      .filter((path) => path.endsWith('/') && path !== '/')
-      .filter((path) => !path.startsWith('/c/'))
-      .find((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
+    return itemPathsFrom(await (await request.get('/sitemap.xml')).text())[0];
   }
 
   test('every post gets a middle unit without the post asking for one', async ({
@@ -729,12 +803,7 @@ test.describe('advertising', () => {
    * in one article is enough to push that page sideways on a phone.
    */
   test('no ad-filled post page scrolls sideways on a phone', async ({ page, request }) => {
-    const xml = await (await request.get('/sitemap.xml')).text();
-    const posts = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
-      .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
-      .filter((path) => path.endsWith('/') && path !== '/')
-      .filter((path) => !path.startsWith('/c/'))
-      .filter((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
+    const posts = itemPathsFrom(await (await request.get('/sitemap.xml')).text());
     test.skip(!posts.length, 'this build has no published posts');
 
     await page.setViewportSize({ width: 390, height: 780 });
