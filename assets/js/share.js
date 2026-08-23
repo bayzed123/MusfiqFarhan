@@ -1,0 +1,195 @@
+/**
+ * Share this post.
+ *
+ * A button on every item page opens a sheet of the places people actually
+ * send links, each one a real share endpoint carrying this page's canonical
+ * URL and title — so what lands in the chat is the permanent link, not
+ * whatever tracking-laden address happened to be in the address bar.
+ *
+ * The host element is written by the build as `<div class="share" data-share>`
+ * so the markup is in the page source; this fills it in.
+ */
+
+import { $, $$, attr, esc, on } from './dom.js';
+
+/**
+ * The page's permanent URL. The canonical tag is the one place that is right
+ * on every page, including when someone arrives with ?fbclid=… appended.
+ */
+function canonicalUrl() {
+  const tag = document.querySelector('link[rel="canonical"]');
+  return tag?.href || window.location.href.split('#')[0];
+}
+
+function pageTitle() {
+  const heading = document.querySelector('[data-entry-title]')?.textContent?.trim();
+  return heading || document.title.replace(/\s*\|.*$/, '').trim();
+}
+
+function pageImage() {
+  return document.querySelector('meta[property="og:image"]')?.content || '';
+}
+
+const ICONS = {
+  facebook:
+    '<path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z"/>',
+  whatsapp:
+    '<path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.4A10 10 0 1 0 12 2zm5.1 14c-.2.6-1.2 1.2-1.7 1.2-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6a11 11 0 0 1-4.2-4c-.3-.5-.7-1.2-.7-2 0-.7.4-1.2.6-1.4.2-.2.4-.3.6-.3h.5c.1 0 .3 0 .5.4l.7 1.6c.1.1.1.3 0 .5l-.3.4-.3.3c-.1.1-.2.2-.1.4.2.3.7 1.1 1.4 1.7.9.8 1.6 1 1.9 1.2.2.1.4 0 .5-.1l.7-.8c.2-.2.3-.2.5-.1l1.6.8c.2.1.4.2.4.3.1.2.1.6-.1 1.1z"/>',
+  x: '<path d="M17.5 3h3l-6.6 7.5L21.7 21h-6l-4.7-6.1L5.6 21h-3l7-8L2.6 3h6.2l4.2 5.6L17.5 3zm-1 16h1.7L7.6 4.8H5.8L16.5 19z"/>',
+  telegram:
+    '<path d="M21.5 4.3 2.9 11.4c-.9.4-.9 1.1 0 1.3l4.7 1.5 1.8 5.5c.2.6.4.8 1 .8.4 0 .6-.2.9-.5l2.3-2.2 4.7 3.5c.9.5 1.5.2 1.7-.8l3.1-14.4c.3-1.3-.5-1.9-1.6-1.8zM8.9 14.1 17.9 8c.4-.3.8-.1.5.2l-7.5 6.8-.3 3.1-1.7-4z"/>',
+  linkedin:
+    '<path d="M6.9 8H4v12h2.9V8zM5.4 3a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4zM20 13.4c0-3.2-1.7-4.7-4-4.7-1.8 0-2.6 1-3.1 1.7V8H10v12h2.9v-6.7c0-1.4.9-2.1 1.9-2.1s1.7.6 1.7 2.1V20H20v-6.6z"/>',
+  reddit:
+    '<path d="M22 12a2 2 0 0 0-3.4-1.4 10 10 0 0 0-5-1.4l.9-4 2.8.6a1.7 1.7 0 1 0 .2-1.4l-3.5-.8a.7.7 0 0 0-.8.5l-1.1 5.1a10 10 0 0 0-5 1.4A2 2 0 1 0 4 14.8a4 4 0 0 0 0 .6c0 3 3.6 5.4 8 5.4s8-2.4 8-5.4a4 4 0 0 0 0-.6c.6-.4 1-1 1-1.8zM8 14a1.4 1.4 0 1 1 2.8 0A1.4 1.4 0 0 1 8 14zm7.9 4a5.7 5.7 0 0 1-3.9 1.1A5.7 5.7 0 0 1 8.1 18a.5.5 0 0 1 .7-.7 4.8 4.8 0 0 0 3.2.9 4.8 4.8 0 0 0 3.2-.9.5.5 0 0 1 .7.7zm-.3-2.6a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8z"/>',
+  pinterest:
+    '<path d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.5 1.8-2.5.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.7 0-2.4-1.8-4.1-4.3-4.1a4.4 4.4 0 0 0-4.6 4.4c0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.1c0 .2-.1.2-.3.1-1.3-.6-2-2.4-2-3.9 0-3.2 2.3-6.1 6.7-6.1 3.5 0 6.2 2.5 6.2 5.8 0 3.5-2.2 6.3-5.2 6.3-1 0-2-.5-2.3-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.6A10 10 0 1 0 12 2z"/>',
+  email:
+    '<path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.2-8 5-8-5V6l8 5 8-5v2.2z"/>',
+  link: '<path d="M10.6 13.4a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 1.4l-1.4 1.4a1 1 0 0 1-1.4 0zM7.8 16.2a4 4 0 0 1 0-5.7l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a2 2 0 0 0 2.8 2.8l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a4 4 0 0 1-5.6 0zm8.4-8.4a4 4 0 0 1 0 5.7l-2.1 2.1a1 1 0 0 1-1.4-1.4l2.1-2.1a2 2 0 0 0-2.8-2.8L9.9 11.4A1 1 0 0 1 8.5 10l2.1-2.1a4 4 0 0 1 5.6 0z"/>',
+  share:
+    '<path d="M18 16.1c-.8 0-1.5.3-2 .8l-7-4a3 3 0 0 0 0-1.8l7-4a3 3 0 1 0-1-2.2c0 .3 0 .6.1.9l-7 4a3 3 0 1 0 0 4.4l7 4c0 .3-.1.5-.1.8a3 3 0 1 0 3-2.9z"/>'
+};
+
+const icon = (name) =>
+  `<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">${ICONS[name]}</svg>`;
+
+/**
+ * Every destination is a documented share endpoint that takes the URL as a
+ * parameter, so the link that arrives is this page's canonical URL.
+ */
+function destinations({ url, title, image }) {
+  const u = encodeURIComponent(url);
+  const t = encodeURIComponent(title);
+  return [
+    { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+    { id: 'whatsapp', label: 'WhatsApp', href: `https://api.whatsapp.com/send?text=${t}%20${u}` },
+    { id: 'telegram', label: 'Telegram', href: `https://t.me/share/url?url=${u}&text=${t}` },
+    { id: 'x', label: 'X', href: `https://twitter.com/intent/tweet?url=${u}&text=${t}` },
+    {
+      id: 'linkedin',
+      label: 'LinkedIn',
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`
+    },
+    { id: 'reddit', label: 'Reddit', href: `https://www.reddit.com/submit?url=${u}&title=${t}` },
+    {
+      id: 'pinterest',
+      label: 'Pinterest',
+      href: `https://pinterest.com/pin/create/button/?url=${u}&description=${t}${
+        image ? `&media=${encodeURIComponent(image)}` : ''
+      }`
+    },
+    { id: 'email', label: 'Email', href: `mailto:?subject=${t}&body=${t}%20${u}` }
+  ];
+}
+
+function sheetMarkup(share) {
+  const links = destinations(share)
+    .map(
+      (item) => `<a class="share-sheet__item" href="${attr(item.href)}"
+        target="_blank" rel="noopener noreferrer" data-share-to="${attr(item.id)}">
+        ${icon(item.id)}<span>${esc(item.label)}</span>
+      </a>`
+    )
+    .join('');
+
+  return `<div class="share-sheet" data-share-sheet role="dialog" aria-modal="true"
+    aria-label="Share this page">
+    <div class="share-sheet__panel">
+      <div class="share-sheet__head">
+        <h2>Share this</h2>
+        <button class="share-sheet__close" type="button" data-share-close aria-label="Close">×</button>
+      </div>
+      <p class="share-sheet__title">${esc(share.title)}</p>
+      <div class="share-sheet__grid">${links}</div>
+      <div class="share-sheet__foot">
+        <input class="share-sheet__url" type="text" readonly value="${attr(share.url)}"
+          aria-label="Link to this page" data-share-url>
+        <button class="button button--primary" type="button" data-share-copy>
+          ${icon('link')} Copy link
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openSheet(share) {
+  const host = document.createElement('div');
+  host.innerHTML = sheetMarkup(share);
+  const sheet = host.firstElementChild;
+  document.body.appendChild(sheet);
+  document.body.classList.add('is-sharing');
+
+  const close = () => {
+    document.removeEventListener('keydown', onKey);
+    document.body.classList.remove('is-sharing');
+    sheet.remove();
+  };
+  const onKey = (event) => {
+    if (event.key === 'Escape') close();
+  };
+  document.addEventListener('keydown', onKey);
+
+  on(sheet, 'click', async (event) => {
+    // The backdrop and the close button both dismiss.
+    if (event.target === sheet || event.target.closest('[data-share-close]')) return close();
+
+    if (event.target.closest('[data-share-copy]')) {
+      const button = event.target.closest('[data-share-copy]');
+      try {
+        await navigator.clipboard.writeText(share.url);
+        button.textContent = 'Link copied';
+      } catch {
+        // Clipboard access can be refused; select the text so it can be
+        // copied by hand rather than leaving the button doing nothing.
+        const field = $('[data-share-url]', sheet);
+        field.focus();
+        field.select();
+        button.textContent = 'Press Ctrl+C';
+      }
+      return;
+    }
+
+    // Any real destination opens in its own tab and the sheet gets out of
+    // the way, so coming back lands on the post rather than this overlay.
+    if (event.target.closest('[data-share-to]')) close();
+  });
+
+  $('[data-share-close]', sheet)?.focus();
+}
+
+export function initShare() {
+  for (const host of $$('[data-share]')) {
+    if (host.dataset.shareReady) continue;
+    host.dataset.shareReady = 'true';
+
+    const share = {
+      url: host.dataset.shareUrl || canonicalUrl(),
+      title: host.dataset.shareTitle || pageTitle(),
+      image: pageImage()
+    };
+
+    host.innerHTML = `<button class="button button--ghost share__button" type="button" data-share-open>
+      ${icon('share')} Share
+    </button>`;
+
+    on(host, 'click', async (event) => {
+      if (!event.target.closest('[data-share-open]')) return;
+
+      // On a phone the built-in sheet reaches apps a web page cannot —
+      // Messenger, Instagram, the SMS app — so offer it first where it
+      // exists, and fall back to our own list if it is dismissed.
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: share.title, url: share.url });
+          return;
+        } catch (error) {
+          if (error?.name === 'AbortError') return;
+        }
+      }
+      openSheet(share);
+    });
+  }
+}
+
+initShare();
