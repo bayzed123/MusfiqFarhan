@@ -469,6 +469,88 @@ test.describe('published item pages', () => {
     );
   });
 
+  /**
+   * Every post carries a share button; the sheet behind it must hand out the
+   * page's canonical URL, not whatever address the visitor arrived on.
+   */
+  test('every item page can be shared to the networks people use', async ({ page, request }) => {
+    const paths = await itemPaths(request);
+    test.skip(!paths.length, 'this build has no published posts');
+
+    const path = paths[0];
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+
+    // The host is in the HTML source; the button is filled in by the module.
+    const button = page.locator('[data-share] [data-share-open]');
+    await expect(button).toBeVisible();
+
+    // navigator.share exists in some browsers and would swallow the click,
+    // so make sure the in-page sheet is what this exercises.
+    await page.evaluate(() => {
+      delete Object.getPrototypeOf(navigator).share;
+      // eslint-disable-next-line no-param-reassign
+      navigator.share = undefined;
+    });
+    await button.click();
+
+    const sheet = page.locator('[data-share-sheet]');
+    await expect(sheet).toBeVisible();
+
+    const canonical = `https://www.musfiqrfarhan.blog${path}`;
+    const encoded = encodeURIComponent(canonical);
+
+    for (const [network, pattern] of [
+      ['facebook', `facebook.com/sharer/sharer.php?u=${encoded}`],
+      ['whatsapp', `api.whatsapp.com/send?text=`],
+      ['telegram', `t.me/share/url?url=${encoded}`],
+      ['x', `twitter.com/intent/tweet?url=${encoded}`],
+      ['linkedin', `linkedin.com/sharing/share-offsite/?url=${encoded}`],
+      ['reddit', `reddit.com/submit?url=${encoded}`],
+      ['pinterest', `pinterest.com/pin/create/button/?url=${encoded}`],
+      ['email', 'mailto:?subject=']
+    ]) {
+      const link = sheet.locator(`[data-share-to="${network}"]`);
+      await expect(link, `${network} is offered`).toBeVisible();
+      expect(await link.getAttribute('href'), `${network} link`).toContain(pattern);
+    }
+
+    // Each one opens away from the site rather than replacing the post.
+    await expect(sheet.locator('[data-share-to="facebook"]')).toHaveAttribute('target', '_blank');
+    await expect(sheet.locator('[data-share-to="facebook"]')).toHaveAttribute(
+      'rel',
+      /noopener/
+    );
+
+    // The copy field carries the canonical URL too.
+    await expect(sheet.locator('[data-share-url]')).toHaveValue(canonical);
+
+    // Escape closes it.
+    await page.keyboard.press('Escape');
+    await expect(sheet).toHaveCount(0);
+  });
+
+  test('the share links carry the canonical url even with tracking params', async ({
+    page,
+    request
+  }) => {
+    const paths = await itemPaths(request);
+    test.skip(!paths.length, 'this build has no published posts');
+
+    // Arriving from Facebook appends ?fbclid=…; sharing on must not pass that
+    // along, or the link that spreads is a tracking URL rather than the post.
+    await page.goto(`${paths[0]}?fbclid=abc123`, { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      navigator.share = undefined;
+    });
+    await page.locator('[data-share] [data-share-open]').click();
+
+    const href = await page
+      .locator('[data-share-to="facebook"]')
+      .getAttribute('href');
+    expect(href).not.toContain('fbclid');
+    expect(href).toContain(encodeURIComponent(`https://www.musfiqrfarhan.blog${paths[0]}`));
+  });
+
   test('a hosted video page offers a real player source', async ({ request }) => {
     const response = await request.get('/new-natok/tor-preme-pagol/');
     test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');

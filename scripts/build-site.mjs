@@ -388,6 +388,9 @@ async function buildItemPages(items) {
         )}</time>
         <span>By <strong>${esc(item.author_name || 'Musfiq R. Farhan')}</strong></span>
       </div>
+      <div class="share" data-share data-share-url="${esc(
+        `${SITE_ORIGIN}${item.path || contentPath(item)}`
+      )}" data-share-title="${esc(item.title)}"></div>
     </div>
 
     <div class="article">
@@ -431,7 +434,9 @@ ${renderMarkdown(item.body)}
         }),
         bodyAttrs: ` data-slug="${esc(item.slug)}" data-category="${esc(item.category)}"`,
         main,
-        scripts: '  <script type="module" src="/assets/js/entry.js"></script>',
+        scripts:
+          '  <script type="module" src="/assets/js/entry.js"></script>\n' +
+          '  <script type="module" src="/assets/js/share.js"></script>',
         schema: contentSchema({
           item,
           canonical,
