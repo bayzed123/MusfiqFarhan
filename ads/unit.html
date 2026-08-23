@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<title>Advertisement</title>
+<style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style>
+</head>
+<body>
+<!--
+  One Adsterra banner, in its own document on this site's own origin.
+
+  Two things have to be true at once, and this file is what makes both true.
+
+  1. Every Adsterra banner reads one global, `window.atOptions`. Two of them
+     in a single document overwrite each other, so each unit needs its own
+     window — hence a frame per unit rather than inline script tags.
+
+  2. The ad server decides what to serve from the domain that asks. An
+     `srcdoc` frame sandboxed without `allow-same-origin` has an opaque
+     origin: no hostname, no referrer. Adsterra could not match the request
+     to this site and returned nothing, which is why the slots rendered as
+     empty white boxes. Loading a real file from musfiqrfarhan.blog gives the
+     request a genuine origin and referrer.
+
+  The key is checked against the units this account owns. Without that, this
+  page would run any script named in a query string, from our own domain.
+-->
+<script>
+  (function () {
+    var UNITS = {
+      '5eafb0abe297aa165fad81b9d9a6cc5b': [728, 90],
+      'd8c7eedc100db2e87e8220ccb8c86c70': [468, 60],
+      'cc12dcdbe4d4a8991416d88fa8d39fc0': [320, 50],
+      'dec8e7c5a6013e2a549acf5343f56664': [300, 250],
+      '2af700860e9cb041351b895af5acc1a1': [160, 600],
+      '526fc12b05e03824b147ab501ebdcc6e': [160, 300]
+    };
+
+    var key = new URLSearchParams(window.location.search).get('key') || '';
+    var size = Object.prototype.hasOwnProperty.call(UNITS, key) ? UNITS[key] : null;
+    if (!size) return;
+
+    // The size comes from the unit, never from the URL: Adsterra fills a slot
+    // at the dimensions that unit was created with, so asking for any other
+    // size is how you get an empty box.
+    window.atOptions = { key: key, format: 'iframe', width: size[0], height: size[1], params: {} };
+
+    var script = document.createElement('script');
+    script.src = 'https://www.highrevenueformat.com/' + key + '/invoke.js';
+    document.body.appendChild(script);
+  })();
+</script>
+</body>
+</html>
