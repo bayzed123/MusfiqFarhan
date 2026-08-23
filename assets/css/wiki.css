@@ -1,0 +1,329 @@
+/* ==========================================================================
+   Encyclopedia profile — a standalone page in the reference layout readers
+   know: a light column of prose, a fact box pinned right, a contents list,
+   hairline-ruled section headings and numbered references.
+
+   This page carries no site chrome — no navigation, no site footer — so it
+   is self-contained and does not load site.css. Every value it needs is
+   declared here.
+
+   The layout is borrowed; the identity is not. No Wikipedia logo, wordmark
+   or byline appears, because this is Musfiq R. Farhan's own site writing
+   about him, and it must not read as an outside encyclopedia's article.
+   ========================================================================== */
+
+:root {
+  --wiki-ink: #202122;
+  --wiki-soft: #54595d;
+  --wiki-line: #a2a9b1;
+  --wiki-rule: #c8ccd1;
+  --wiki-bg: #f8f9fa;
+  --wiki-link: #3366cc;
+  --wiki-link-visited: #795cb2;
+  --wiki-serif: 'Linux Libertine', 'Georgia', 'Times New Roman', serif;
+  --wiki-sans: -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: #fff;
+  color: var(--wiki-ink);
+  font-family: var(--wiki-sans);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--wiki-link);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9;
+  padding: 0.6rem 1rem;
+  background: var(--wiki-bg);
+  border: 1px solid var(--wiki-line);
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+.wiki {
+  max-width: 1000px;
+  margin-inline: auto;
+  padding: 1.75rem clamp(1rem, 4vw, 2.5rem) 2rem;
+}
+
+/* ------------------------------------------------------------------ title */
+
+.wiki__title {
+  font-family: var(--wiki-serif);
+  font-size: clamp(1.85rem, 4vw, 2.3rem);
+  font-weight: 400;
+  line-height: 1.25;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--wiki-rule);
+}
+
+.wiki__tagline {
+  margin: 0.35rem 0 1.25rem;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--wiki-soft);
+}
+
+.wiki a {
+  color: var(--wiki-link);
+  text-decoration: none;
+}
+
+.wiki a:visited {
+  color: var(--wiki-link-visited);
+}
+
+.wiki a:hover {
+  text-decoration: underline;
+}
+
+.wiki p {
+  margin: 0.6rem 0;
+}
+
+.wiki h2 {
+  font-family: var(--wiki-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin: 1.6rem 0 0.4rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--wiki-rule);
+}
+
+.wiki h3 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin: 1.1rem 0 0.3rem;
+}
+
+.wiki ul,
+.wiki ol {
+  margin: 0.5rem 0 0.5rem 1.6rem;
+  padding: 0;
+}
+
+.wiki li {
+  margin-bottom: 0.2rem;
+}
+
+/* --------------------------------------------------------------- fact box */
+
+.infobox {
+  float: right;
+  clear: right;
+  width: 292px;
+  margin: 0 0 1rem 1.4rem;
+  border: 1px solid var(--wiki-line);
+  background: var(--wiki-bg);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.infobox__name {
+  padding: 0.5rem;
+  background: #eaecf0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.infobox__figure {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.infobox__figure img {
+  width: 100%;
+  border: 1px solid var(--wiki-rule);
+}
+
+.infobox__figure figcaption {
+  padding-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--wiki-soft);
+}
+
+.infobox table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.infobox th,
+.infobox td {
+  padding: 0.34rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #eaecf0;
+}
+
+.infobox th {
+  width: 34%;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.infobox__section {
+  padding: 0.35rem 0.5rem;
+  background: #eaecf0;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .infobox {
+    float: none;
+    width: 100%;
+    margin: 0 0 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------------- contents */
+
+.wiki-toc {
+  display: table;
+  margin: 1rem 0;
+  padding: 0.6rem 1.2rem 0.6rem 0.7rem;
+  border: 1px solid var(--wiki-line);
+  background: var(--wiki-bg);
+  font-size: 0.88rem;
+}
+
+.wiki-toc__title {
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
+.wiki-toc ol {
+  margin: 0 0 0 1.4rem;
+  padding: 0;
+}
+
+.wiki-toc ol ol {
+  margin-left: 1.2rem;
+}
+
+/* ------------------------------------------------------------------ table */
+
+.wiki-table {
+  width: 100%;
+  margin: 0.8rem 0;
+  border: 1px solid var(--wiki-line);
+  border-collapse: collapse;
+  background: var(--wiki-bg);
+  font-size: 0.86rem;
+}
+
+.wiki-table caption {
+  padding-bottom: 0.35rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.wiki-table th,
+.wiki-table td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--wiki-rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.wiki-table thead th {
+  background: #eaecf0;
+}
+
+/* Long tables scroll inside their own box rather than widening the page. */
+.wiki-scroll {
+  overflow-x: auto;
+}
+
+/* ------------------------------------------------------------------ notes */
+
+.wiki-note {
+  margin: 1rem 0;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--wiki-rule);
+  border-left: 4px solid var(--wiki-line);
+  background: var(--wiki-bg);
+  font-size: 0.85rem;
+  color: var(--wiki-soft);
+}
+
+.wiki-refs {
+  font-size: 0.85rem;
+}
+
+.wiki-refs li {
+  margin-bottom: 0.3rem;
+}
+
+/*
+ * The one line at the foot of the page. Not the site footer — this page has
+ * none — but a page with no way back to the site it belongs to is a dead
+ * end, and a reader has to be able to tell whose page this is.
+ */
+.wiki-colophon {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0.9rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+  border-top: 1px solid var(--wiki-rule);
+  font-size: 0.8rem;
+  color: var(--wiki-soft);
+}
+
+.wiki-colophon a {
+  color: var(--wiki-link);
+}
+
+.wiki-colophon a:hover {
+  text-decoration: underline;
+}
