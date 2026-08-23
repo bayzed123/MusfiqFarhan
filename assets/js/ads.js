@@ -32,7 +32,8 @@ const BANNERS = Object.freeze({
 });
 
 const NATIVE_KEY = '95ccad5ad2296df12234714b8e6904cf';
-const BANNER_HOST = 'https://www.highrevenueformat.com';
+// The banner frame lives on this site so the ad request has a real origin.
+const AD_FRAME = '/ads/unit.html';
 const NATIVE_HOST = 'https://pl30964228.profitableratecpmnetwork.com';
 
 /* Smartlink and SocialBar are deliberately not loaded: the first is an
@@ -80,17 +81,19 @@ function slotElement(name, label = 'Advertisement') {
   return slot;
 }
 
-/** The document handed to a banner iframe: one unit, one private atOptions. */
-function bannerDocument({ key, width, height }) {
-  const options = JSON.stringify({ key, format: 'iframe', height, width, params: {} });
-  return `<!doctype html><html><head><meta charset="utf-8">
-<style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style>
-</head><body>
-<script>window.atOptions=${options};<\/script>
-<script src="${BANNER_HOST}/${key}/invoke.js"><\/script>
-</body></html>`;
-}
-
+/**
+ * A banner runs in /ads/unit.html — a real page on this origin.
+ *
+ * The obvious approach, an `srcdoc` frame sandboxed without
+ * `allow-same-origin`, is what made every slot render as an empty white box:
+ * that frame has an opaque origin, so the request carries no hostname and no
+ * referrer, and the ad server has no way to tell which site is asking. It
+ * matched nothing and returned nothing.
+ *
+ * Loading a file from our own domain fixes that and still gives each unit its
+ * own window, which is the other half of the problem — every Adsterra banner
+ * reads one global `window.atOptions`, so two in a document fight over it.
+ */
 function fillBanner(slot, config) {
   const frame = document.createElement('iframe');
   frame.className = 'ad-slot__frame';
@@ -100,12 +103,14 @@ function fillBanner(slot, config) {
   frame.scrolling = 'no';
   frame.title = 'Advertisement';
   frame.setAttribute('frameborder', '0');
-  // No allow-same-origin: the ad cannot reach this page or its storage.
+  // allow-same-origin is required: without it the frame is opaque and the ad
+  // never fills. The frame is our own document, and the sandbox still holds
+  // back forms, plugins and downloads.
   frame.setAttribute(
     'sandbox',
-    'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'
+    'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation'
   );
-  frame.srcdoc = bannerDocument(config);
+  frame.src = `${AD_FRAME}?key=${encodeURIComponent(config.key)}`;
   slot.appendChild(frame);
 }
 

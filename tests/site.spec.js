@@ -646,18 +646,73 @@ test.describe('advertising', () => {
     // and a native unit whatever content the build happens to hold.
     await slotsOn(page, '/watch/');
     const frames = await page.$$eval('.ad-slot__frame', (nodes) =>
-      nodes.map((node) => node.getAttribute('sandbox') || '')
+      nodes.map((node) => ({ src: node.getAttribute('src'), sandbox: node.getAttribute('sandbox') }))
     );
     expect(frames.length, 'banners are rendered').toBeGreaterThan(0);
-    for (const sandbox of frames) {
-      // Adsterra sets a global window.atOptions, so two banners in one
-      // document overwrite each other; and without this the frame could
-      // reach back into the page.
-      expect(sandbox).not.toContain('allow-same-origin');
+    for (const frame of frames) {
+      // Every banner reads one global window.atOptions, so each needs its own
+      // document — and that document has to be on this origin. An opaque
+      // srcdoc frame sends no hostname and no referrer, and the ad server
+      // then has nothing to match the site against, so the slot stays blank.
+      expect(frame.src, 'the banner frame is served from this site').toContain('/ads/unit.html');
+      expect(frame.src, 'the frame names which unit to load').toMatch(/[?&]key=[a-f0-9]{32}/);
+      expect(frame.sandbox, 'an opaque frame never fills').toContain('allow-same-origin');
     }
     // The native unit's script looks the container up by an exact id, so a
     // second one on the page would never fill.
     await expect(page.locator('#container-95ccad5ad2296df12234714b8e6904cf')).toHaveCount(1);
+  });
+
+  /**
+   * The frame is the whole fix, so it gets its own test. A banner that loads
+   * with no origin behind it is exactly what produced empty white boxes on
+   * the live site.
+   */
+  test('the banner frame runs the right unit at its own size', async ({ page }) => {
+    const requested = [];
+    await page.route('**://*.highrevenueformat.com/**', (route) => {
+      requested.push(route.request().url());
+      return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
+    });
+
+    // 300x250 — one of the six units this account owns.
+    await page.goto('/ads/unit.html?key=dec8e7c5a6013e2a549acf5343f56664', {
+      waitUntil: 'domcontentloaded'
+    });
+    await page.waitForTimeout(400);
+
+    // The size comes from the unit, never from the URL: Adsterra fills at the
+    // dimensions the unit was created with, so any other size returns empty.
+    expect(await page.evaluate(() => window.atOptions)).toEqual({
+      key: 'dec8e7c5a6013e2a549acf5343f56664',
+      format: 'iframe',
+      width: 300,
+      height: 250,
+      params: {}
+    });
+    expect(requested.at(-1)).toBe(
+      'https://www.highrevenueformat.com/dec8e7c5a6013e2a549acf5343f56664/invoke.js'
+    );
+  });
+
+  test('the banner frame ignores a key this account does not own', async ({ page }) => {
+    const requested = [];
+    await page.route('**://*.highrevenueformat.com/**', (route) => {
+      requested.push(route.request().url());
+      return route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
+    });
+    await page.route('**://evil.example.com/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/javascript', body: '' })
+    );
+
+    // Otherwise the page would run any script a query string named, from our
+    // own domain.
+    await page.goto('/ads/unit.html?key=../../evil.example.com/x', {
+      waitUntil: 'domcontentloaded'
+    });
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => window.atOptions)).toBeUndefined();
+    expect(requested).toHaveLength(0);
   });
 
   test('the dashboard and error page stay ad-free', async ({ page }) => {
@@ -669,18 +724,33 @@ test.describe('advertising', () => {
     }
   });
 
-  test('an ad-filled post page still does not scroll sideways on a phone', async ({
-    page,
-    request
-  }) => {
-    const post = await somePost(request);
-    test.skip(!post, 'this build has no published posts');
+  /**
+   * Every post, not just the first: the body is hand-written and one long URL
+   * in one article is enough to push that page sideways on a phone.
+   */
+  test('no ad-filled post page scrolls sideways on a phone', async ({ page, request }) => {
+    const xml = await (await request.get('/sitemap.xml')).text();
+    const posts = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+      .map((match) => match[1].replace('https://www.musfiqrfarhan.blog', ''))
+      .filter((path) => path.endsWith('/') && path !== '/')
+      .filter((path) => !path.startsWith('/c/'))
+      .filter((path) => !['/watch/', '/blog/', '/gallery/', '/love-notes/'].includes(path));
+    test.skip(!posts.length, 'this build has no published posts');
+
     await page.setViewportSize({ width: 390, height: 780 });
-    await slotsOn(page, post);
-    const overflows = await page.evaluate(
-      () => document.documentElement.scrollWidth > window.innerWidth + 2
-    );
-    expect(overflows, 'the post page overflows horizontally').toBeFalsy();
+    for (const post of posts) {
+      await slotsOn(page, post);
+      const widest = await page.evaluate(() => {
+        if (document.documentElement.scrollWidth <= window.innerWidth + 2) return null;
+        // Name the culprit rather than just failing, so the next person does
+        // not have to go hunting for which element is too wide.
+        const over = [...document.querySelectorAll('body *')]
+          .filter((node) => node.getBoundingClientRect().right > window.innerWidth + 2)
+          .map((node) => node.tagName.toLowerCase() + (node.className ? `.${node.className}` : ''));
+        return over[0] || 'unknown element';
+      });
+      expect(widest, `${post} scrolls sideways (${widest})`).toBeNull();
+    }
   });
 });
 

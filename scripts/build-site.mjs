@@ -476,6 +476,7 @@ async function buildSitemaps(items, gallery) {
     `User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /ads/
 
 User-agent: Googlebot
 Allow: /

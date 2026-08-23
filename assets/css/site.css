@@ -1429,6 +1429,10 @@ p {
   max-width: 74ch;
   font-size: 1.03rem;
   color: #dfe2e8;
+  /* Article text is written by hand and can carry a long URL or an unbroken
+     Bengali compound; on a narrow phone either one would push the page wider
+     than the screen. Break inside the word rather than scroll the page. */
+  overflow-wrap: anywhere;
 }
 
 .article__body > * + * {
