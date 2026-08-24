@@ -227,6 +227,60 @@ test.describe('public site', () => {
     await expect(page.locator('.vcard')).toHaveCount(0);
   });
 
+  /**
+   * The full-size trigger is a transparent button stretched over each photo.
+   * Left unstyled the browser paints it grey with an outset border, which hid
+   * every image on the page behind a rectangle — the picture only appeared
+   * once the lightbox opened, so nothing about the markup looked wrong.
+   */
+  test('the gallery shows its photographs rather than covering them', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/gallery/', { waitUntil: 'networkidle' });
+
+    const figure = page.locator('.figure').first();
+    await expect(figure).toBeVisible();
+    await expect(figure.locator('img')).toHaveAttribute('src', /\S/);
+    expect(
+      await figure.locator('img').evaluate((node) => node.naturalWidth),
+      'the photograph decoded'
+    ).toBeGreaterThan(0);
+
+    const overlay = await figure.locator('.card__link').evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { background: style.backgroundColor, border: style.borderTopStyle };
+    });
+    expect(overlay.background, 'the hit area must not paint over the photo').toMatch(
+      /rgba\(0, 0, 0, 0\)|transparent/
+    );
+    expect(overlay.border, 'nor draw a border over it').toBe('none');
+  });
+
+  /**
+   * Google's licence badge in image search reads `license` and
+   * `acquireLicensePage` off the image itself — a sitemap cannot carry
+   * either, so the gallery has to describe its own photographs.
+   */
+  test('gallery photographs say who owns them', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/gallery/', { waitUntil: 'networkidle' });
+
+    const schema = await page.evaluate(() => {
+      const node = document.getElementById('gallery-schema');
+      return node ? JSON.parse(node.textContent) : null;
+    });
+    expect(schema, 'the gallery describes its images').toBeTruthy();
+    expect(schema['@type']).toBe('ImageGallery');
+    expect(schema.image.length).toBeGreaterThan(0);
+
+    for (const image of schema.image) {
+      expect(image['@type']).toBe('ImageObject');
+      expect(image.contentUrl, 'contentUrl').toMatch(/^https:\/\//);
+      expect(image.name, 'name').not.toBe('');
+      expect(image.license, 'license').toContain('/terms-of-service.html');
+      expect(image.acquireLicensePage, 'acquireLicensePage').toContain('/contact.html');
+    }
+  });
+
   test('the mobile drawer opens and expands a category', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 780 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -731,12 +785,20 @@ test.describe('published item pages', () => {
         // "42:10" is what an editor types and what Google rejects.
         if (video.duration) expect(video.duration, `${path} · duration`).toMatch(/^PT\d/);
 
-        // Originally published here, and the markup says so.
-        expect(video.license, `${path} · license`).toContain('/terms-of-service.html');
-        expect(video.acquireLicensePage, `${path} · acquireLicensePage`).toContain('/contact.html');
-        expect(video.copyrightHolder, `${path} · copyrightHolder`).toBeTruthy();
-        expect(video.creator, `${path} · creator`).toBeTruthy();
-        expect(video.publisher, `${path} · publisher`).toBeTruthy();
+        // Provenance is stated either way, and the two ways are exclusive: a
+        // licence over our own upload, attribution over someone else's.
+        if (video.license) {
+          expect(video.license, `${path} · license`).toContain('/terms-of-service.html');
+          expect(video.acquireLicensePage, `${path} · acquireLicensePage`).toContain('/contact.html');
+          expect(video.copyrightHolder, `${path} · copyrightHolder`).toBeTruthy();
+          expect(video.creator, `${path} · creator`).toBeTruthy();
+          expect(video.sourceOrganization, `${path} · ours, so no outside source`).toBeUndefined();
+        } else {
+          expect(video.sourceOrganization, `${path} · unlicensed means attributed`).toBeTruthy();
+          expect(video.isBasedOn, `${path} · links back to the original`).toMatch(/^https:\/\//);
+          expect(video.copyrightHolder, `${path} · claims no ownership`).toBeUndefined();
+        }
+        expect(video.creditText, `${path} · credit line`).toBeTruthy();
       }
     }
     expect(checked, 'at least one video page was checked').toBeGreaterThan(0);
@@ -759,6 +821,114 @@ test.describe('published item pages', () => {
       expect(value('publication_date'), 'publication_date').not.toBe('');
       expect(block, 'uploader').toContain('<video:uploader');
     }
+  });
+
+  /**
+   * Google indexes a video only from a "watch page" — one where the video is
+   * the point of the page rather than an illustration beside an article — and
+   * it judges that from the page it crawls. It reported these as supplementary
+   * content: the pre-rendered HTML held a poster image and a button with no
+   * player in it at all, below the heading, the meta row and the share bar.
+   */
+  test('a video page leads with a real player', async ({ page, request }) => {
+    const path = '/new-natok/tor-preme-pagol/';
+    const response = await request.get(path);
+    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
+    const html = await response.text();
+
+    // In the source, not just after the script runs.
+    expect(html, 'a real player element').toMatch(/<video[^>]*controls/);
+    expect(html, 'with a source to play').toMatch(/<source src="[^"]+\.(mp4|webm|mov)"/i);
+    // preload="none" keeps it free until someone presses play.
+    expect(html).toMatch(/<video[^>]*preload="none"/);
+    expect(html.indexOf('data-entry-player'), 'the player comes before the heading').toBeLessThan(
+      html.indexOf('data-entry-title')
+    );
+
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const geometry = await page.evaluate(() => {
+      const player = document.querySelector('[data-entry-player] .player');
+      const heading = document.querySelector('[data-entry-title]');
+      if (!player || !heading) return null;
+      const box = player.getBoundingClientRect();
+      return { top: box.top, height: box.height, viewport: window.innerHeight,
+        beforeHeading: heading.getBoundingClientRect().top > box.top };
+    });
+    expect(geometry, 'both the player and the heading render').toBeTruthy();
+    expect(geometry.top, 'the player is on the first screen').toBeLessThan(geometry.viewport);
+    expect(geometry.beforeHeading, 'the heading sits below the player').toBe(true);
+
+    // And nothing is wedged between them.
+    const adBetween = await page.evaluate(() => {
+      const player = document.querySelector('[data-entry-player]');
+      const heading = document.querySelector('.page-head--titled');
+      if (!player || !heading) return false;
+      let node = player.nextElementSibling;
+      while (node && node !== heading) {
+        if (node.classList.contains('ad-slot')) return true;
+        node = node.nextElementSibling;
+      }
+      return false;
+    });
+    expect(adBetween, 'no ad between the player and the title').toBe(false);
+  });
+
+  /**
+   * Rights follow the media, with nothing for the editor to remember. A file
+   * uploaded from the phone is served from this site and is his; a link pasted
+   * from YouTube is someone else's upload that he happens to act in. Both
+   * fixture items are left on `auto`, so this is the rule doing the deciding.
+   */
+  const readEntity = (html) =>
+    [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+      .flatMap((match) => {
+        const parsed = JSON.parse(match[1]);
+        return parsed['@graph'] || [parsed];
+      })
+      .find((node) => node['@type'] === 'VideoObject' || node['@type'] === 'Article');
+
+  test('a file uploaded here claims the licence', async ({ request }) => {
+    const response = await request.get('/new-natok/tor-preme-pagol/');
+    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
+
+    const entity = readEntity(await response.text());
+    expect(entity.license, 'licence url').toContain('/terms-of-service.html#copyright');
+    expect(entity.acquireLicensePage, 'where to ask').toContain('/contact.html');
+    expect(entity.copyrightHolder, 'copyright holder').toBeTruthy();
+    expect(entity.creator, 'creator').toBeTruthy();
+    expect(entity.creditText, 'credit line').toContain('Musfiq R. Farhan');
+    expect(typeof entity.copyrightYear, 'copyright year is a number').toBe('number');
+    // Nothing to attribute: it did not come from anywhere else.
+    expect(entity.sourceOrganization, 'no outside source').toBeUndefined();
+  });
+
+  test('a video shared from YouTube credits YouTube and claims nothing', async ({
+    page,
+    request
+  }) => {
+    const path = '/new-teaser/doob-official-teaser/';
+    const response = await request.get(path);
+    test.skip(!response.ok(), 'the shared-video fixture item is not part of this build');
+    const html = await response.text();
+    const entity = readEntity(html);
+
+    // No ownership claim of any kind.
+    for (const field of ['license', 'acquireLicensePage', 'copyrightHolder', 'creator']) {
+      expect(entity[field], `${field} must not be claimed over someone else's video`).toBeUndefined();
+    }
+
+    // Attribution instead, and his real part in it.
+    expect(entity.sourceOrganization?.name, 'the platform is named').toBe('YouTube');
+    expect(entity.isBasedOn, 'links back to the original').toContain('youtube.com');
+    expect(entity.actor, 'credited as the performer').toBeTruthy();
+    expect(entity.creditText, 'says whose rights these are').toMatch(/rights stay with the original/i);
+
+    // And a reader can see it, not just a crawler.
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const credit = page.locator('[data-media-credit]');
+    await expect(credit).toBeVisible();
+    await expect(credit).toContainText('Shared from YouTube');
+    await expect(credit.locator('a')).toHaveAttribute('href', /youtube\.com/);
   });
 
   /**
@@ -1194,6 +1364,64 @@ test.describe('dashboard', () => {
     await page.fill('#c-title', 'Doob Official Teaser 2026 (updated)');
     await expect(page.locator('#c-seo-title')).toHaveValue('My own title');
   });
+
+  /**
+   * The composer never asks who owns the video — it reads the URL and says
+   * what it worked out. The editor is told the answer and the reason for it,
+   * because a page's copyright hangs on that guess being right.
+   */
+  test('the composer says what the rights will be, before saving', async ({ page }) => {
+    await mockAdminApi(page);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="compose"]');
+
+    await expect(page.locator('[data-rights-mode]'), 'automatic by default').toHaveValue('auto');
+    const hint = page.locator('[data-rights-hint]');
+
+    await page.click('[data-kind="natok-teaser"]');
+    await page.fill('#c-title', 'A teaser we uploaded');
+    await page.fill('#c-video', '/media/2026-08-22/teaser.mp4');
+    await expect(hint).toHaveAttribute('data-rights-resolved', 'own');
+    await expect(hint).toContainText('hosted here');
+    await expect(hint).toContainText('claim your copyright');
+
+    await page.fill('#c-video', 'https://www.youtube.com/watch?v=t8d6rWQQl8g');
+    await expect(hint, 'a pasted link flips it').toHaveAttribute('data-rights-resolved', 'shared');
+    await expect(hint).toContainText('YouTube link');
+    await expect(hint).toContainText('claim no licence');
+
+    // And the guess can be overruled when it is wrong.
+    await page.selectOption('[data-rights-mode]', 'own');
+    await expect(hint).toHaveAttribute('data-rights-resolved', 'own');
+    await expect(hint).toContainText('Set by hand');
+  });
+
+  test('the rights choice reaches the API and survives an edit', async ({ page }) => {
+    const sent = [];
+    await mockAdminApi(page, sent);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="compose"]');
+
+    await page.click('[data-kind="blog"]');
+    await page.fill('#c-title', 'A piece someone else owns');
+    await page.fill('#c-description', 'Published here with permission.');
+    await page.fill('#c-image', '/assets/img/hero_red-1280.webp');
+    await page.selectOption('[data-rights-mode]', 'shared');
+    await page.click('[data-composer-form] button[type=submit]');
+
+    await expect
+      .poll(() => sent.filter((call) => call.method === 'POST' && call.path === '/api/admin/content').length)
+      .toBe(1);
+    expect(
+      sent.find((call) => call.method === 'POST' && call.path === '/api/admin/content').body.rights_mode
+    ).toBe('shared');
+
+    await page.click('.nav-btn[data-view="content"]');
+    await page.locator('.row', { hasText: 'Press feature kept out of search' }).getByText('Edit').click();
+    await expect(page.locator('[data-rights-mode]'), 'a stored override comes back').toHaveValue(
+      'shared'
+    );
+  });
 });
 
 /**
@@ -1208,7 +1436,13 @@ async function mockPublicApi(page) {
   await page.route('**/api/public/**', (route) => {
     const path = new URL(route.request().url()).pathname;
     const slug = path.split('/').filter(Boolean).pop();
-    const body = path.endsWith('/marquee')
+    // /api/public/gallery answers with the gallery rows under `items`, not
+    // under `gallery`. Returning the content list here instead painted the
+    // gallery with posts that have no image_url, so every figure came out
+    // blank and the page's own rendering went untested.
+    const body = path.endsWith('/gallery')
+      ? { items: fixture.gallery }
+      : path.endsWith('/marquee')
       ? { notes: fixture.notes, count: fixture.notes.length }
       : path.endsWith('/love-notes')
         ? { notes: fixture.notes, count: fixture.notes.length, hearts: 0 }
@@ -1257,6 +1491,13 @@ async function mockAdminApi(page, sent = []) {
       path: '/behind-the-scenes/studio-notes/', category: 'Behind the Scenes',
       subcategory: 'Studio Notes', image: '', published: 0, indexable: 1,
       published_at: '2026-04-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
+    },
+    // Published with permission rather than owned, so it claims no licence.
+    {
+      id: 3, type: 'post', kind: 'blog', title: 'Press feature kept out of search',
+      slug: 'press-feature-noindex', path: '/press/press-feature-noindex/', category: 'Press',
+      subcategory: 'Recent Releases', image: '', published: 1, indexable: 0, rights_mode: 'shared',
+      published_at: '2026-03-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
     }
   ];
   let media = [

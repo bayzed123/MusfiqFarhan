@@ -18,6 +18,7 @@
  * - `duration` must be ISO 8601. Editors type "42:10", which is not.
  */
 
+import { rightsBlock, rightsFor } from './rights.js';
 import {
   PERSON_NAME,
   SITE_ORIGIN,
@@ -26,10 +27,6 @@ import {
   embedUrlFor,
   isDirectVideo
 } from './urls.js';
-
-/** Where the site states who owns its media and how to ask for a copy. */
-export const LICENSE_URL = '/terms-of-service.html#copyright';
-export const ACQUIRE_LICENSE_URL = '/contact.html';
 
 const FALLBACK_THUMBNAIL = '/assets/img/og-card.jpg';
 
@@ -110,10 +107,11 @@ export function videoFacts(item, origin = SITE_ORIGIN) {
 }
 
 /**
- * The VideoObject for an item page. Carries the rights block as well as the
- * required fields: this archive publishes Musfiq R. Farhan's own work, and the
- * markup should say who owns it and where to ask for it rather than leaving a
- * search engine to guess.
+ * The VideoObject for an item page.
+ *
+ * The provenance half comes from shared/rights.js: a file uploaded here
+ * carries the site's own licence, a link shared from YouTube or Facebook
+ * carries attribution to that platform and no licence claim at all.
  */
 export function videoSchema(item, origin = SITE_ORIGIN) {
   const facts = videoFacts(item, origin);
@@ -130,14 +128,9 @@ export function videoSchema(item, origin = SITE_ORIGIN) {
     inLanguage: 'bn',
     isFamilyFriendly: true,
     isAccessibleForFree: true,
-    creator: { '@id': `${origin}/#person` },
     author: { '@id': `${origin}/#person` },
     publisher: { '@id': `${origin}/#organization` },
-    copyrightHolder: { '@id': `${origin}/#person` },
-    copyrightYear: facts.year ? Number(facts.year) : undefined,
-    creditText: `${PERSON_NAME} Official`,
-    license: `${origin}${LICENSE_URL}`,
-    acquireLicensePage: `${origin}${ACQUIRE_LICENSE_URL}`,
+    ...rightsBlock(item, origin, { performer: true }),
     mainEntityOfPage: facts.canonical
   };
 }
@@ -170,6 +163,76 @@ export function videoSitemapBlock(item, origin = SITE_ORIGIN, esc = (value) => v
   ]
     .filter(Boolean)
     .join('\n');
+}
+
+const PLAY_ICON =
+  '<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
+
+const escapeHtml = (value) =>
+  String(value ?? '').replace(/[&<>'"]/g, (char) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]
+  );
+
+/**
+ * The player, rendered the same way by the build and by the browser.
+ *
+ * Google will only index a video on a "watch page" — one where the video is
+ * the main thing, not an illustration beside an article. It decides that from
+ * the page it crawls, and the pre-rendered page used to contain a poster
+ * image and a button with no player in it at all. A file we host now ships a
+ * real <video> element in the HTML; `preload="none"` means that still costs
+ * no bytes until someone presses play.
+ *
+ * A third-party embed stays a facade: putting the iframe in the markup would
+ * pull YouTube's script into every page load, and the VideoObject already
+ * hands the crawler the embedUrl. The iframe is built on the first click.
+ */
+export function playerHtml(item, { fallbackPoster = '' } = {}) {
+  const facts = videoFacts(item);
+  const source = facts.contentUrl || facts.embedUrl;
+  if (!source) return '';
+  const poster = escapeHtml(facts.thumbnailUrl || fallbackPoster);
+
+  if (facts.contentUrl) {
+    return `<div class="player">
+      <video controls preload="none" playsinline poster="${poster}"
+        width="1280" height="720" data-player-video>
+        <source src="${escapeHtml(facts.contentUrl)}" type="video/mp4">
+        Your browser cannot play this video. <a href="${escapeHtml(facts.contentUrl)}">Download it instead.</a>
+      </video>
+    </div>`;
+  }
+
+  return `<div class="player" data-player-embed="${escapeHtml(facts.embedUrl)}">
+    <img class="player__poster" src="${poster}" alt="" width="1280" height="720" fetchpriority="high" decoding="async">
+    <button class="player__start" type="button" data-player-start>
+      <span>${PLAY_ICON}</span>
+      <span class="visually-hidden">Play ${escapeHtml(item?.title || '')}</span>
+    </button>
+  </div>${creditHtml(item)}`;
+}
+
+/**
+ * The line under a shared player naming whose video it is.
+ *
+ * The structured data already withholds the licence claim, but a reader
+ * cannot see structured data. Saying it on the page is the half of respecting
+ * someone's rights that a person can actually check, and it gives the
+ * original a real link back.
+ */
+export function creditHtml(item, origin = SITE_ORIGIN) {
+  const rights = rightsFor(item, origin);
+  if (rights.mode !== 'shared') return '';
+
+  const link = rights.sourceUrl
+    ? ` <a href="${escapeHtml(rights.sourceUrl)}" target="_blank" rel="noopener">Watch it on ${escapeHtml(
+        rights.source?.name || 'the original'
+      )}</a>.`
+    : '';
+  return `
+  <p class="media-credit" data-media-credit>
+    <span>${escapeHtml(rights.creditLine)}</span>${link}
+  </p>`;
 }
 
 /** Sitemaps count seconds where schema.org wants ISO 8601. */

@@ -1,9 +1,46 @@
 /** Gallery page: filter chips plus a lightbox for full-size viewing. */
 
+import { rightsBlock } from '../../shared/rights.js';
+import { SITE } from './config.js';
 import { api } from './api.js';
-import { $, $$, attr, esc, on } from './dom.js';
+import { $, $$, addJsonLd, attr, esc, on } from './dom.js';
 
 let allItems = [];
+
+/**
+ * An ImageObject per photograph, so image search knows who owns them.
+ *
+ * Google's licence badge needs `license` and `acquireLicensePage` on the
+ * image itself; the sitemap cannot carry either. Only the images the editor
+ * marked original get that block — a still supplied by a production company
+ * is published here with permission, not ours to license.
+ */
+function describeImages(items) {
+  if (!items.length) return;
+  addJsonLd(
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ImageGallery',
+      '@id': `${SITE.origin}/gallery/#gallery`,
+      name: 'Musfiq R. Farhan — official gallery',
+      isPartOf: { '@id': `${SITE.origin}/#website` },
+      about: { '@id': `${SITE.origin}/#person` },
+      image: items.slice(0, 60).map((item) => ({
+        '@type': 'ImageObject',
+        contentUrl: absolute(item.image_url),
+        name: item.title,
+        caption: item.caption || item.alt_text || item.title,
+        ...rightsBlock(item, SITE.origin)
+      }))
+    },
+    'gallery-schema'
+  );
+}
+
+function absolute(url) {
+  const value = String(url || '').trim();
+  return /^https?:\/\//i.test(value) ? value : `${SITE.origin}/${value.replace(/^\//, '')}`;
+}
 
 function figureMarkup(item, index) {
   return `<figure class="figure">
@@ -65,6 +102,7 @@ export async function initGallery() {
     const data = await api.gallery();
     allItems = data.items || [];
     paint(allItems);
+    describeImages(allItems);
   } catch {
     grid.innerHTML = '<p class="muted">The gallery could not load. Please refresh in a moment.</p>';
   }

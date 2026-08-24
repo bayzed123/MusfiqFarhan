@@ -123,6 +123,62 @@ export const STATIC_PATHS = {
   editorial: '/editorial-standards.html'
 };
 
+/**
+ * The platforms a shared link can come from.
+ *
+ * Recognising the host is what lets the site tell its own uploads apart from
+ * someone else's video, and credit the second properly instead of claiming it.
+ */
+const PLATFORMS = [
+  { id: 'youtube', name: 'YouTube', url: 'https://www.youtube.com', match: /(?:^|\.)(?:youtube\.com|youtu\.be|youtube-nocookie\.com)$/i },
+  { id: 'facebook', name: 'Facebook', url: 'https://www.facebook.com', match: /(?:^|\.)(?:facebook\.com|fb\.watch)$/i },
+  { id: 'instagram', name: 'Instagram', url: 'https://www.instagram.com', match: /(?:^|\.)instagram\.com$/i },
+  { id: 'vimeo', name: 'Vimeo', url: 'https://vimeo.com', match: /(?:^|\.)(?:vimeo\.com|player\.vimeo\.com)$/i },
+  { id: 'tiktok', name: 'TikTok', url: 'https://www.tiktok.com', match: /(?:^|\.)tiktok\.com$/i },
+  { id: 'x', name: 'X', url: 'https://x.com', match: /(?:^|\.)(?:x\.com|twitter\.com)$/i },
+  { id: 'dailymotion', name: 'Dailymotion', url: 'https://www.dailymotion.com', match: /(?:^|\.)(?:dailymotion\.com|dai\.ly)$/i }
+];
+
+/**
+ * The platform a URL belongs to, or null when it is ours or unrecognised.
+ * A relative path is always ours, so it never reaches the host test.
+ */
+export function mediaSource(rawUrl) {
+  const value = String(rawUrl || '').trim();
+  if (!value || !/^https?:\/\//i.test(value)) return null;
+  let host = '';
+  try {
+    host = new URL(value).hostname;
+  } catch {
+    return null;
+  }
+  return PLATFORMS.find((platform) => platform.match.test(host)) || null;
+}
+
+/**
+ * True when a URL points at storage this site controls — the R2 bucket the
+ * dashboard uploads to, or the site's own domain. Everything a phone uploads
+ * lands in one of the two; a pasted link does not.
+ */
+export function isOwnMedia(rawUrl, origin = SITE_ORIGIN) {
+  const value = String(rawUrl || '').trim();
+  if (!value) return false;
+  if (!/^https?:\/\//i.test(value)) return true; // a site-relative path
+  try {
+    const host = new URL(value).hostname;
+    const ours = new URL(origin).hostname;
+    return (
+      host === ours ||
+      host.endsWith(`.${ours.replace(/^www\./, '')}`) ||
+      host === ours.replace(/^www\./, '') ||
+      // The Worker serves R2 media, so uploads carry its hostname.
+      /\.workers\.dev$/i.test(host)
+    );
+  } catch {
+    return false;
+  }
+}
+
 /** Turn any supported media reference into an embeddable player URL. */
 export function embedUrlFor(rawUrl) {
   const url = String(rawUrl || '').trim();

@@ -1,47 +1,19 @@
 /**
  * Detail page controller for a single post or video.
  *
- * The player is click-to-play: the poster image paints immediately and the
+ * A third-party embed is click-to-play: the poster paints immediately and the
  * iframe is only created on interaction, which keeps the largest contentful
- * paint fast and avoids third-party scripts on load.
+ * paint fast and avoids third-party scripts on load. The player markup itself
+ * lives in shared/video.js so the build writes the same thing.
  */
 
-import { isVideoItem, videoSchema } from '../../shared/video.js';
+import { rightsBlock } from '../../shared/rights.js';
+import { isVideoItem, playerHtml, videoSchema } from '../../shared/video.js';
 import { api } from './api.js';
 import { SITE } from './config.js';
 import { $, addJsonLd, attr, esc, formatDate, mediaUrl, renderBody, setMeta } from './dom.js';
 import { initRails, railMarkup } from './cards.js';
 import { initRatings } from './rating.js';
-
-const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
-
-function isDirectVideo(url) {
-  return /\.(mp4|webm|m4v|mov|ogv)(\?|#|$)/i.test(String(url || ''));
-}
-
-function playerMarkup(item) {
-  const source = item.embed_url || item.video_url || item.attachment_url;
-  if (!source) return '';
-  const poster = mediaUrl(item.thumbnail_url || item.image, SITE.fallbackImage);
-
-  if (isDirectVideo(source)) {
-    return `<div class="player">
-      <video controls preload="none" playsinline poster="${attr(poster)}"
-        width="1280" height="720" data-player-video>
-        <source src="${attr(mediaUrl(source))}" type="video/mp4">
-        Your browser cannot play this video. <a href="${attr(mediaUrl(source))}">Download it instead.</a>
-      </video>
-    </div>`;
-  }
-
-  return `<div class="player" data-player-embed="${attr(source)}">
-    <img class="player__poster" src="${attr(poster)}" alt="" width="1280" height="720" fetchpriority="high" decoding="async">
-    <button class="player__start" type="button" data-player-start>
-      <span>${PLAY}</span>
-      <span class="visually-hidden">Play ${esc(item.title)}</span>
-    </button>
-  </div>`;
-}
 
 function initPlayer(scope) {
   const embed = $('[data-player-embed]', scope);
@@ -112,6 +84,7 @@ function structuredData(item) {
       dateModified: item.modified_at || item.published_at,
       author: { '@id': `${SITE.origin}/#person` },
       publisher: { '@id': `${SITE.origin}/#organization` },
+      ...rightsBlock(item, SITE.origin),
       mainEntityOfPage: url,
       inLanguage: 'en'
     });
@@ -164,7 +137,7 @@ export async function initEntry() {
 
   const playerHost = $('[data-entry-player]');
   if (playerHost) {
-    playerHost.innerHTML = playerMarkup(item);
+    playerHost.innerHTML = playerHtml(item, { fallbackPoster: SITE.fallbackImage });
     initPlayer(playerHost);
   }
 

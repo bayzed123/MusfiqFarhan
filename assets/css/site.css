@@ -112,6 +112,19 @@ textarea {
   color: inherit;
 }
 
+/*
+ * A button with no styling of its own is not invisible: the browser paints it
+ * grey with a 2px outset border. The gallery's full-size trigger is exactly
+ * that — a transparent hit area stretched over the photo — and it covered
+ * every image on the page with a grey rectangle, which is why the pictures
+ * only appeared once the lightbox opened. Every other button here sets its
+ * own background and border, so they are unaffected by this reset.
+ */
+button {
+  background: none;
+  border: 0;
+}
+
 h1,
 h2,
 h3,
@@ -1387,6 +1400,55 @@ p {
   background: radial-gradient(120% 100% at 0% 0%, rgba(225, 29, 46, 0.14), transparent 60%);
 }
 
+/*
+ * A video page leads with the player: breadcrumb, player, then the title.
+ * The head splits in two around it, so the breadcrumb strip loses its tall
+ * padding and its rule, and the title block below the player loses the top
+ * padding it would otherwise repeat.
+ */
+.page-head--watch {
+  padding-block: clamp(1rem, 3vw, 1.75rem) clamp(0.75rem, 2vw, 1rem);
+  border-bottom: 0;
+}
+
+.page-head--titled {
+  padding-top: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.watch-lead {
+  padding-inline: var(--gutter);
+}
+
+/* The player is the point of the page, so give it the width to say so. */
+.watch-lead .player {
+  max-width: 1100px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
+/*
+ * Whose video this is, when it is not ours. The structured data withholds the
+ * licence claim, but a reader cannot see structured data — this is the half of
+ * respecting someone's rights that a person can actually check.
+ */
+.media-credit {
+  max-width: 1100px;
+  margin: 0.7rem auto 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--ink-faint);
+}
+
+.media-credit a {
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.media-credit a:hover {
+  color: #fff;
+}
+
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -2079,6 +2141,13 @@ body.is-sharing {
   display: block;
   border: 0;
   max-width: 100%;
+  /*
+   * An iframe paints white until its document arrives, and paints white for
+   * good when the ad server has nothing to fill the unit with. On a page this
+   * dark that is a bright slab, so let the slot's own surface show through.
+   */
+  background: transparent;
+  color-scheme: dark;
 }
 
 .ad-slot__native {

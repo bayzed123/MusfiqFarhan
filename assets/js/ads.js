@@ -182,9 +182,14 @@ function placeOnEntry() {
   const player = document.querySelector('[data-entry-player]');
   if (!body && !player) return false;
 
-  // Directly under the video, before the article text.
-  if (player && !has(player.parentElement, 'under-player')) {
-    insertAfter(player, makeSlot('under-player', 'banner'));
+  // Under the video, before the article text. On a video page the title and
+  // meta sit between the two, and the unit belongs below them: an ad wedged
+  // between the player and the headline pushes the headline off the first
+  // screen and makes the video read as one element among many rather than
+  // the point of the page.
+  const underPlayerAnchor = document.querySelector('.page-head--titled') || player;
+  if (underPlayerAnchor && !has(underPlayerAnchor.parentElement, 'under-player')) {
+    insertAfter(underPlayerAnchor, makeSlot('under-player', 'banner'));
   }
 
   if (body) {

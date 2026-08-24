@@ -1,5 +1,5 @@
 {
-  "_comment": "Sample /api/public/export payload. Used with MRF_EXPORT_FILE to build and test the item-page pipeline without the live API. Covers an R2-hosted video, a YouTube video, an article, a [\u2026]",
+  "_comment": "Sample /api/public/export payload. Used with MRF_EXPORT_FILE to build and test the item-page pipeline without the live API. Covers an R2-hosted video, a YouTube video, an article, a […]",
   "items": [
     {
       "id": 1,
@@ -22,7 +22,7 @@
       "author_name": "Musfiq R. Farhan",
       "canonical_url": "https://www.musfiqrfarhan.blog/new-natok/tor-preme-pagol/",
       "og_image": "/assets/img/doob-poster-1280.webp",
-      "body": "## About this natok\nTor Preme Pagol follows two people who keep meeting at the wrong moment, in a small town that never quite lets them go.\n\n## Cast and crew\n- Musfiq R. Farhan [\u2026]",
+      "body": "## About this natok\nTor Preme Pagol follows two people who keep meeting at the wrong moment, in a small town that never quite lets them go.\n\n## Cast and crew\n- Musfiq R. Farhan […]",
       "published_at": "2026-05-14T00:00:00+06:00",
       "modified_at": "2026-05-20T00:00:00+06:00",
       "duration": "42:10",
@@ -34,7 +34,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/new-natok/tor-preme-pagol/",
       "rating": 4.6,
-      "rating_count": 12
+      "rating_count": 12,
+      "rights_mode": "auto"
     },
     {
       "id": 2,
@@ -69,7 +70,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/new-teaser/doob-official-teaser/",
       "rating": 4.9,
-      "rating_count": 30
+      "rating_count": 30,
+      "rights_mode": "auto"
     },
     {
       "id": 3,
@@ -92,7 +94,7 @@
       "author_name": "Musfiq R. Farhan",
       "canonical_url": "https://www.musfiqrfarhan.blog/biography-journey/musfiq-r-farhan-biography-age-height-wife/",
       "og_image": "/assets/img/musfiq-profile-1-960.webp",
-      "body": "## Editorial note\nThis biography brings together publicly available career information. Personal details appear only when a public source supports them.\n\n## From radio to acting [\u2026]",
+      "body": "## Editorial note\nThis biography brings together publicly available career information. Personal details appear only when a public source supports them.\n\n## From radio to acting […]",
       "published_at": "2026-08-21T06:00:00+00:00",
       "modified_at": "2026-08-21T06:00:00+00:00",
       "duration": "",
@@ -104,7 +106,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/biography-journey/musfiq-r-farhan-biography-age-height-wife/",
       "rating": 4.8,
-      "rating_count": 9
+      "rating_count": 9,
+      "rights_mode": "auto"
     },
     {
       "id": 4,
@@ -139,7 +142,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/poster-release/eid-poster-2026/",
       "rating": null,
-      "rating_count": 0
+      "rating_count": 0,
+      "rights_mode": "auto"
     },
     {
       "id": 5,
@@ -174,7 +178,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/behind-the-scenes/studio-notes-doob-set/",
       "rating": 4.2,
-      "rating_count": 4
+      "rating_count": 4,
+      "rights_mode": "auto"
     },
     {
       "id": 6,
@@ -209,7 +214,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/press/press-feature-noindex/",
       "rating": null,
-      "rating_count": 0
+      "rating_count": 0,
+      "rights_mode": "auto"
     },
     {
       "id": 7,
@@ -244,7 +250,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/biography-journey/musfiq-r-farhan-biography-age-height-wife/",
       "rating": 4.8,
-      "rating_count": 9
+      "rating_count": 9,
+      "rights_mode": "auto"
     },
     {
       "id": 8,
@@ -279,7 +286,8 @@
       "view_count": 0,
       "url": "https://www.musfiqrfarhan.blog/biography-journey/musfiq-r-farhan-biography-age-height-wife/",
       "rating": 4.8,
-      "rating_count": 9
+      "rating_count": 9,
+      "rights_mode": "auto"
     }
   ],
   "gallery": [
@@ -293,7 +301,8 @@
       "caption": "In character",
       "published": 1,
       "sort_order": 1,
-      "updated_at": "2026-08-01T00:00:00+06:00"
+      "updated_at": "2026-08-01T00:00:00+06:00",
+      "rights_mode": "auto"
     },
     {
       "id": 2,
@@ -305,7 +314,8 @@
       "caption": "Between takes",
       "published": 1,
       "sort_order": 2,
-      "updated_at": "2026-08-01T00:00:00+06:00"
+      "updated_at": "2026-08-01T00:00:00+06:00",
+      "rights_mode": "auto"
     }
   ],
   "notes": [
