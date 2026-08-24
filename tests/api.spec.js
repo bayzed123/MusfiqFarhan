@@ -20,9 +20,10 @@ import {
   normalizeContent,
   toPublicItem
 } from '../worker/src/lib/content.js';
+import { rightsBlock, rightsFor } from '../shared/rights.js';
 import { canonicalPair, isMirrorPair, itemInCategory, CATEGORIES } from '../shared/taxonomy.js';
 import { fullSitemap } from '../shared/sitemap.js';
-import { categoryUrl } from '../shared/urls.js';
+import { SITE_ORIGIN, categoryUrl } from '../shared/urls.js';
 
 /** Minimal D1 stand-in: records the SQL and bindings, replays fixed rows. */
 function stubDb(rows, calls = []) {
@@ -103,17 +104,14 @@ test.describe('worker api contracts', () => {
   });
 
   /**
-   * The rights switch is only as good as its round trip. A column left out of
-   * the SELECT list, or a value left out of the bindings, would leave the
-   * dashboard showing a tick that the database never stored.
+   * The rights column is only as good as its round trip. Left out of the
+   * SELECT list, or out of the bindings, and the dashboard would show a choice
+   * the database never stored.
    */
-  test('the rights switch survives the trip to the database and back', () => {
-    expect(CONTENT_COLUMNS, 'licensed is selected').toContain('licensed');
-
-    // The bindings are positional: one value per ? in the statement, in order.
+  test('the rights mode survives the trip to the database and back', () => {
+    expect(CONTENT_COLUMNS, 'rights_mode is selected').toContain('rights_mode');
     for (const sql of [INSERT_SQL, UPDATE_SQL]) {
-      const columns = sql.match(/\blicensed\b/g);
-      expect(columns, 'licensed is written').not.toBeNull();
+      expect(sql, 'rights_mode is written').toContain('rights_mode');
     }
 
     const base = {
@@ -122,21 +120,59 @@ test.describe('worker api contracts', () => {
       image: '/assets/img/og-card.jpg',
       description: 'Something to publish.'
     };
-    const owned = normalizeContent({ ...base, title: 'Ours' });
-    const borrowed = normalizeContent({ ...base, title: 'Theirs', licensed: 0 });
-    expect(owned.error, owned.error).toBeUndefined();
-    expect(owned.licensed, 'unset means ours').toBe(1);
-    expect(borrowed.licensed, 'an explicit 0 is respected').toBe(0);
+    const auto = normalizeContent({ ...base, title: 'Unset' });
+    const forced = normalizeContent({ ...base, title: 'Theirs', rights_mode: 'shared' });
+    expect(auto.error, auto.error).toBeUndefined();
+    expect(auto.rightsMode, 'unset means automatic').toBe('auto');
+    expect(forced.rightsMode, 'an explicit choice is respected').toBe('shared');
+    // Anything else is not a mode, and must not reach the column.
+    expect(normalizeContent({ ...base, title: 'Junk', rights_mode: 'whatever' }).rightsMode).toBe('auto');
 
-    // One binding per placeholder, and the flag among them.
-    const values = bindValues(borrowed);
+    const values = bindValues(forced);
     expect(values.length, 'a binding for every ?').toBe((INSERT_SQL.match(/\?/g) || []).length);
-    expect(values).toContain(0);
+    expect(values).toContain('shared');
 
-    // And it comes back out typed, defaulting to licensed for rows written
-    // before the column existed.
-    expect(toPublicItem({ licensed: 0, published: 1, indexable: 1 }).licensed).toBe(0);
-    expect(toPublicItem({ published: 1, indexable: 1 }).licensed).toBe(1);
+    expect(toPublicItem({ rights_mode: 'own', published: 1, indexable: 1 }).rights_mode).toBe('own');
+    // Rows written before the column existed read as automatic.
+    expect(toPublicItem({ published: 1, indexable: 1 }).rights_mode).toBe('auto');
+  });
+
+  /**
+   * The rule the whole feature rests on: where the media came from decides
+   * whose rights the page claims, with no editor input at all.
+   */
+  test('provenance is read from the media, not asked for', () => {
+    const hosted = {
+      type: 'video',
+      published_at: '2026-05-14T00:00:00+06:00',
+      attachment_url: 'https://mrf-api.gadget02030.workers.dev/media/2026-05-14/clip.mp4'
+    };
+    const shared = {
+      type: 'video',
+      published_at: '2026-08-01T00:00:00+06:00',
+      video_url: 'https://www.youtube.com/watch?v=t8d6rWQQl8g'
+    };
+
+    expect(rightsFor(hosted).mode, 'an upload is ours').toBe('own');
+    expect(rightsFor(shared).mode, 'a pasted link is not').toBe('shared');
+    expect(rightsFor(shared).source.name).toBe('YouTube');
+
+    // A stored choice overrules the guess in either direction.
+    expect(rightsFor({ ...shared, rights_mode: 'own' }).mode).toBe('own');
+    expect(rightsFor({ ...hosted, rights_mode: 'shared' }).mode).toBe('shared');
+
+    // And the schema follows: a claim on one, attribution on the other.
+    const ours = rightsBlock(hosted, SITE_ORIGIN, { performer: true });
+    expect(ours.license).toContain('/terms-of-service.html#copyright');
+    expect(ours.copyrightHolder).toBeTruthy();
+    expect(ours.actor, 'no performer credit needed on our own upload').toBeUndefined();
+
+    const theirs = rightsBlock(shared, SITE_ORIGIN, { performer: true });
+    expect(theirs.license, 'never claim a licence over an embed').toBeUndefined();
+    expect(theirs.copyrightHolder).toBeUndefined();
+    expect(theirs.sourceOrganization.name).toBe('YouTube');
+    expect(theirs.isBasedOn).toBe(shared.video_url);
+    expect(theirs.actor, 'he is the performer, not the owner').toBeTruthy();
   });
 });
 

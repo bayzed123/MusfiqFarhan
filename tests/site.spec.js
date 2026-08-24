@@ -785,12 +785,20 @@ test.describe('published item pages', () => {
         // "42:10" is what an editor types and what Google rejects.
         if (video.duration) expect(video.duration, `${path} · duration`).toMatch(/^PT\d/);
 
-        // Originally published here, and the markup says so.
-        expect(video.license, `${path} · license`).toContain('/terms-of-service.html');
-        expect(video.acquireLicensePage, `${path} · acquireLicensePage`).toContain('/contact.html');
-        expect(video.copyrightHolder, `${path} · copyrightHolder`).toBeTruthy();
-        expect(video.creator, `${path} · creator`).toBeTruthy();
-        expect(video.publisher, `${path} · publisher`).toBeTruthy();
+        // Provenance is stated either way, and the two ways are exclusive: a
+        // licence over our own upload, attribution over someone else's.
+        if (video.license) {
+          expect(video.license, `${path} · license`).toContain('/terms-of-service.html');
+          expect(video.acquireLicensePage, `${path} · acquireLicensePage`).toContain('/contact.html');
+          expect(video.copyrightHolder, `${path} · copyrightHolder`).toBeTruthy();
+          expect(video.creator, `${path} · creator`).toBeTruthy();
+          expect(video.sourceOrganization, `${path} · ours, so no outside source`).toBeUndefined();
+        } else {
+          expect(video.sourceOrganization, `${path} · unlicensed means attributed`).toBeTruthy();
+          expect(video.isBasedOn, `${path} · links back to the original`).toMatch(/^https:\/\//);
+          expect(video.copyrightHolder, `${path} · claims no ownership`).toBeUndefined();
+        }
+        expect(video.creditText, `${path} · credit line`).toBeTruthy();
       }
     }
     expect(checked, 'at least one video page was checked').toBeGreaterThan(0);
@@ -866,37 +874,61 @@ test.describe('published item pages', () => {
   });
 
   /**
-   * The "Original work" switch on the composer. Ticked, the page claims the
-   * copyright and points at the licence; unticked, it says nothing — a still
-   * or a press piece published here with permission is not ours to license,
-   * and claiming otherwise on every page would be a false statement at scale.
+   * Rights follow the media, with nothing for the editor to remember. A file
+   * uploaded from the phone is served from this site and is his; a link pasted
+   * from YouTube is someone else's upload that he happens to act in. Both
+   * fixture items are left on `auto`, so this is the rule doing the deciding.
    */
-  test('the licence appears only on work marked original', async ({ request }) => {
-    const readEntity = (html) =>
-      [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
-        .flatMap((match) => {
-          const parsed = JSON.parse(match[1]);
-          return parsed['@graph'] || [parsed];
-        })
-        .find((node) => node['@type'] === 'VideoObject' || node['@type'] === 'Article');
+  const readEntity = (html) =>
+    [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+      .flatMap((match) => {
+        const parsed = JSON.parse(match[1]);
+        return parsed['@graph'] || [parsed];
+      })
+      .find((node) => node['@type'] === 'VideoObject' || node['@type'] === 'Article');
 
-    const owned = await request.get('/blog/icche-dana-production-credits-explained/');
-    const borrowed = await request.get('/press/press-feature-noindex/');
-    test.skip(!owned.ok() || !borrowed.ok(), 'the licensing fixture items are not in this build');
+  test('a file uploaded here claims the licence', async ({ request }) => {
+    const response = await request.get('/new-natok/tor-preme-pagol/');
+    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
 
-    const claimed = readEntity(await owned.text());
-    expect(claimed.license, 'licence url').toContain('/terms-of-service.html#copyright');
-    expect(claimed.acquireLicensePage, 'where to ask').toContain('/contact.html');
-    expect(claimed.copyrightHolder, 'copyright holder').toBeTruthy();
-    expect(claimed.creditText, 'credit line').toContain('Musfiq R. Farhan');
-    expect(typeof claimed.copyrightYear, 'copyright year is a number').toBe('number');
+    const entity = readEntity(await response.text());
+    expect(entity.license, 'licence url').toContain('/terms-of-service.html#copyright');
+    expect(entity.acquireLicensePage, 'where to ask').toContain('/contact.html');
+    expect(entity.copyrightHolder, 'copyright holder').toBeTruthy();
+    expect(entity.creator, 'creator').toBeTruthy();
+    expect(entity.creditText, 'credit line').toContain('Musfiq R. Farhan');
+    expect(typeof entity.copyrightYear, 'copyright year is a number').toBe('number');
+    // Nothing to attribute: it did not come from anywhere else.
+    expect(entity.sourceOrganization, 'no outside source').toBeUndefined();
+  });
 
-    const unclaimed = readEntity(await borrowed.text());
-    for (const field of ['license', 'acquireLicensePage', 'copyrightHolder', 'creditText']) {
-      expect(unclaimed[field], `${field} must be absent when not original`).toBeUndefined();
+  test('a video shared from YouTube credits YouTube and claims nothing', async ({
+    page,
+    request
+  }) => {
+    const path = '/new-teaser/doob-official-teaser/';
+    const response = await request.get(path);
+    test.skip(!response.ok(), 'the shared-video fixture item is not part of this build');
+    const html = await response.text();
+    const entity = readEntity(html);
+
+    // No ownership claim of any kind.
+    for (const field of ['license', 'acquireLicensePage', 'copyrightHolder', 'creator']) {
+      expect(entity[field], `${field} must not be claimed over someone else's video`).toBeUndefined();
     }
-    // The page is still described — only the ownership claim is withheld.
-    expect(unclaimed.author, 'authorship still stated').toBeTruthy();
+
+    // Attribution instead, and his real part in it.
+    expect(entity.sourceOrganization?.name, 'the platform is named').toBe('YouTube');
+    expect(entity.isBasedOn, 'links back to the original').toContain('youtube.com');
+    expect(entity.actor, 'credited as the performer').toBeTruthy();
+    expect(entity.creditText, 'says whose rights these are').toMatch(/rights stay with the original/i);
+
+    // And a reader can see it, not just a crawler.
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const credit = page.locator('[data-media-credit]');
+    await expect(credit).toBeVisible();
+    await expect(credit).toContainText('Shared from YouTube');
+    await expect(credit.locator('a')).toHaveAttribute('href', /youtube\.com/);
   });
 
   /**
@@ -1334,47 +1366,61 @@ test.describe('dashboard', () => {
   });
 
   /**
-   * The switch that decides whether a page claims the copyright. An unticked
-   * checkbox is simply absent from FormData and the API reads a missing flag
-   * as "yes", so the state has to be sent explicitly — otherwise unticking
-   * silently does nothing and every page claims a licence.
+   * The composer never asks who owns the video — it reads the URL and says
+   * what it worked out. The editor is told the answer and the reason for it,
+   * because a page's copyright hangs on that guess being right.
    */
-  test('the original-work switch reaches the API in both positions', async ({ page }) => {
+  test('the composer says what the rights will be, before saving', async ({ page }) => {
+    await mockAdminApi(page);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="compose"]');
+
+    await expect(page.locator('[data-rights-mode]'), 'automatic by default').toHaveValue('auto');
+    const hint = page.locator('[data-rights-hint]');
+
+    await page.click('[data-kind="natok-teaser"]');
+    await page.fill('#c-title', 'A teaser we uploaded');
+    await page.fill('#c-video', '/media/2026-08-22/teaser.mp4');
+    await expect(hint).toHaveAttribute('data-rights-resolved', 'own');
+    await expect(hint).toContainText('hosted here');
+    await expect(hint).toContainText('claim your copyright');
+
+    await page.fill('#c-video', 'https://www.youtube.com/watch?v=t8d6rWQQl8g');
+    await expect(hint, 'a pasted link flips it').toHaveAttribute('data-rights-resolved', 'shared');
+    await expect(hint).toContainText('YouTube link');
+    await expect(hint).toContainText('claim no licence');
+
+    // And the guess can be overruled when it is wrong.
+    await page.selectOption('[data-rights-mode]', 'own');
+    await expect(hint).toHaveAttribute('data-rights-resolved', 'own');
+    await expect(hint).toContainText('Set by hand');
+  });
+
+  test('the rights choice reaches the API and survives an edit', async ({ page }) => {
     const sent = [];
     await mockAdminApi(page, sent);
     await signIn(page);
     await page.click('.nav-btn[data-view="compose"]');
 
-    const licensed = page.locator('input[name="licensed"]');
-    await expect(licensed, 'new items claim the licence by default').toBeChecked();
+    await page.click('[data-kind="blog"]');
+    await page.fill('#c-title', 'A piece someone else owns');
+    await page.fill('#c-description', 'Published here with permission.');
+    await page.fill('#c-image', '/assets/img/hero_red-1280.webp');
+    await page.selectOption('[data-rights-mode]', 'shared');
+    await page.click('[data-composer-form] button[type=submit]');
 
-    const save = async (title, original) => {
-      await page.click('[data-composer-reset]');
-      await page.click('[data-kind="blog"]');
-      await page.fill('#c-title', title);
-      await page.fill('#c-description', 'Something to publish.');
-      await page.fill('#c-image', '/assets/img/hero_red-1280.webp');
-      await page.locator('input[name="licensed"]').setChecked(original);
-      sent.length = 0;
-      await page.click('[data-composer-form] button[type=submit]');
-      await expect
-        .poll(() => sent.filter((call) => call.method === 'POST' && call.path === '/api/admin/content').length)
-        .toBe(1);
-      return sent.find((call) => call.method === 'POST' && call.path === '/api/admin/content').body;
-    };
-
-    expect((await save('A piece someone else owns', false)).licensed).toBe(0);
-    expect((await save('A piece we made', true)).licensed).toBe(1);
-  });
-
-  test('editing an item restores the switch it was saved with', async ({ page }) => {
-    await mockAdminApi(page);
-    await signIn(page);
+    await expect
+      .poll(() => sent.filter((call) => call.method === 'POST' && call.path === '/api/admin/content').length)
+      .toBe(1);
+    expect(
+      sent.find((call) => call.method === 'POST' && call.path === '/api/admin/content').body.rights_mode
+    ).toBe('shared');
 
     await page.click('.nav-btn[data-view="content"]');
     await page.locator('.row', { hasText: 'Press feature kept out of search' }).getByText('Edit').click();
-    await expect(page.locator('input[name="licensed"]'), 'the unticked state survives a round trip')
-      .not.toBeChecked();
+    await expect(page.locator('[data-rights-mode]'), 'a stored override comes back').toHaveValue(
+      'shared'
+    );
   });
 });
 
@@ -1450,7 +1496,7 @@ async function mockAdminApi(page, sent = []) {
     {
       id: 3, type: 'post', kind: 'blog', title: 'Press feature kept out of search',
       slug: 'press-feature-noindex', path: '/press/press-feature-noindex/', category: 'Press',
-      subcategory: 'Recent Releases', image: '', published: 1, indexable: 0, licensed: 0,
+      subcategory: 'Recent Releases', image: '', published: 1, indexable: 0, rights_mode: 'shared',
       published_at: '2026-03-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
     }
   ];

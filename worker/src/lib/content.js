@@ -1,6 +1,7 @@
 /** Content normalisation, validation and queries. */
 
 import { clean, toInt } from './http.js';
+import { normaliseRightsMode } from '../../../shared/rights.js';
 import { CONTENT_TYPES, findKind, resolvePlacement, IMAGE_FIRST_CATEGORIES } from '../../../shared/taxonomy.js';
 import {
   PERSON_NAME,
@@ -17,7 +18,7 @@ import {
 export const CONTENT_COLUMNS = `id, type, kind, title, slug, path, image, video_url, attachment_url,
   media_type, category, subcategory, year, description, seo_title, meta_description, keywords,
   author_name, canonical_url, og_image, body, published_at, modified_at, duration, embed_url,
-  thumbnail_url, indexable, licensed, published, sort_order, view_count, created_at, updated_at`;
+  thumbnail_url, indexable, rights_mode, published, sort_order, view_count, created_at, updated_at`;
 
 /** Trim a description down to a search-friendly meta description. */
 export function toMetaDescription(text, title) {
@@ -117,8 +118,7 @@ export function normalizeContent(body, existing = null) {
     embedUrl: media.embeddable || clean(body.embed_url, 600),
     thumbnailUrl: clean(body.thumbnail_url, 600) || media.poster || image,
     indexable: body.indexable === 0 || body.indexable === false ? 0 : 1,
-    // Unticked means "not ours to license"; anything else keeps the claim.
-    licensed: body.licensed === 0 || body.licensed === false ? 0 : 1,
+    rightsMode: normaliseRightsMode(body.rights_mode),
     sortOrder: toInt(body.sort_order, 0),
     published
   };
@@ -150,7 +150,7 @@ export function toPublicItem(row) {
     ...row,
     published: Number(row.published),
     indexable: Number(row.indexable),
-    licensed: Number(row.licensed ?? 1),
+    rights_mode: normaliseRightsMode(row.rights_mode),
     sort_order: Number(row.sort_order || 0),
     view_count: Number(row.view_count || 0),
     path: row.path || contentPath(row),
@@ -231,14 +231,14 @@ export const INSERT_SQL = `INSERT INTO content (
     type, kind, title, slug, path, image, video_url, attachment_url, media_type, category,
     subcategory, year, description, seo_title, meta_description, keywords, author_name,
     canonical_url, og_image, body, published_at, modified_at, duration, embed_url,
-    thumbnail_url, indexable, licensed, sort_order, published, updated_at
+    thumbnail_url, indexable, rights_mode, sort_order, published, updated_at
   ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *`;
 
 export const UPDATE_SQL = `UPDATE content SET
     type=?, kind=?, title=?, slug=?, path=?, image=?, video_url=?, attachment_url=?, media_type=?,
     category=?, subcategory=?, year=?, description=?, seo_title=?, meta_description=?, keywords=?,
     author_name=?, canonical_url=?, og_image=?, body=?, published_at=?, modified_at=?, duration=?,
-    embed_url=?, thumbnail_url=?, indexable=?, licensed=?, sort_order=?, published=?, updated_at=CURRENT_TIMESTAMP
+    embed_url=?, thumbnail_url=?, indexable=?, rights_mode=?, sort_order=?, published=?, updated_at=CURRENT_TIMESTAMP
   WHERE id=? RETURNING *`;
 
 export function bindValues(row) {
@@ -269,7 +269,7 @@ export function bindValues(row) {
     row.embedUrl,
     row.thumbnailUrl,
     row.indexable,
-    row.licensed,
+    row.rightsMode,
     row.sortOrder,
     row.published
   ];

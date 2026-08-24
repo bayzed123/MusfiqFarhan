@@ -8,7 +8,9 @@
  * than chased afterwards.
  */
 
+import { normaliseRightsMode, rightsFor } from '../../../shared/rights.js';
 import { CATEGORIES, KINDS, findCategory, findKind } from '../../../shared/taxonomy.js';
+import { mediaSource } from '../../../shared/urls.js';
 import { SITE } from '../config.js';
 import { adminApi } from './api.js';
 import { $, esc, makeDropzone, pickFromLibrary, slugify, toast, uploadRow } from './ui.js';
@@ -173,8 +175,16 @@ export function composerMarkup() {
           <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin:1.1rem 0">
             <label class="switch"><input type="checkbox" name="published" checked> Published</label>
             <label class="switch"><input type="checkbox" name="indexable" checked> Allow search engines</label>
-            <label class="switch" title="Adds the copyright holder, credit and licence to this page's markup, so search engines treat this site as the source. Untick for anything published here with permission but owned by someone else."><input
-              type="checkbox" name="licensed" checked> Original work &mdash; add licence</label>
+          </div>
+
+          <div class="field rights" data-rights>
+            <label for="c-rights">Rights</label>
+            <select id="c-rights" name="rights_mode" data-rights-mode>
+              <option value="auto">Automatic &mdash; work it out from the media</option>
+              <option value="own">My original work</option>
+              <option value="shared">Shared &mdash; credit the owner</option>
+            </select>
+            <p class="rights__hint" data-rights-hint></p>
           </div>
 
           <div style="display:flex;gap:.6rem;flex-wrap:wrap">
@@ -299,7 +309,7 @@ function readForm(form) {
   const values = Object.fromEntries(new FormData(form));
   values.published = form.published.checked ? 1 : 0;
   values.indexable = form.indexable.checked ? 1 : 0;
-  values.licensed = form.licensed.checked ? 1 : 0;
+  values.rights_mode = form.rights_mode.value;
   values.sort_order = Number(values.sort_order || 0);
   if (values.published_at) values.published_at = new Date(values.published_at).toISOString();
   return values;
@@ -337,6 +347,35 @@ function refresh(root) {
   }
 
   paintSeo(root, readForm(form));
+  paintRights(root, readForm(form));
+}
+
+/*
+ * Say out loud what "Automatic" is about to do. The rule is simple — a file
+ * uploaded here is his, a pasted link is someone else's — but an editor
+ * should not have to take that on trust while a page's copyright depends on
+ * it, so the hint names the answer and the reason for it.
+ */
+function paintRights(root, values) {
+  const hint = $('[data-rights-hint]', root);
+  if (!hint) return;
+
+  const chosen = normaliseRightsMode(values.rights_mode);
+  const resolved = rightsFor({ ...values, rights_mode: chosen }, SITE.origin);
+  const source = mediaSource(values.video_url || values.image || '');
+
+  const because =
+    chosen !== 'auto'
+      ? 'Set by hand.'
+      : source
+        ? `This is a ${source.name} link.`
+        : 'This is hosted here.';
+
+  hint.textContent =
+    resolved.mode === 'own'
+      ? `${because} The page will claim your copyright and link to your licence.`
+      : `${because} The page will credit ${source?.name || 'the original uploader'}, link back to it, and claim no licence. You are credited as the performer.`;
+  hint.dataset.rightsResolved = resolved.mode;
 }
 
 export function fillComposer(root, item = null) {
@@ -392,7 +431,7 @@ export function fillComposer(root, item = null) {
   form.keywords.value = item.keywords || '';
   form.published.checked = Number(item.published) === 1;
   form.indexable.checked = Number(item.indexable) !== 0;
-  form.licensed.checked = Number(item.licensed ?? 1) !== 0;
+  form.rights_mode.value = normaliseRightsMode(item.rights_mode);
   if (item.kind) {
     root.querySelector(`[data-kind="${CSS.escape(item.kind)}"]`)?.classList.add('is-active');
   }
@@ -431,7 +470,7 @@ async function save(root, { asDraft = false } = {}) {
         category: values.category,
         subcategory: values.subcategory,
         published: values.published,
-        licensed: values.licensed,
+        rights_mode: values.rights_mode,
         sort_order: values.sort_order
       });
       toast(values.published ? 'Added to the gallery.' : 'Saved as a gallery draft.');

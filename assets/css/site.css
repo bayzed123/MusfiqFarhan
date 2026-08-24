@@ -1426,6 +1426,29 @@ p {
   margin-bottom: 0;
 }
 
+/*
+ * Whose video this is, when it is not ours. The structured data withholds the
+ * licence claim, but a reader cannot see structured data — this is the half of
+ * respecting someone's rights that a person can actually check.
+ */
+.media-credit {
+  max-width: 1100px;
+  margin: 0.7rem auto 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--ink-faint);
+}
+
+.media-credit a {
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.media-credit a:hover {
+  color: #fff;
+}
+
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;

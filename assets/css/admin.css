@@ -376,6 +376,33 @@ h3 {
   font-weight: 500;
 }
 
+/*
+ * What "Automatic" is about to decide, spelled out. Green when the page will
+ * claim the copyright, amber when it will credit someone else — an editor
+ * should be able to tell which at a glance, because it is the difference
+ * between a true statement and a false one.
+ */
+.rights__hint {
+  margin-top: 0.45rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ink-soft);
+}
+
+.rights__hint[data-rights-resolved='own'] {
+  border-color: rgba(64, 192, 120, 0.35);
+  background: rgba(64, 192, 120, 0.08);
+}
+
+.rights__hint[data-rights-resolved='shared'] {
+  border-color: rgba(240, 180, 41, 0.35);
+  background: rgba(240, 180, 41, 0.08);
+}
+
 .field input[type='text'],
 .field input[type='url'],
 .field input[type='number'],

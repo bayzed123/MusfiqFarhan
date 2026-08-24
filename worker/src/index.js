@@ -37,6 +37,7 @@ import { adminNotes, deleteNote, heartNote, marqueeNotes, publicNotes, submitNot
 import { adminReviews, deleteReview, publicReviews, submitReview, updateReview } from './lib/reviews.js';
 import { CATEGORIES, HOME_RAILS, KINDS, findCategory, findSubcategory } from '../../shared/taxonomy.js';
 import { fullSitemap } from '../../shared/sitemap.js';
+import { normaliseRightsMode } from '../../shared/rights.js';
 
 const HOME_RAIL_SIZE = 12;
 
@@ -206,8 +207,7 @@ function galleryPayload(body) {
     subcategory: findSubcategory(category, body.subcategory) || '',
     caption: clean(body.caption, 240),
     published: body.published === 0 || body.published === false ? 0 : 1,
-    // Unticked means "not ours to license" — see shared/rights.js.
-    licensed: body.licensed === 0 || body.licensed === false ? 0 : 1,
+    rightsMode: normaliseRightsMode(body.rights_mode),
     sortOrder: toInt(body.sort_order, 0)
   };
 }
@@ -395,7 +395,7 @@ export default {
         const payload = galleryPayload(await readJson(request));
         if (payload.error) return fail(payload.error, 400, origin);
         const row = await env.DB.prepare(
-          `INSERT INTO gallery(title, slug, image_url, alt_text, category, caption, published, licensed, sort_order, updated_at)
+          `INSERT INTO gallery(title, slug, image_url, alt_text, category, caption, published, rights_mode, sort_order, updated_at)
            VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *`
         )
           .bind(
@@ -406,7 +406,7 @@ export default {
             payload.category,
             payload.caption,
             payload.published,
-            payload.licensed,
+            payload.rightsMode,
             payload.sortOrder
           )
           .first();
@@ -425,7 +425,7 @@ export default {
           if (payload.error) return fail(payload.error, 400, origin);
           const row = await env.DB.prepare(
             `UPDATE gallery SET title=?, slug=?, image_url=?, alt_text=?, category=?, caption=?,
-             published=?, licensed=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *`
+             published=?, rights_mode=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *`
           )
             .bind(
               payload.title,
@@ -435,7 +435,7 @@ export default {
               payload.category,
               payload.caption,
               payload.published,
-              payload.licensed,
+              payload.rightsMode,
               payload.sortOrder,
               id
             )

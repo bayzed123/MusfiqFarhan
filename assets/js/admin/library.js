@@ -288,9 +288,15 @@ export function galleryMarkup() {
         <label for="g-caption">Caption</label>
         <input id="g-caption" name="caption" type="text" maxlength="240">
       </div>
-      <label class="switch" style="margin-bottom:.9rem"
-        title="Adds the copyright holder, credit and licence to this image's markup, so image search knows it is yours. Untick for a still owned by someone else."><input
-        type="checkbox" name="licensed" checked> Original work &mdash; add licence</label>
+      <div class="field">
+        <label for="g-rights">Rights</label>
+        <select id="g-rights" name="rights_mode">
+          <option value="auto">Automatic &mdash; work it out from the image</option>
+          <option value="own">My original work</option>
+          <option value="shared">Shared &mdash; credit the owner</option>
+        </select>
+        <small>An image uploaded here carries your licence. One linked from another site credits its owner instead.</small>
+      </div>
       <button class="btn btn--primary" type="submit">Add to gallery</button>
     </form>
   </div>
@@ -354,9 +360,6 @@ export function initGallery(root) {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const values = Object.fromEntries(new FormData(form));
-    // An unticked checkbox is simply absent from FormData, and the API reads
-    // a missing flag as "yes". Send the state explicitly either way.
-    values.licensed = form.licensed.checked ? 1 : 0;
     try {
       await adminApi.createGalleryItem(values);
       toast('Added to the gallery.');

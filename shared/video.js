@@ -18,7 +18,7 @@
  * - `duration` must be ISO 8601. Editors type "42:10", which is not.
  */
 
-import { rightsBlock } from './rights.js';
+import { rightsBlock, rightsFor } from './rights.js';
 import {
   PERSON_NAME,
   SITE_ORIGIN,
@@ -107,8 +107,11 @@ export function videoFacts(item, origin = SITE_ORIGIN) {
 }
 
 /**
- * The VideoObject for an item page. The rights half of it appears only when
- * the editor has marked the item original — see shared/rights.js.
+ * The VideoObject for an item page.
+ *
+ * The provenance half comes from shared/rights.js: a file uploaded here
+ * carries the site's own licence, a link shared from YouTube or Facebook
+ * carries attribution to that platform and no licence claim at all.
  */
 export function videoSchema(item, origin = SITE_ORIGIN) {
   const facts = videoFacts(item, origin);
@@ -127,7 +130,7 @@ export function videoSchema(item, origin = SITE_ORIGIN) {
     isAccessibleForFree: true,
     author: { '@id': `${origin}/#person` },
     publisher: { '@id': `${origin}/#organization` },
-    ...rightsBlock(item, origin),
+    ...rightsBlock(item, origin, { performer: true }),
     mainEntityOfPage: facts.canonical
   };
 }
@@ -206,7 +209,30 @@ export function playerHtml(item, { fallbackPoster = '' } = {}) {
       <span>${PLAY_ICON}</span>
       <span class="visually-hidden">Play ${escapeHtml(item?.title || '')}</span>
     </button>
-  </div>`;
+  </div>${creditHtml(item)}`;
+}
+
+/**
+ * The line under a shared player naming whose video it is.
+ *
+ * The structured data already withholds the licence claim, but a reader
+ * cannot see structured data. Saying it on the page is the half of respecting
+ * someone's rights that a person can actually check, and it gives the
+ * original a real link back.
+ */
+export function creditHtml(item, origin = SITE_ORIGIN) {
+  const rights = rightsFor(item, origin);
+  if (rights.mode !== 'shared') return '';
+
+  const link = rights.sourceUrl
+    ? ` <a href="${escapeHtml(rights.sourceUrl)}" target="_blank" rel="noopener">Watch it on ${escapeHtml(
+        rights.source?.name || 'the original'
+      )}</a>.`
+    : '';
+  return `
+  <p class="media-credit" data-media-credit>
+    <span>${escapeHtml(rights.creditLine)}</span>${link}
+  </p>`;
 }
 
 /** Sitemaps count seconds where schema.org wants ISO 8601. */
