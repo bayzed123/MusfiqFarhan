@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <title>Advertisement</title>
-<style>html,body{margin:0;padding:0;overflow:hidden;background:transparent}</style>
+<!--
+  `background: transparent` on the root does not make an iframe see-through:
+  it makes the canvas fall back to the browser default, and under the default
+  light colour scheme that default is white. On a page this dark an unfilled
+  unit was a bright slab. Declare the scheme and paint the site's own ink, so
+  a unit with nothing in it is an empty dark box and a filled one covers it.
+-->
+<style>html,body{margin:0;padding:0;overflow:hidden;background:#0a0b10;color-scheme:dark}</style>
 </head>
 <body>
 <!--

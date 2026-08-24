@@ -162,6 +162,53 @@ export function videoSitemapBlock(item, origin = SITE_ORIGIN, esc = (value) => v
     .join('\n');
 }
 
+const PLAY_ICON =
+  '<svg viewBox="0 0 24 24" fill="currentColor" width="34" height="34" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>';
+
+const escapeHtml = (value) =>
+  String(value ?? '').replace(/[&<>'"]/g, (char) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]
+  );
+
+/**
+ * The player, rendered the same way by the build and by the browser.
+ *
+ * Google will only index a video on a "watch page" — one where the video is
+ * the main thing, not an illustration beside an article. It decides that from
+ * the page it crawls, and the pre-rendered page used to contain a poster
+ * image and a button with no player in it at all. A file we host now ships a
+ * real <video> element in the HTML; `preload="none"` means that still costs
+ * no bytes until someone presses play.
+ *
+ * A third-party embed stays a facade: putting the iframe in the markup would
+ * pull YouTube's script into every page load, and the VideoObject already
+ * hands the crawler the embedUrl. The iframe is built on the first click.
+ */
+export function playerHtml(item, { fallbackPoster = '' } = {}) {
+  const facts = videoFacts(item);
+  const source = facts.contentUrl || facts.embedUrl;
+  if (!source) return '';
+  const poster = escapeHtml(facts.thumbnailUrl || fallbackPoster);
+
+  if (facts.contentUrl) {
+    return `<div class="player">
+      <video controls preload="none" playsinline poster="${poster}"
+        width="1280" height="720" data-player-video>
+        <source src="${escapeHtml(facts.contentUrl)}" type="video/mp4">
+        Your browser cannot play this video. <a href="${escapeHtml(facts.contentUrl)}">Download it instead.</a>
+      </video>
+    </div>`;
+  }
+
+  return `<div class="player" data-player-embed="${escapeHtml(facts.embedUrl)}">
+    <img class="player__poster" src="${poster}" alt="" width="1280" height="720" fetchpriority="high" decoding="async">
+    <button class="player__start" type="button" data-player-start>
+      <span>${PLAY_ICON}</span>
+      <span class="visually-hidden">Play ${escapeHtml(item?.title || '')}</span>
+    </button>
+  </div>`;
+}
+
 /** Sitemaps count seconds where schema.org wants ISO 8601. */
 export function durationSeconds(iso) {
   const match = String(iso || '').match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/i);

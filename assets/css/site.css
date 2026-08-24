@@ -1400,6 +1400,32 @@ p {
   background: radial-gradient(120% 100% at 0% 0%, rgba(225, 29, 46, 0.14), transparent 60%);
 }
 
+/*
+ * A video page leads with the player: breadcrumb, player, then the title.
+ * The head splits in two around it, so the breadcrumb strip loses its tall
+ * padding and its rule, and the title block below the player loses the top
+ * padding it would otherwise repeat.
+ */
+.page-head--watch {
+  padding-block: clamp(1rem, 3vw, 1.75rem) clamp(0.75rem, 2vw, 1rem);
+  border-bottom: 0;
+}
+
+.page-head--titled {
+  padding-top: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.watch-lead {
+  padding-inline: var(--gutter);
+}
+
+/* The player is the point of the page, so give it the width to say so. */
+.watch-lead .player {
+  max-width: 1100px;
+  margin-inline: auto;
+  margin-bottom: 0;
+}
+
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -2092,6 +2118,13 @@ body.is-sharing {
   display: block;
   border: 0;
   max-width: 100%;
+  /*
+   * An iframe paints white until its document arrives, and paints white for
+   * good when the ad server has nothing to fill the unit with. On a page this
+   * dark that is a bright slab, so let the slot's own surface show through.
+   */
+  background: transparent;
+  color-scheme: dark;
 }
 
 .ad-slot__native {

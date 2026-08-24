@@ -816,6 +816,56 @@ test.describe('published item pages', () => {
   });
 
   /**
+   * Google indexes a video only from a "watch page" — one where the video is
+   * the point of the page rather than an illustration beside an article — and
+   * it judges that from the page it crawls. It reported these as supplementary
+   * content: the pre-rendered HTML held a poster image and a button with no
+   * player in it at all, below the heading, the meta row and the share bar.
+   */
+  test('a video page leads with a real player', async ({ page, request }) => {
+    const path = '/new-natok/tor-preme-pagol/';
+    const response = await request.get(path);
+    test.skip(!response.ok(), 'the hosted-video fixture item is not part of this build');
+    const html = await response.text();
+
+    // In the source, not just after the script runs.
+    expect(html, 'a real player element').toMatch(/<video[^>]*controls/);
+    expect(html, 'with a source to play').toMatch(/<source src="[^"]+\.(mp4|webm|mov)"/i);
+    // preload="none" keeps it free until someone presses play.
+    expect(html).toMatch(/<video[^>]*preload="none"/);
+    expect(html.indexOf('data-entry-player'), 'the player comes before the heading').toBeLessThan(
+      html.indexOf('data-entry-title')
+    );
+
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const geometry = await page.evaluate(() => {
+      const player = document.querySelector('[data-entry-player] .player');
+      const heading = document.querySelector('[data-entry-title]');
+      if (!player || !heading) return null;
+      const box = player.getBoundingClientRect();
+      return { top: box.top, height: box.height, viewport: window.innerHeight,
+        beforeHeading: heading.getBoundingClientRect().top > box.top };
+    });
+    expect(geometry, 'both the player and the heading render').toBeTruthy();
+    expect(geometry.top, 'the player is on the first screen').toBeLessThan(geometry.viewport);
+    expect(geometry.beforeHeading, 'the heading sits below the player').toBe(true);
+
+    // And nothing is wedged between them.
+    const adBetween = await page.evaluate(() => {
+      const player = document.querySelector('[data-entry-player]');
+      const heading = document.querySelector('.page-head--titled');
+      if (!player || !heading) return false;
+      let node = player.nextElementSibling;
+      while (node && node !== heading) {
+        if (node.classList.contains('ad-slot')) return true;
+        node = node.nextElementSibling;
+      }
+      return false;
+    });
+    expect(adBetween, 'no ad between the player and the title').toBe(false);
+  });
+
+  /**
    * The "Original work" switch on the composer. Ticked, the page claims the
    * copyright and points at the licence; unticked, it says nothing — a still
    * or a press piece published here with permission is not ours to license,

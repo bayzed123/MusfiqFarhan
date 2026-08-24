@@ -37,7 +37,7 @@ import {
 } from '../shared/urls.js';
 import { fullSitemap } from '../shared/sitemap.js';
 import { rightsBlock } from '../shared/rights.js';
-import { videoSchema } from '../shared/video.js';
+import { playerHtml, videoSchema } from '../shared/video.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API_BASE = (process.env.MRF_API_URL || 'https://mrf-api.gadget02030.workers.dev').replace(/\/$/, '');
@@ -354,23 +354,13 @@ async function buildItemPages(items) {
     const isVideo = item.type === 'video';
     const poster = item.thumbnail_url || item.image || '/assets/img/hero_red-1280.webp';
 
-    const playerBlock = isVideo
-      ? `      <div data-entry-player>
-        <div class="player">
-          <img class="player__poster" src="${esc(poster)}" alt="" width="1280" height="720" fetchpriority="high" decoding="async">
-        </div>
-      </div>`
-      : `      <div data-entry-player></div>
-      <img src="${esc(poster)}" alt="${esc(item.title)}" width="1280" height="720"
-        style="border-radius:18px;margin-bottom:1.5rem" fetchpriority="high" decoding="async">`;
-
-    const main = `    <div class="page-head">
-      <nav class="breadcrumb" aria-label="Breadcrumb">
+    const breadcrumb = `      <nav class="breadcrumb" aria-label="Breadcrumb">
         <a href="/">Home</a><span aria-hidden="true">/</span>
         <a href="${categoryPath(item.category)}" data-entry-crumb>${esc(item.category)}</a>
         <span aria-hidden="true">/</span><span>${esc(item.title)}</span>
-      </nav>
-      <h1 data-entry-title>${esc(item.title)}</h1>
+      </nav>`;
+
+    const heading = `      <h1 data-entry-title>${esc(item.title)}</h1>
       <div class="meta-row" data-entry-meta>
         <time datetime="${esc(item.published_at || '')}">${esc(
           (item.published_at || '').slice(0, 10)
@@ -379,13 +369,45 @@ async function buildItemPages(items) {
       </div>
       <div class="share" data-share data-share-url="${esc(
         `${SITE_ORIGIN}${item.path || contentPath(item)}`
-      )}" data-share-title="${esc(item.title)}"></div>
+      )}" data-share-title="${esc(item.title)}"></div>`;
+
+    /*
+     * On a video page the player comes first, directly under the breadcrumb.
+     * Google only indexes a video it judges to be the point of the page rather
+     * than an illustration beside an article, and it decides that from the
+     * page it crawls: with the player pushed below the heading, the meta row
+     * and the share bar it reported the video as supplementary content.
+     *
+     * The same crawl is why the player is real markup now rather than a poster
+     * the script replaces — see playerHtml() in shared/video.js.
+     */
+    const top = isVideo
+      ? `    <div class="page-head page-head--watch">
+${breadcrumb}
     </div>
+    <div class="watch-lead" data-entry-player>
+      ${playerHtml(item, { fallbackPoster: poster })}
+    </div>
+    <div class="page-head page-head--titled">
+${heading}
+    </div>`
+      : `    <div class="page-head">
+${breadcrumb}
+${heading}
+    </div>`;
+
+    const inlineMedia = isVideo
+      ? ''
+      : `      <div data-entry-player></div>
+      <img src="${esc(poster)}" alt="${esc(item.title)}" width="1280" height="720"
+        style="border-radius:18px;margin-bottom:1.5rem" fetchpriority="high" decoding="async">
+`;
+
+    const main = `${top}
 
     <div class="article">
       <div>
-${playerBlock}
-        <div class="article__body" data-entry-body>
+${inlineMedia}        <div class="article__body" data-entry-body>
           ${item.description ? `<p class="hero__lede" data-entry-lead>${esc(item.description)}</p>` : ''}
 ${renderMarkdown(item.body)}
         </div>
