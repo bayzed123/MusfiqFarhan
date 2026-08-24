@@ -45,6 +45,14 @@ export const ICONS = {
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zm7 0h3.8v1.7h.05a4.2 4.2 0 0 1 3.75-2c4 0 4.75 2.6 4.75 6V21h-4v-5.5c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21h-4z"/></svg>'
 };
 
+/**
+ * Google's two tags. Kept together and named here so the pair is findable:
+ * the measurement id is the GA4 property everything reports into, and the
+ * container id is Tag Manager. See analyticsHeadHtml() for why both.
+ */
+export const GA4_MEASUREMENT_ID = 'G-N7D4DRYVT7';
+export const GTM_CONTAINER_ID = 'GTM-WJKZBG9Z';
+
 /** Who built the site, credited in the footer of every page. */
 const DEVELOPER = {
   name: 'Sayad Md Bayezid Hosan',
@@ -271,10 +279,56 @@ export function headAssetsHtml() {
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=Noto+Sans+Bengali:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=Noto+Sans+Bengali:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
-  <script defer src="/assets/js/ads.js"></script>`;
+  <script defer src="/assets/js/ads.js"></script>
+${analyticsHeadHtml()}`;
+}
+
+/**
+ * Analytics, on every public page.
+ *
+ * Two tags, and they do different jobs:
+ *
+ *   gtag sends the page view to GA4 directly. This is what fills the reports
+ *   the dashboard and the view counts read, and it needs no configuration
+ *   anywhere else to start working.
+ *
+ *   Tag Manager loads alongside for everything else — conversion tags, Ads,
+ *   verification — without another code change here.
+ *
+ * ────────────────────────────────────────────────────────────────────────
+ *  DO NOT add a GA4 tag inside Tag Manager for ${GA4_MEASUREMENT_ID}.
+ *  The page already sends it. A second one would count every visit twice,
+ *  silently, and every number on the site would be wrong by a factor of two.
+ * ────────────────────────────────────────────────────────────────────────
+ */
+export function analyticsHeadHtml() {
+  return `  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA4_MEASUREMENT_ID}');
+  </script>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','${GTM_CONTAINER_ID}');</script>`;
+}
+
+/**
+ * Tag Manager's fallback for a browser with JavaScript switched off. It goes
+ * first in the body, per Google's own instructions. GA4 itself needs
+ * JavaScript, so this only ever serves image-based tags — it is here because
+ * the container expects it, not because it will carry a page view.
+ */
+export function bodyStartHtml() {
+  return `<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}"
+  height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>`;
 }
 
 /**
@@ -349,6 +403,7 @@ export function siteSchemaHtml(origin = 'https://www.musfiqrfarhan.blog') {
 
 export const SHELL_REGIONS = {
   head: headAssetsHtml,
+  bodystart: bodyStartHtml,
   schema: siteSchemaHtml,
   lovestrip: loveStripHtml,
   header: headerHtml,

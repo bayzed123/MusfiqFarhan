@@ -407,6 +407,54 @@ test.describe('public site', () => {
     );
   });
 
+  /**
+   * Analytics has to be on every public page or the numbers are wrong, and on
+   * each of them exactly once — a second GA4 tag would count every visit twice
+   * and nothing would announce it. The dashboard is excluded: it is a private
+   * screen behind a login and its traffic is not readership.
+   */
+  test('analytics is on every public page, once, and not on the dashboard', async ({ request }) => {
+    const pages = [
+      '/',
+      '/404.html',
+      '/about.html',
+      '/contact.html',
+      '/blog/',
+      '/watch/',
+      '/gallery/',
+      '/love-notes/',
+      '/wikipedia/',
+      '/privacy-policy.html',
+      '/terms-of-service.html',
+      '/editorial-standards.html'
+    ];
+
+    for (const path of pages) {
+      const response = await request.get(path);
+      expect(response.ok(), `${path} resolves`).toBeTruthy();
+      const html = await response.text();
+
+      const gtag = html.match(/gtag\/js\?id=G-N7D4DRYVT7/g) || [];
+      const container = html.match(/gtm\.js\?id='\+i\+dl/g) || [];
+      const noscript = html.match(/ns\.html\?id=GTM-WJKZBG9Z/g) || [];
+      expect(gtag.length, `${path} loads GA4 exactly once`).toBe(1);
+      expect(container.length, `${path} loads Tag Manager exactly once`).toBe(1);
+      expect(noscript.length, `${path} carries one noscript fallback`).toBe(1);
+
+      // The measurement id has to be configured, not merely loaded.
+      expect(html, `${path} configures GA4`).toContain("gtag('config', 'G-N7D4DRYVT7')");
+    }
+
+    const admin = await (await request.get('/admin/')).text();
+    expect(admin, 'the dashboard stays out of the numbers').not.toContain('googletagmanager');
+  });
+
+  test('the privacy policy says the site measures readers', async ({ request }) => {
+    const html = await (await request.get('/privacy-policy.html')).text();
+    expect(html).toMatch(/Google Analytics/i);
+    expect(html, 'and how to opt out').toContain('tools.google.com/dlpage/gaoptout');
+  });
+
   test('the footer credits the developer, and the name animates', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const credit = page.locator('.footer-credit__name');
