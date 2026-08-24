@@ -8,7 +8,7 @@
 
 import { SITE } from '../config.js';
 import { adminApi, token } from './api.js';
-import { $, esc, toast } from './ui.js';
+import { $, esc, formatDate, toast } from './ui.js';
 import { composerMarkup, fillComposer, initComposer } from './composer.js';
 import {
   contentMarkup,
@@ -195,6 +195,30 @@ function seoMarkup() {
       videos and gallery images. Submit the index once in Search Console:
     </p>
     <p style="margin-top:.6rem"><code>${SITE.origin}/sitemap.xml</code></p>
+  </div>
+  <div class="panel">
+    <div class="panel__head">
+      <h2>What people search for</h2>
+      <button class="btn btn--ghost btn--sm" type="button" data-queries-refresh>Refresh</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--ink-faint);margin-bottom:1rem">
+      The queries that brought people here over the last 28 days, from Search Console.
+      A query with impressions but few clicks is a post waiting to be written.
+    </p>
+    <div data-queries><p class="empty">Loading…</p></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head">
+      <h2>Is Google holding these pages?</h2>
+      <button class="btn btn--ghost btn--sm" type="button" data-index-check>Check now</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--ink-faint);margin-bottom:1rem">
+      Reads the index status of the main pages straight from Search Console. Pages are
+      submitted by the sitemap &mdash; Google's Indexing API only accepts job postings
+      and live streams, so nothing here can push a page in, only report on it. Anything
+      showing as not indexed is worth a manual <em>Request indexing</em> in Search Console.
+    </p>
+    <div data-index-status><p class="empty">Not checked yet.</p></div>
   </div>`;
 }
 
@@ -238,6 +262,88 @@ function initSeoView(root) {
       rows.innerHTML = `<p class="empty">${esc(error.message)}</p>`;
     }
   }
+
+  /*
+   * Search Console's query report, not Google Trends. Trends publishes no
+   * official API and the endpoints people scrape for it are neither stable
+   * nor permitted; this is the supported source, and it is the more useful
+   * one — what this site already surfaces for, rather than what is popular
+   * somewhere in general.
+   */
+  async function loadQueries() {
+    const host = $('[data-queries]', root);
+    host.innerHTML = '<p class="empty">Loading…</p>';
+    try {
+      const data = await adminApi.searchQueries();
+      if (!data.configured) {
+        host.innerHTML =
+          '<p class="empty">Not connected yet. Add the Google service account to the Worker and grant it Search Console access.</p>';
+        return;
+      }
+      if (!data.queries.length) {
+        host.innerHTML = '<p class="empty">No query data for this period yet.</p>';
+        return;
+      }
+      host.innerHTML = `<div class="queries">${data.queries
+        .map(
+          (row) => `<button class="query" type="button" data-query="${esc(row.query)}">
+            <span class="query__text">${esc(row.query)}</span>
+            <span class="query__stats">
+              <span title="Impressions">${row.impressions.toLocaleString('en-GB')} seen</span>
+              <span title="Clicks">${row.clicks.toLocaleString('en-GB')} clicks</span>
+              <span title="Average position">#${row.position.toFixed(1)}</span>
+            </span>
+          </button>`
+        )
+        .join('')}</div>
+        <p style="font-size:.75rem;color:var(--ink-faint);margin-top:.8rem">Click one to start a post with it as the working title.</p>`;
+    } catch (error) {
+      host.innerHTML = `<p class="empty">${esc(error.message)}</p>`;
+    }
+  }
+
+  async function checkIndex() {
+    const host = $('[data-index-status]', root);
+    host.innerHTML = '<p class="empty">Asking Search Console…</p>';
+    // The inspection quota is 2,000 a day, so this checks the handful of
+    // pages worth watching rather than walking the whole archive.
+    const urls = ['/', '/watch/', '/blog/', '/gallery/', '/love-notes/', '/wikipedia/'].map(
+      (path) => `${SITE.origin}${path}`
+    );
+    try {
+      const data = await adminApi.indexStatus(urls);
+      if (!data.configured) {
+        host.innerHTML =
+          '<p class="empty">Not connected yet. Add the Google service account to the Worker and grant it Search Console access.</p>';
+        return;
+      }
+      host.innerHTML = `<div class="rows">${data.results
+        .map((row) => {
+          const good = row.verdict === 'PASS';
+          return `<article class="row">
+            <div>
+              <p class="row__title" style="font-size:.85rem">${esc(row.url.replace(SITE.origin, '') || '/')}</p>
+              <div class="row__meta">
+                <span class="tag ${good ? 'tag--live' : 'tag--draft'}">${esc(row.coverage || row.verdict)}</span>
+                ${row.lastCrawled ? `<span>Crawled ${esc(formatDate(row.lastCrawled))}</span>` : '<span>Never crawled</span>'}
+              </div>
+            </div>
+          </article>`;
+        })
+        .join('')}</div>`;
+    } catch (error) {
+      host.innerHTML = `<p class="empty">${esc(error.message)}</p>`;
+    }
+  }
+
+  $('[data-queries-refresh]', root).addEventListener('click', loadQueries);
+  $('[data-index-check]', root).addEventListener('click', checkIndex);
+  $('[data-queries]', root).addEventListener('click', (event) => {
+    const button = event.target.closest('[data-query]');
+    if (!button) return;
+    openInComposer({ title: button.dataset.query, keywords: button.dataset.query });
+  });
+  loadQueries();
 
   $('[data-seo-refresh]', root).addEventListener('click', load);
   rows.addEventListener('click', async (event) => {

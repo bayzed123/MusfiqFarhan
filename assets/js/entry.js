@@ -37,10 +37,36 @@ function metaRow(item) {
       : '',
     item.author_name ? `<span>By <strong>${esc(item.author_name)}</strong></span>` : '',
     item.duration ? `<span>${esc(item.duration)}</span>` : '',
+    // Filled in separately: the reading count comes from a second request that
+    // must not hold up the page, and is simply absent when GA4 is not wired up.
+    '<span class="views" data-entry-views hidden></span>',
     item.rating ? `<span class="stars">★ ${Number(item.rating).toFixed(1)} (${item.rating_count})</span>` : ''
   ]
     .filter(Boolean)
     .join('');
+}
+
+/**
+ * How many people have read this page, from Google Analytics by way of the
+ * Worker. Deliberately last and deliberately quiet: it is the least important
+ * thing on the page, the numbers are cached for half an hour anyway, and a
+ * site with no analytics configured should show nothing rather than a zero.
+ */
+async function paintViews(path) {
+  const host = $('[data-entry-views]');
+  if (!host) return;
+  try {
+    const data = await api.views();
+    const key = String(path || '').replace(/\/+$/, '') || '/';
+    const count = Number(data?.views?.[key] || 0);
+    if (!count) return;
+    // The exact number, not the site's usual "12k" shorthand: a reading
+    // count is one of the few figures people want precisely.
+    host.textContent = `${count.toLocaleString('en-GB')} ${count === 1 ? 'view' : 'views'}`;
+    host.hidden = false;
+  } catch {
+    /* analytics is never worth an error on the page */
+  }
 }
 
 /** The category slug is the first segment of the item's permanent path. */
@@ -175,6 +201,7 @@ export async function initEntry() {
   structuredData(item);
   initRails();
   initRatings({ title: item.title });
+  paintViews(item.path);
 }
 
 initEntry();

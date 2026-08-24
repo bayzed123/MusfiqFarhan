@@ -382,6 +382,54 @@ h3 {
  * should be able to tell which at a glance, because it is the difference
  * between a true statement and a false one.
  */
+/* The Search Console query list: each row is a starting point for a post. */
+.queries {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.query {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.query:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.query__text {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.query__stats {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  .query {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
 .rights__hint {
   margin-top: 0.45rem;
   padding: 0.5rem 0.7rem;

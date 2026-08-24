@@ -407,6 +407,17 @@ test.describe('public site', () => {
     );
   });
 
+  test('the footer credits the developer, and the name animates', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const credit = page.locator('.footer-credit__name');
+    await expect(credit).toHaveText('Sayad Md Bayezid Hosan');
+    await expect(credit).toHaveAttribute('href', 'https://sayadbayezid');
+    await expect(credit).toHaveAttribute('rel', /noopener/);
+
+    const animation = await credit.evaluate((node) => getComputedStyle(node).animationName);
+    expect(animation, 'the colour cycles').toBe('credit-hue');
+  });
+
   test('the profile page is linked from the footer and listed in the sitemap', async ({
     page,
     request
@@ -929,6 +940,55 @@ test.describe('published item pages', () => {
     await expect(credit).toBeVisible();
     await expect(credit).toContainText('Shared from YouTube');
     await expect(credit.locator('a')).toHaveAttribute('href', /youtube\.com/);
+  });
+
+  /**
+   * The reading count comes from GA4 through the Worker. It is the least
+   * important thing on the page, so it has to fail quietly: a site with no
+   * analytics configured shows nothing rather than a zero, and an analytics
+   * outage must not cost the reader the post.
+   */
+  test('the view count appears when analytics answers, and never breaks the page', async ({
+    page,
+    request
+  }) => {
+    const paths = await itemPaths(request);
+    test.skip(!paths.length, 'this build has no published posts');
+    const path = paths[0];
+    const bare = path.replace(/\/+$/, '') || '/';
+
+    await mockPublicApi(page);
+    await page.route('**/api/public/views', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ views: { [bare]: 12345 }, configured: true })
+      })
+    );
+    await page.goto(path, { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-entry-views]')).toHaveText('12,345 views');
+
+    // Analytics not configured: the count is absent, the page is intact.
+    const quiet = await page.context().newPage();
+    await mockPublicApi(quiet);
+    await quiet.route('**/api/public/views', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ views: {}, configured: false })
+      })
+    );
+    await quiet.goto(path, { waitUntil: 'networkidle' });
+    await expect(quiet.locator('[data-entry-views]')).toBeHidden();
+    await expect(quiet.locator('[data-entry-title]')).not.toBeEmpty();
+
+    // Analytics failing outright: same again.
+    const broken = await page.context().newPage();
+    await mockPublicApi(broken);
+    await broken.route('**/api/public/views', (route) => route.abort());
+    await broken.goto(path, { waitUntil: 'networkidle' });
+    await expect(broken.locator('[data-entry-views]')).toBeHidden();
+    await expect(broken.locator('[data-entry-title]')).not.toBeEmpty();
   });
 
   /**

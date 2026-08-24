@@ -54,6 +54,21 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      # The service account reads Analytics and Search Console. It lives as a
+      # GitHub secret, but the Worker is what calls Google, so it has to be
+      # copied across — a browser can never hold a private key. Skipped
+      # silently when the secret is not set, so the deploy works without it
+      # and the features simply report themselves as not connected.
+      - name: Configure Google read-only access
+        if: ${{ secrets.GOOGLE_SERVICE_ACCOUNT != '' }}
+        run: |
+          printf '%s' '${{ secrets.GOOGLE_SERVICE_ACCOUNT }}' | npx --yes wrangler@4 secret put GOOGLE_SERVICE_ACCOUNT --config ../wrangler.toml
+          printf '%s' '${{ secrets.GA4_PROPERTY_ID }}' | npx --yes wrangler@4 secret put GA4_PROPERTY_ID --config ../wrangler.toml
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
   build-site:
     name: Build and verify the site
     runs-on: ubuntu-latest

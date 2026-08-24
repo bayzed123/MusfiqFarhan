@@ -45,6 +45,12 @@ export const ICONS = {
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zm7 0h3.8v1.7h.05a4.2 4.2 0 0 1 3.75-2c4 0 4.75 2.6 4.75 6V21h-4v-5.5c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21h-4z"/></svg>'
 };
 
+/** Who built the site, credited in the footer of every page. */
+const DEVELOPER = {
+  name: 'Sayad Md Bayezid Hosan',
+  url: 'https://sayadbayezid'
+};
+
 const SOCIAL_LINKS = [
   { label: 'YouTube', href: 'https://youtube.com/@musfiqrfarhan', icon: 'youtube' },
   { label: 'Facebook', href: 'https://www.facebook.com/Musfiqrfarhanofficial/', icon: 'facebook' },
@@ -240,7 +246,14 @@ export function footerHtml() {
     </div>
   </div>
   <div class="footer-bottom">
-    <p>&copy; <span data-year>${new Date().getFullYear()}</span> ${esc(SITE_NAME)}. All rights reserved.</p>
+    <div>
+      <p>&copy; <span data-year>${new Date().getFullYear()}</span> ${esc(SITE_NAME)}. All rights reserved.</p>
+      <p class="footer-credit">Developed by
+        <a class="footer-credit__name" href="${esc(DEVELOPER.url)}" target="_blank" rel="noopener">${esc(
+          DEVELOPER.name
+        )}</a>
+      </p>
+    </div>
     <div class="social-row">
       ${SOCIAL_LINKS.map(
         (item) =>

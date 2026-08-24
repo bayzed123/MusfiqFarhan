@@ -35,6 +35,8 @@ async function cachedGet(path) {
 export const api = {
   request,
   home: () => cachedGet('/api/public/home'),
+  // Page views for the whole site in one call, cached — see the Worker.
+  views: () => cachedGet('/api/public/views'),
   taxonomy: () => cachedGet('/api/public/taxonomy'),
   export: () => cachedGet('/api/public/export'),
   gallery: (category = '') =>
