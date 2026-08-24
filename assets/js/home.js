@@ -13,22 +13,6 @@ import { cardMarkup, initRails, railMarkup } from './cards.js';
 import { initRatings } from './rating.js';
 import { initHomeNotes } from './love-notes.js';
 
-function aboutHeroMarkup() {
-  return `<div class="about-hero__media" aria-hidden="true"></div>
-    <div class="about-hero__inner">
-      <p class="hero__eyebrow">Official biography</p>
-      <h1 class="about-hero__title">Musfiq R Farhan</h1>
-      <div class="about-hero__copy">
-        <p>Musfiq R. Farhan is a Bangladeshi actor, radio jockey whose work moves between intimate character stories and the energy of contemporary entertainment. He is widely known to audiences as RJ Farhan, and his natok and telefilm work reaches viewers across Bangladesh and the wider Bengali-speaking world.</p>
-        <p><strong>The work</strong><br>From natok and telefilm to music videos, radio and digital storytelling, Musfiq’s work is shaped by character, rhythm and a close relationship with the audience. This official site gathers releases, posters, interviews, behind-the-scenes notes and selected archive moments in one place.</p>
-      </div>
-      <div class="about-hero__actions">
-        <a class="button button--primary" href="/about.html">Read the full story</a>
-        <a class="button button--ghost" href="/c/blog/">Explore the blog</a>
-      </div>
-    </div>`;
-}
-
 function heroMarkup(item) {
   if (!item) return '';
   const image = mediaUrl(item.image || item.og_image, SITE.fallbackImage);
@@ -101,7 +85,14 @@ export async function initHome() {
     return;
   }
 
-  render('[data-hero]', aboutHeroMarkup());
+  /*
+   * The biography hero is not re-rendered here. It holds no live data — the
+   * same fixed text, the same two buttons — so redrawing it only kept a
+   * second copy of that markup in this file, and the copies drifted: the
+   * build writes the official-accounts row into the hero, and this overwrote
+   * it the moment the API answered, so the row appeared and then vanished.
+   * The page source is the one copy now.
+   */
   if (data.featured) render('[data-featured-story]', heroMarkup(data.featured));
 
   const posterSection = $('[data-posters]');

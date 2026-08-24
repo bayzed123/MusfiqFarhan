@@ -2257,7 +2257,7 @@ body.is-sharing {
  */
 .footer-brand {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.1rem;
   padding-bottom: 1.6rem;
   margin-bottom: 2rem;
@@ -2375,10 +2375,70 @@ body.is-sharing {
   }
 }
 
+/* ------------------------------------------------------------ gallery lightbox */
+
+.lightbox__caption {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.lightbox__share {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/*
+ * The follow block under the home biography.
+ *
+ * It sits inside the hero, so it is read against the portrait behind it: the
+ * circles get a dark fill of their own rather than relying on the page
+ * background showing through, which at this point in the page is a photograph.
+ */
+.social-follow {
+  margin-top: 1.8rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.social-follow__label {
+  margin-bottom: 0.8rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .social-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.social-row--lg a {
+  width: 44px;
+  height: 44px;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(8, 9, 12, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.social-row--lg a:hover {
+  border-color: var(--gold);
+  background: rgba(8, 9, 12, 0.8);
+  transform: translateY(-2px);
+}
+
+.social-row--lg svg {
+  width: 19px;
+  height: 19px;
+}
+
+.footer-brand .social-row {
+  margin-top: 0.85rem;
 }
 
 .social-row a {
