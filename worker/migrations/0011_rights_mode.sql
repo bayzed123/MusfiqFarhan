@@ -12,3 +12,15 @@
 
 ALTER TABLE content ADD COLUMN rights_mode TEXT NOT NULL DEFAULT 'auto';
 ALTER TABLE gallery ADD COLUMN rights_mode TEXT NOT NULL DEFAULT 'auto';
+
+-- A small cache for anything fetched from Google.
+--
+-- The GA4 report covers the whole site in one call, and every post page then
+-- reads its own number out of it. Without somewhere to keep the answer, a
+-- busy hour would spend the day's API quota; with it, GA4 is asked twice an
+-- hour however many people are reading.
+CREATE TABLE IF NOT EXISTS google_cache (
+  key TEXT PRIMARY KEY,
+  payload TEXT NOT NULL,
+  fetched_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

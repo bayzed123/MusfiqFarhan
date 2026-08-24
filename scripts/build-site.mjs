@@ -104,6 +104,7 @@ ${head}
 ${schema}
 </head>
 <body${bodyAttrs}>
+  <!--shell:bodystart:start--><!--shell:bodystart:end-->
   <a class="skip-link" href="#main">Skip to main content</a>
   <!--shell:lovestrip:start--><!--shell:lovestrip:end-->
   <!--shell:header:start--><!--shell:header:end-->

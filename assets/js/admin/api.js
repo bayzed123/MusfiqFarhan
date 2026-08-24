@@ -132,6 +132,9 @@ export const adminApi = {
   patchContent: (id, payload) => request(`/api/admin/content/${id}`, { method: 'PATCH', body: payload }),
   deleteContent: (id) => request(`/api/admin/content/${id}`, { method: 'DELETE' }),
 
+  // Read-only Google data: what people searched for, and what Google holds.
+  searchQueries: (days = 28) => request(`/api/admin/search-queries?days=${days}`),
+  indexStatus: (urls) => request(`/api/admin/index-status?urls=${encodeURIComponent(urls.join(','))}`),
   listGallery: () => request('/api/admin/gallery'),
   createGalleryItem: (payload) => request('/api/admin/gallery', { method: 'POST', body: payload }),
   updateGalleryItem: (id, payload) => request(`/api/admin/gallery/${id}`, { method: 'PATCH', body: payload }),

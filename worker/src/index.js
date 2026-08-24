@@ -38,6 +38,7 @@ import { adminReviews, deleteReview, publicReviews, submitReview, updateReview }
 import { CATEGORIES, HOME_RAILS, KINDS, findCategory, findSubcategory } from '../../shared/taxonomy.js';
 import { fullSitemap } from '../../shared/sitemap.js';
 import { normaliseRightsMode } from '../../shared/rights.js';
+import { inspectUrl, pageViews, searchQueries, serviceAccount } from './lib/google.js';
 
 const HOME_RAIL_SIZE = 12;
 
@@ -114,6 +115,51 @@ async function exportAll(env) {
     note_count: notes.results.length,
     generated_at: new Date().toISOString()
   };
+}
+
+const VIEWS_CACHE_KEY = 'ga4:page-views';
+const VIEWS_CACHE_MINUTES = 30;
+
+/**
+ * Page views for the whole site, from GA4, cached in D1.
+ *
+ * The report is one call covering every path, so it is fetched for the site
+ * rather than per post: asking per post would multiply the daily quota by the
+ * size of the archive to learn nothing extra. A stale cache is served if
+ * Google is unreachable — a missing view count must never take a page down.
+ */
+async function sitePageViews(env) {
+  const cached = await env.DB.prepare('SELECT payload, fetched_at FROM google_cache WHERE key = ?')
+    .bind(VIEWS_CACHE_KEY)
+    .first();
+
+  const age = cached ? (Date.now() - new Date(`${cached.fetched_at}Z`).getTime()) / 60000 : Infinity;
+  if (cached && age < VIEWS_CACHE_MINUTES) {
+    try {
+      return JSON.parse(cached.payload);
+    } catch {
+      /* fall through and refetch */
+    }
+  }
+
+  const views = await pageViews(env);
+  if (!views) {
+    if (!cached) return null;
+    try {
+      return JSON.parse(cached.payload);
+    } catch {
+      return null;
+    }
+  }
+
+  const payload = Object.fromEntries(views);
+  await env.DB.prepare(
+    `INSERT INTO google_cache(key, payload, fetched_at) VALUES (?,?,CURRENT_TIMESTAMP)
+     ON CONFLICT(key) DO UPDATE SET payload=excluded.payload, fetched_at=CURRENT_TIMESTAMP`
+  )
+    .bind(VIEWS_CACHE_KEY, JSON.stringify(payload))
+    .run();
+  return payload;
 }
 
 async function adminMetrics(env) {
@@ -240,6 +286,19 @@ export default {
 
       if (path === '/api/public/export' && method === 'GET') {
         return json(await exportAll(env), { origin, cache: 'public, max-age=60' });
+      }
+
+      /*
+       * How many people have read each page. Cached hard at both ends: the
+       * numbers move slowly and the GA4 quota does not, so an hour of edge
+       * caching over a half-hour D1 cache costs nothing anyone would notice.
+       */
+      if (path === '/api/public/views' && method === 'GET') {
+        const views = await sitePageViews(env);
+        return json(
+          { views: views || {}, configured: Boolean(serviceAccount(env)) },
+          { origin, cache: 'public, max-age=900' }
+        );
       }
 
       if (path === '/api/public/gallery' && method === 'GET') {
@@ -382,6 +441,45 @@ export default {
             ? json(toPublicItem(updated), { origin, cache: 'no-store' })
             : fail('Content not found.', 404, origin);
         }
+      }
+
+      /*
+       * Which queries brought people here, for the composer's suggestions.
+       * Search Console rather than Trends: Trends has no official API, and
+       * this is the better answer anyway — what this site already ranks for.
+       */
+      if (path === '/api/admin/search-queries' && method === 'GET') {
+        const rows = await searchQueries(env, {
+          days: Math.min(toInt(url.searchParams.get('days'), 28), 90),
+          limit: Math.min(toInt(url.searchParams.get('limit'), 40), 100)
+        });
+        return json(
+          rows ? { queries: rows, configured: true } : { queries: [], configured: false },
+          { origin, cache: 'no-store' }
+        );
+      }
+
+      /*
+       * Whether Google has each page indexed. Read-only by necessity: the
+       * Indexing API takes JobPosting and BroadcastEvent and nothing else,
+       * so there is no supported way to submit these pages from code. The
+       * sitemap does the submitting; this reports the result.
+       */
+      if (path === '/api/admin/index-status' && method === 'GET') {
+        const wanted = clean(url.searchParams.get('urls'), 4000)
+          .split(',')
+          .map((value) => value.trim())
+          .filter(Boolean)
+          .slice(0, 12);
+        if (!wanted.length) return fail('Pass one or more urls.', 400, origin);
+
+        const results = [];
+        for (const target of wanted) {
+          // Sequentially, and capped at twelve: the quota is 2,000 a day and
+          // a burst of parallel calls is the fastest way to spend it.
+          results.push((await inspectUrl(env, target)) || { url: target, verdict: 'UNAVAILABLE' });
+        }
+        return json({ results, configured: Boolean(serviceAccount(env)) }, { origin, cache: 'no-store' });
       }
 
       if (path === '/api/admin/gallery' && method === 'GET') {

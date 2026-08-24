@@ -20,6 +20,14 @@ import {
   normalizeContent,
   toPublicItem
 } from '../worker/src/lib/content.js';
+import {
+  accessToken,
+  inspectUrl,
+  normalisePath,
+  pageViews,
+  searchQueries,
+  serviceAccount
+} from '../worker/src/lib/google.js';
 import { rightsBlock, rightsFor } from '../shared/rights.js';
 import { canonicalPair, isMirrorPair, itemInCategory, CATEGORIES } from '../shared/taxonomy.js';
 import { fullSitemap } from '../shared/sitemap.js';
@@ -173,6 +181,41 @@ test.describe('worker api contracts', () => {
     expect(theirs.sourceOrganization.name).toBe('YouTube');
     expect(theirs.isBasedOn).toBe(shared.video_url);
     expect(theirs.actor, 'he is the performer, not the owner').toBeTruthy();
+  });
+});
+
+/**
+ * The Google integration is optional by design: the site has to work with no
+ * service account configured, and has to keep working when Google is having a
+ * bad day. These pin the "switched off" and "unreachable" paths, which are the
+ * ones nobody exercises by hand.
+ */
+test.describe('google integration', () => {
+  test('everything reports itself off when no service account is set', async () => {
+    const env = {};
+    expect(serviceAccount(env), 'no account').toBeNull();
+    expect(await accessToken(env, 'scope'), 'no token, and no throw').toBe('');
+    expect(await pageViews(env), 'no analytics').toBeNull();
+    expect(await searchQueries(env), 'no query report').toBeNull();
+    expect(await inspectUrl(env, 'https://www.musfiqrfarhan.blog/'), 'no inspection').toBeNull();
+  });
+
+  test('malformed credentials are treated as absent, not as a crash', async () => {
+    expect(serviceAccount({ GOOGLE_SERVICE_ACCOUNT: 'not json' })).toBeNull();
+    expect(serviceAccount({ GOOGLE_SERVICE_ACCOUNT: '{}' }), 'no key, no account').toBeNull();
+    expect(
+      serviceAccount({ GOOGLE_SERVICE_ACCOUNT: '{"client_email":"a@b.c"}' }),
+      'half an account is no account'
+    ).toBeNull();
+  });
+
+  test('analytics paths are folded so a post has one total', () => {
+    // GA4 reports /a/b, /a/b/ and /a/b?utm=… as three rows for one page.
+    expect(normalisePath('/new-natok/tor-preme-pagol/')).toBe('/new-natok/tor-preme-pagol');
+    expect(normalisePath('/new-natok/tor-preme-pagol?utm_source=fb')).toBe('/new-natok/tor-preme-pagol');
+    expect(normalisePath('/new-natok/tor-preme-pagol#top')).toBe('/new-natok/tor-preme-pagol');
+    expect(normalisePath('new-natok/tor-preme-pagol'), 'always rooted').toBe('/new-natok/tor-preme-pagol');
+    expect(normalisePath('/'), 'the home page keeps its slash').toBe('/');
   });
 });
 

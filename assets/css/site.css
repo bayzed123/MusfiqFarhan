@@ -1605,6 +1605,16 @@ p {
   font-weight: 600;
 }
 
+/* The reading count, once Analytics has answered. */
+.meta-row .views {
+  font-variant-numeric: tabular-nums;
+}
+
+.meta-row .views::before {
+  content: '👁 ';
+  font-size: 0.9em;
+}
+
 /* --------------------------------------------------------------- sharing */
 
 .share {
@@ -2324,6 +2334,45 @@ body.is-sharing {
   border-top: 1px solid var(--line);
   font-size: 0.78rem;
   color: var(--ink-faint);
+}
+
+.footer-credit {
+  margin-top: 0.35rem;
+  color: var(--ink-faint);
+}
+
+/*
+ * The developer's name cycles through the site's own accent colours, a step a
+ * second. Written as discrete keyframe stops rather than a gradient sweep so
+ * each colour is actually shown rather than passed through, and paused for
+ * anyone who has asked the system for less motion.
+ */
+.footer-credit__name {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--brand-bright);
+  animation: credit-hue 6s steps(1, end) infinite;
+}
+
+.footer-credit__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@keyframes credit-hue {
+  0% { color: var(--brand-bright); }
+  16.66% { color: var(--gold); }
+  33.33% { color: #4fd1c5; }
+  50% { color: #b5f26d; }
+  66.66% { color: #8ab4ff; }
+  83.33% { color: #ff8ac4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-credit__name {
+    animation: none;
+    color: var(--gold);
+  }
 }
 
 .social-row {
