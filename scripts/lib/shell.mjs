@@ -48,7 +48,7 @@ export const ICONS = {
 /** Who built the site, credited in the footer of every page. */
 const DEVELOPER = {
   name: 'Sayad Md Bayezid Hosan',
-  url: 'https://sayadbayezid'
+  url: 'https://sayadbayezid.com'
 };
 
 const SOCIAL_LINKS = [

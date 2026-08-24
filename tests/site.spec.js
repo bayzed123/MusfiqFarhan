@@ -411,7 +411,7 @@ test.describe('public site', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     const credit = page.locator('.footer-credit__name');
     await expect(credit).toHaveText('Sayad Md Bayezid Hosan');
-    await expect(credit).toHaveAttribute('href', 'https://sayadbayezid');
+    await expect(credit).toHaveAttribute('href', 'https://sayadbayezid.com');
     await expect(credit).toHaveAttribute('rel', /noopener/);
 
     const animation = await credit.evaluate((node) => getComputedStyle(node).animationName);
