@@ -408,6 +408,101 @@ test.describe('public site', () => {
   });
 
   /**
+   * The official accounts are offered while someone is still reading the
+   * biography, not only at the very bottom of the page. Position is the point
+   * of this one, so it is asserted as position: below the biography, above
+   * the poster strip.
+   */
+  test('the official accounts sit under the home biography, above Poster release', async ({
+    page
+  }) => {
+    await mockPublicApi(page);
+    await page.goto('/');
+
+    const follow = page.locator('.about-hero__inner .social-follow');
+    await expect(follow).toHaveCount(1);
+    await expect(follow).toBeVisible();
+
+    // Below the biography, and still inside the hero — so whatever section
+    // comes next (the poster strip, when there are posters to show) is below
+    // it. The strip removes itself when the build has no posters, so the
+    // reference is the hero's next sibling rather than the strip by name.
+    const row = await follow.boundingBox();
+    const copy = await page.locator('.about-hero__copy').boundingBox();
+    const next = await page.locator('.about-hero ~ *').first().boundingBox();
+    expect(row.y, 'the row follows the biography').toBeGreaterThan(copy.y);
+    expect(row.y, 'the row is still inside the hero').toBeLessThan(next.y);
+    await expect(page.locator('.about-hero__inner > *').last()).toHaveClass(/social-follow/);
+
+    // Every account is a real link out, and the newest one is Pinterest.
+    await expect(follow.locator('a[href*="pinterest.com"]')).toHaveAttribute(
+      'href',
+      'https://www.pinterest.com/MusfiqRFarhanofficial/'
+    );
+    for (const link of await follow.locator('a').all()) {
+      expect(await link.getAttribute('href')).toMatch(/^https:\/\//);
+      expect(await link.getAttribute('aria-label')).toBeTruthy();
+    }
+  });
+
+  test('every page carries the official accounts, Pinterest among them', async ({ request }) => {
+    for (const path of ['/', '/about.html', '/gallery/', '/watch/', '/contact.html']) {
+      const html = await (await request.get(path)).text();
+      expect(html, `${path} links Pinterest`).toContain(
+        'https://www.pinterest.com/MusfiqRFarhanofficial/'
+      );
+      expect(html, `${path} keeps the accounts in the footer too`).toContain('footer-brand');
+    }
+
+    // The same list feeds the schema, which is how Google ties the accounts
+    // to him rather than to someone with a similar name.
+    const home = await (await request.get('/')).text();
+    const graph = JSON.parse(home.match(/<script type="application\/ld\+json">(\{"@context[\s\S]*?)<\/script>/)[1]);
+    const person = graph['@graph'].find((node) => node['@type'] === 'Person');
+    expect(person.sameAs).toContain('https://www.pinterest.com/MusfiqRFarhanofficial/');
+  });
+
+  test('a gallery photograph can be shared, and Pinterest is handed the picture', async ({
+    page
+  }) => {
+    await mockPublicApi(page);
+    // Force the in-page sheet. Where the browser has its own share dialog the
+    // page never draws one, and there would be nothing here to assert.
+    await page.addInitScript(() =>
+      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
+    );
+    await page.goto('/gallery/');
+
+    await page.locator('[data-lightbox="1"]').click();
+    await page.locator('[data-lightbox-share] [data-share-open]').click();
+
+    const sheet = page.locator('[data-share-sheet]');
+    await expect(sheet).toBeVisible();
+
+    // The dialog is in the browser's top layer and would paint over the
+    // sheet, so opening the sheet has to close it.
+    await expect(page.locator('[data-lightbox-dialog]')).toBeHidden();
+
+    // A photograph has no page of its own; the link names it by fragment.
+    const pin = decodeURIComponent(await sheet.locator('[data-share-to="pinterest"]').getAttribute('href'));
+    expect(pin).toContain('/gallery/#photo-2');
+    expect(pin, 'Pinterest pins the photograph itself, not the page').toContain(
+      '/assets/img/about_photo-828.webp'
+    );
+  });
+
+  test('following a shared photo link opens that photograph', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/gallery/#photo-2');
+    const dialog = page.locator('[data-lightbox-dialog]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('img')).toHaveAttribute(
+      'src',
+      '/assets/img/about_photo-828.webp'
+    );
+  });
+
+  /**
    * Analytics has to be on every public page or the numbers are wrong, and on
    * each of them exactly once — a second GA4 tag would count every visit twice
    * and nothing would announce it. The dashboard is excluded: it is a private
@@ -608,6 +703,44 @@ test.describe('published item pages', () => {
   async function itemPaths(request) {
     return itemPathsFrom(await (await request.get('/sitemap.xml')).text());
   }
+
+  /**
+   * Every post — a natok, a teaser, a blog piece — has to be shareable, and
+   * the button has to actually open something. The host div is in the HTML
+   * source; the sheet is drawn by share.js, so a broken import would leave a
+   * button that looks fine and does nothing.
+   */
+  test('every post can be shared, to Pinterest among the rest', async ({ page, request }) => {
+    const paths = await itemPaths(request);
+    expect(paths.length, 'no item pages were built').toBeGreaterThan(0);
+
+    for (const path of paths) {
+      const html = await (await request.get(path)).text();
+      expect(html, `${path} has no share button`).toContain('data-share');
+    }
+
+    await mockPublicApi(page);
+    await page.addInitScript(() =>
+      Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
+    );
+    await page.goto(paths[0]);
+
+    const button = page.locator('[data-share] [data-share-open]');
+    await expect(button).toBeVisible();
+    await button.click();
+
+    const sheet = page.locator('[data-share-sheet]');
+    await expect(sheet).toBeVisible();
+    for (const to of ['facebook', 'whatsapp', 'telegram', 'x', 'linkedin', 'pinterest', 'email']) {
+      await expect(sheet.locator(`[data-share-to="${to}"]`)).toBeVisible();
+    }
+
+    // What gets sent is the canonical URL, not whatever was in the address bar.
+    const href = decodeURIComponent(
+      await sheet.locator('[data-share-to="facebook"]').getAttribute('href')
+    );
+    expect(href).toContain(`https://www.musfiqrfarhan.blog${paths[0]}`);
+  });
 
   test('every item page carries its own canonical, meta and social tags', async ({ request }) => {
     const paths = await itemPaths(request);

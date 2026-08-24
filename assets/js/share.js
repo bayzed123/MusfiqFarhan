@@ -34,7 +34,7 @@ const ICONS = {
   reddit:
     '<path d="M22 12a2 2 0 0 0-3.4-1.4 10 10 0 0 0-5-1.4l.9-4 2.8.6a1.7 1.7 0 1 0 .2-1.4l-3.5-.8a.7.7 0 0 0-.8.5l-1.1 5.1a10 10 0 0 0-5 1.4A2 2 0 1 0 4 14.8a4 4 0 0 0 0 .6c0 3 3.6 5.4 8 5.4s8-2.4 8-5.4a4 4 0 0 0 0-.6c.6-.4 1-1 1-1.8zM8 14a1.4 1.4 0 1 1 2.8 0A1.4 1.4 0 0 1 8 14zm7.9 4a5.7 5.7 0 0 1-3.9 1.1A5.7 5.7 0 0 1 8.1 18a.5.5 0 0 1 .7-.7 4.8 4.8 0 0 0 3.2.9 4.8 4.8 0 0 0 3.2-.9.5.5 0 0 1 .7.7zm-.3-2.6a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8z"/>',
   pinterest:
-    '<path d="M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.5 1.8-2.5.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.7 0-2.4-1.8-4.1-4.3-4.1a4.4 4.4 0 0 0-4.6 4.4c0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.1c0 .2-.1.2-.3.1-1.3-.6-2-2.4-2-3.9 0-3.2 2.3-6.1 6.7-6.1 3.5 0 6.2 2.5 6.2 5.8 0 3.5-2.2 6.3-5.2 6.3-1 0-2-.5-2.3-1.2l-.6 2.4c-.2.9-.8 2-1.2 2.6A10 10 0 1 0 12 2z"/>',
+    '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.43 7.63 11.17-.11-.95-.2-2.4.04-3.44.22-.94 1.4-5.96 1.4-5.96s-.36-.72-.36-1.78c0-1.67.97-2.92 2.17-2.92 1.02 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-1 4-.28 1.19.6 2.16 1.78 2.16 2.13 0 3.77-2.25 3.77-5.49 0-2.87-2.06-4.88-5.01-4.88-3.41 0-5.42 2.56-5.42 5.2 0 1.04.4 2.14.9 2.74a.36.36 0 0 1 .08.35l-.34 1.36c-.05.22-.17.27-.4.16-1.5-.7-2.43-2.89-2.43-4.65 0-3.79 2.75-7.27 7.93-7.27 4.16 0 7.4 2.97 7.4 6.93 0 4.14-2.61 7.47-6.23 7.47-1.21 0-2.36-.64-2.75-1.38l-.75 2.85c-.27 1.05-1 2.35-1.49 3.15 1.12.35 2.31.53 3.55.53 6.63 0 12-5.37 12-12S18.63 0 12 0z"/>',
   email:
     '<path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.2-8 5-8-5V6l8 5 8-5v2.2z"/>',
   link: '<path d="M10.6 13.4a1 1 0 0 1 0-1.4l1.4-1.4a1 1 0 0 1 1.4 1.4l-1.4 1.4a1 1 0 0 1-1.4 0zM7.8 16.2a4 4 0 0 1 0-5.7l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a2 2 0 0 0 2.8 2.8l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a4 4 0 0 1-5.6 0zm8.4-8.4a4 4 0 0 1 0 5.7l-2.1 2.1a1 1 0 0 1-1.4-1.4l2.1-2.1a2 2 0 0 0-2.8-2.8L9.9 11.4A1 1 0 0 1 8.5 10l2.1-2.1a4 4 0 0 1 5.6 0z"/>',
@@ -104,7 +104,7 @@ function sheetMarkup(share) {
   </div>`;
 }
 
-function openSheet(share) {
+export function openShareSheet(share) {
   const host = document.createElement('div');
   host.innerHTML = sheetMarkup(share);
   const sheet = host.firstElementChild;
@@ -149,6 +149,34 @@ function openSheet(share) {
   $('[data-share-close]', sheet)?.focus();
 }
 
+/**
+ * Share one thing — a post, or a single photograph from the gallery.
+ *
+ * On a phone the built-in sheet reaches apps a web page cannot — Messenger,
+ * Instagram, the SMS app — so it is offered first where it exists. Dismissing
+ * it is not a failure to recover from, it is a decision, so an AbortError
+ * ends here rather than falling through to our own list; any other error
+ * means the native sheet never opened, and then our list is the fallback.
+ */
+export async function shareThis(share) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: share.title, url: share.url });
+      return;
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+    }
+  }
+  openShareSheet(share);
+}
+
+/** The markup for a share button, so every caller gets the same one. */
+export function shareButtonHtml(label = 'Share') {
+  return `<button class="button button--ghost share__button" type="button" data-share-open>
+      ${icon('share')} ${esc(label)}
+    </button>`;
+}
+
 export function initShare() {
   for (const host of $$('[data-share]')) {
     if (host.dataset.shareReady) continue;
@@ -160,25 +188,11 @@ export function initShare() {
       image: pageImage()
     };
 
-    host.innerHTML = `<button class="button button--ghost share__button" type="button" data-share-open>
-      ${icon('share')} Share
-    </button>`;
+    host.innerHTML = shareButtonHtml();
 
-    on(host, 'click', async (event) => {
+    on(host, 'click', (event) => {
       if (!event.target.closest('[data-share-open]')) return;
-
-      // On a phone the built-in sheet reaches apps a web page cannot —
-      // Messenger, Instagram, the SMS app — so offer it first where it
-      // exists, and fall back to our own list if it is dismissed.
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: share.title, url: share.url });
-          return;
-        } catch (error) {
-          if (error?.name === 'AbortError') return;
-        }
-      }
-      openSheet(share);
+      shareThis(share);
     });
   }
 }

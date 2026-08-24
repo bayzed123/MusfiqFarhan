@@ -42,7 +42,10 @@ export const ICONS = {
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-1.7-.1a13 13 0 0 1-5.6-4.9c-.4-.6-.9-1.5-.9-2.4 0-.9.5-1.4.7-1.6.2-.2.4-.3.6-.3h.5c.2 0 .4 0 .6.5l.7 1.7c.1.2.1.4 0 .6l-.4.5c-.1.2-.3.3-.1.6a9 9 0 0 0 3.8 3.1c.3.1.5.1.6 0l.8-.9c.2-.2.4-.2.6-.1l1.6.8c.2.1.4.2.4.3.1.1.1.6 0 1z"/></svg>',
   imdb: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6h20v12H2zm2.6 2.4v7.2h1.6V8.4zm3 0v7.2h1.4v-4l.7 4h1l.7-4.1v4.1h1.4V8.4h-2.1l-.5 3-.5-3zm6.4 0v7.2h2.3c1.1 0 1.7-.5 1.7-1.6v-4c0-1.1-.6-1.6-1.7-1.6zm1.6 1.2h.3c.3 0 .5.1.5.5v3.8c0 .4-.2.5-.5.5h-.3z"/></svg>',
   linkedin:
-    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zm7 0h3.8v1.7h.05a4.2 4.2 0 0 1 3.75-2c4 0 4.75 2.6 4.75 6V21h-4v-5.5c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21h-4z"/></svg>'
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zm7 0h3.8v1.7h.05a4.2 4.2 0 0 1 3.75-2c4 0 4.75 2.6 4.75 6V21h-4v-5.5c0-1.3 0-3-1.85-3s-2.1 1.4-2.1 2.9V21h-4z"/></svg>',
+  // Pinterest's own mark — the script "P" inside the round badge.
+  pinterest:
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.08 3.16 9.43 7.63 11.17-.11-.95-.2-2.4.04-3.44.22-.94 1.4-5.96 1.4-5.96s-.36-.72-.36-1.78c0-1.67.97-2.92 2.17-2.92 1.02 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-1 4-.28 1.19.6 2.16 1.78 2.16 2.13 0 3.77-2.25 3.77-5.49 0-2.87-2.06-4.88-5.01-4.88-3.41 0-5.42 2.56-5.42 5.2 0 1.04.4 2.14.9 2.74a.36.36 0 0 1 .08.35l-.34 1.36c-.05.22-.17.27-.4.16-1.5-.7-2.43-2.89-2.43-4.65 0-3.79 2.75-7.27 7.93-7.27 4.16 0 7.4 2.97 7.4 6.93 0 4.14-2.61 7.47-6.23 7.47-1.21 0-2.36-.64-2.75-1.38l-.75 2.85c-.27 1.05-1 2.35-1.49 3.15 1.12.35 2.31.53 3.55.53 6.63 0 12-5.37 12-12S18.63 0 12 0z"/></svg>'
 };
 
 /**
@@ -59,15 +62,51 @@ const DEVELOPER = {
   url: 'https://sayadbayezid.com'
 };
 
+/**
+ * The official accounts, in one list.
+ *
+ * This is the only place a profile URL is written down. The row on the page
+ * is built from it, and so is the `sameAs` array in the Person and
+ * Organization schema — which is how Google ties these accounts to him
+ * rather than to someone with a similar name. Adding an account here puts it
+ * in both without touching anything else.
+ */
 const SOCIAL_LINKS = [
   { label: 'YouTube', href: 'https://youtube.com/@musfiqrfarhan', icon: 'youtube' },
   { label: 'Facebook', href: 'https://www.facebook.com/Musfiqrfarhanofficial/', icon: 'facebook' },
   { label: 'Instagram', href: 'https://www.instagram.com/musfiqfarhan', icon: 'instagram' },
+  {
+    label: 'Pinterest',
+    href: 'https://www.pinterest.com/MusfiqRFarhanofficial/',
+    icon: 'pinterest'
+  },
   { label: 'X', href: X_PROFILE, icon: 'x' },
   { label: 'WhatsApp channel', href: WHATSAPP_CHANNEL, icon: 'whatsapp' },
   { label: 'IMDb', href: 'https://www.imdb.com/name/nm11068428/bio/', icon: 'imdb' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/musfiqrfarhanofficial', icon: 'linkedin' }
 ];
+
+/** The icon row itself, so the hero and the footer cannot drift apart. */
+function socialLinksHtml() {
+  return SOCIAL_LINKS.map(
+    (item) =>
+      `<a href="${item.href}" target="_blank" rel="noopener" aria-label="${esc(
+        item.label
+      )}" title="${esc(item.label)}">${ICONS[item.icon]}</a>`
+  ).join('');
+}
+
+/**
+ * The follow block on the home page, written in directly after the biography
+ * so the accounts are offered while someone is still reading about him,
+ * rather than only at the very bottom of the page.
+ */
+export function socialFollowHtml() {
+  return `<div class="social-follow">
+  <p class="social-follow__label">Follow the official accounts</p>
+  <div class="social-row social-row--lg">${socialLinksHtml()}</div>
+</div>`;
+}
 
 /** The love-note ticker. JS swaps in live notes; this seed keeps the bar stable. */
 export function loveStripHtml() {
@@ -233,6 +272,7 @@ export function footerHtml() {
       <p class="footer-brand__name">${esc(PERSON_NAME).toUpperCase()}</p>
       <p class="footer-brand__tag">OFFICIAL</p>
       <p class="footer-brand__line">Actor &middot; Radio jockey &middot; Storyteller &mdash; Dhaka, Bangladesh</p>
+      <div class="social-row">${socialLinksHtml()}</div>
     </div>
   </div>
   <div class="footer-grid">
@@ -261,12 +301,6 @@ export function footerHtml() {
           DEVELOPER.name
         )}</a>
       </p>
-    </div>
-    <div class="social-row">
-      ${SOCIAL_LINKS.map(
-        (item) =>
-          `<a href="${item.href}" target="_blank" rel="noopener" aria-label="${esc(item.label)}">${ICONS[item.icon]}</a>`
-      ).join('')}
     </div>
   </div>
 </footer>`;
@@ -407,6 +441,7 @@ export const SHELL_REGIONS = {
   schema: siteSchemaHtml,
   lovestrip: loveStripHtml,
   header: headerHtml,
+  social: socialFollowHtml,
   cta: ctaHtml,
   footer: footerHtml
 };
