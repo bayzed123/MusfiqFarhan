@@ -1003,14 +1003,30 @@ test.describe('published item pages', () => {
     const paths = await itemPaths(request);
     test.skip(!paths.length, 'this build has no published posts');
     const path = paths[0];
-    const bare = path.replace(/\/+$/, '') || '/';
+
+    /*
+     * The count is looked up by the path of the item the page renders, which
+     * is not always the path in the address bar: the deploy builds from the
+     * live API, so this walks a real post, and mockPublicApi answers an
+     * unknown slug with the first fixture item instead. Stub a count for
+     * every path either could resolve to, rather than guessing which.
+     */
+    const fixture = JSON.parse(
+      readFileSync(new URL('../scripts/fixtures/sample-export.json', import.meta.url), 'utf8')
+    );
+    const views = Object.fromEntries(
+      [path, ...fixture.items.map((item) => item.path)].map((value) => [
+        String(value).replace(/\/+$/, '') || '/',
+        12345
+      ])
+    );
 
     await mockPublicApi(page);
     await page.route('**/api/public/views', (route) =>
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ views: { [bare]: 12345 }, configured: true })
+        body: JSON.stringify({ views, configured: true })
       })
     );
     await page.goto(path, { waitUntil: 'networkidle' });
