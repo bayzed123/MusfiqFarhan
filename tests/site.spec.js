@@ -227,6 +227,34 @@ test.describe('public site', () => {
     await expect(page.locator('.vcard')).toHaveCount(0);
   });
 
+  /**
+   * The full-size trigger is a transparent button stretched over each photo.
+   * Left unstyled the browser paints it grey with an outset border, which hid
+   * every image on the page behind a rectangle — the picture only appeared
+   * once the lightbox opened, so nothing about the markup looked wrong.
+   */
+  test('the gallery shows its photographs rather than covering them', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/gallery/', { waitUntil: 'networkidle' });
+
+    const figure = page.locator('.figure').first();
+    await expect(figure).toBeVisible();
+    await expect(figure.locator('img')).toHaveAttribute('src', /\S/);
+    expect(
+      await figure.locator('img').evaluate((node) => node.naturalWidth),
+      'the photograph decoded'
+    ).toBeGreaterThan(0);
+
+    const overlay = await figure.locator('.card__link').evaluate((node) => {
+      const style = getComputedStyle(node);
+      return { background: style.backgroundColor, border: style.borderTopStyle };
+    });
+    expect(overlay.background, 'the hit area must not paint over the photo').toMatch(
+      /rgba\(0, 0, 0, 0\)|transparent/
+    );
+    expect(overlay.border, 'nor draw a border over it').toBe('none');
+  });
+
   test('the mobile drawer opens and expands a category', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 780 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -1208,7 +1236,13 @@ async function mockPublicApi(page) {
   await page.route('**/api/public/**', (route) => {
     const path = new URL(route.request().url()).pathname;
     const slug = path.split('/').filter(Boolean).pop();
-    const body = path.endsWith('/marquee')
+    // /api/public/gallery answers with the gallery rows under `items`, not
+    // under `gallery`. Returning the content list here instead painted the
+    // gallery with posts that have no image_url, so every figure came out
+    // blank and the page's own rendering went untested.
+    const body = path.endsWith('/gallery')
+      ? { items: fixture.gallery }
+      : path.endsWith('/marquee')
       ? { notes: fixture.notes, count: fixture.notes.length }
       : path.endsWith('/love-notes')
         ? { notes: fixture.notes, count: fixture.notes.length, hearts: 0 }

@@ -112,6 +112,19 @@ textarea {
   color: inherit;
 }
 
+/*
+ * A button with no styling of its own is not invisible: the browser paints it
+ * grey with a 2px outset border. The gallery's full-size trigger is exactly
+ * that — a transparent hit area stretched over the photo — and it covered
+ * every image on the page with a grey rectangle, which is why the pictures
+ * only appeared once the lightbox opened. Every other button here sets its
+ * own background and border, so they are unaffected by this reset.
+ */
+button {
+  background: none;
+  border: 0;
+}
+
 h1,
 h2,
 h3,

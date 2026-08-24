@@ -71,6 +71,12 @@ textarea {
   color: inherit;
 }
 
+/* An unstyled button paints itself grey with an outset border. See site.css. */
+button {
+  background: none;
+  border: 0;
+}
+
 a {
   color: var(--brand-bright);
 }
