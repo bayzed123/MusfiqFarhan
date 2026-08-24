@@ -6,6 +6,7 @@
  * paint fast and avoids third-party scripts on load.
  */
 
+import { rightsBlock } from '../../shared/rights.js';
 import { isVideoItem, videoSchema } from '../../shared/video.js';
 import { api } from './api.js';
 import { SITE } from './config.js';
@@ -112,6 +113,7 @@ function structuredData(item) {
       dateModified: item.modified_at || item.published_at,
       author: { '@id': `${SITE.origin}/#person` },
       publisher: { '@id': `${SITE.origin}/#organization` },
+      ...rightsBlock(item, SITE.origin),
       mainEntityOfPage: url,
       inLanguage: 'en'
     });

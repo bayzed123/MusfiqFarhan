@@ -255,6 +255,32 @@ test.describe('public site', () => {
     expect(overlay.border, 'nor draw a border over it').toBe('none');
   });
 
+  /**
+   * Google's licence badge in image search reads `license` and
+   * `acquireLicensePage` off the image itself — a sitemap cannot carry
+   * either, so the gallery has to describe its own photographs.
+   */
+  test('gallery photographs say who owns them', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/gallery/', { waitUntil: 'networkidle' });
+
+    const schema = await page.evaluate(() => {
+      const node = document.getElementById('gallery-schema');
+      return node ? JSON.parse(node.textContent) : null;
+    });
+    expect(schema, 'the gallery describes its images').toBeTruthy();
+    expect(schema['@type']).toBe('ImageGallery');
+    expect(schema.image.length).toBeGreaterThan(0);
+
+    for (const image of schema.image) {
+      expect(image['@type']).toBe('ImageObject');
+      expect(image.contentUrl, 'contentUrl').toMatch(/^https:\/\//);
+      expect(image.name, 'name').not.toBe('');
+      expect(image.license, 'license').toContain('/terms-of-service.html');
+      expect(image.acquireLicensePage, 'acquireLicensePage').toContain('/contact.html');
+    }
+  });
+
   test('the mobile drawer opens and expands a category', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 780 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -790,6 +816,40 @@ test.describe('published item pages', () => {
   });
 
   /**
+   * The "Original work" switch on the composer. Ticked, the page claims the
+   * copyright and points at the licence; unticked, it says nothing — a still
+   * or a press piece published here with permission is not ours to license,
+   * and claiming otherwise on every page would be a false statement at scale.
+   */
+  test('the licence appears only on work marked original', async ({ request }) => {
+    const readEntity = (html) =>
+      [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)]
+        .flatMap((match) => {
+          const parsed = JSON.parse(match[1]);
+          return parsed['@graph'] || [parsed];
+        })
+        .find((node) => node['@type'] === 'VideoObject' || node['@type'] === 'Article');
+
+    const owned = await request.get('/blog/icche-dana-production-credits-explained/');
+    const borrowed = await request.get('/press/press-feature-noindex/');
+    test.skip(!owned.ok() || !borrowed.ok(), 'the licensing fixture items are not in this build');
+
+    const claimed = readEntity(await owned.text());
+    expect(claimed.license, 'licence url').toContain('/terms-of-service.html#copyright');
+    expect(claimed.acquireLicensePage, 'where to ask').toContain('/contact.html');
+    expect(claimed.copyrightHolder, 'copyright holder').toBeTruthy();
+    expect(claimed.creditText, 'credit line').toContain('Musfiq R. Farhan');
+    expect(typeof claimed.copyrightYear, 'copyright year is a number').toBe('number');
+
+    const unclaimed = readEntity(await borrowed.text());
+    for (const field of ['license', 'acquireLicensePage', 'copyrightHolder', 'creditText']) {
+      expect(unclaimed[field], `${field} must be absent when not original`).toBeUndefined();
+    }
+    // The page is still described — only the ownership claim is withheld.
+    expect(unclaimed.author, 'authorship still stated').toBeTruthy();
+  });
+
+  /**
    * The page is served pre-rendered and then re-rendered from the API. If the
    * two disagree about a video, whichever Google saw last is the one it keeps.
    */
@@ -1222,6 +1282,50 @@ test.describe('dashboard', () => {
     await page.fill('#c-title', 'Doob Official Teaser 2026 (updated)');
     await expect(page.locator('#c-seo-title')).toHaveValue('My own title');
   });
+
+  /**
+   * The switch that decides whether a page claims the copyright. An unticked
+   * checkbox is simply absent from FormData and the API reads a missing flag
+   * as "yes", so the state has to be sent explicitly — otherwise unticking
+   * silently does nothing and every page claims a licence.
+   */
+  test('the original-work switch reaches the API in both positions', async ({ page }) => {
+    const sent = [];
+    await mockAdminApi(page, sent);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="compose"]');
+
+    const licensed = page.locator('input[name="licensed"]');
+    await expect(licensed, 'new items claim the licence by default').toBeChecked();
+
+    const save = async (title, original) => {
+      await page.click('[data-composer-reset]');
+      await page.click('[data-kind="blog"]');
+      await page.fill('#c-title', title);
+      await page.fill('#c-description', 'Something to publish.');
+      await page.fill('#c-image', '/assets/img/hero_red-1280.webp');
+      await page.locator('input[name="licensed"]').setChecked(original);
+      sent.length = 0;
+      await page.click('[data-composer-form] button[type=submit]');
+      await expect
+        .poll(() => sent.filter((call) => call.method === 'POST' && call.path === '/api/admin/content').length)
+        .toBe(1);
+      return sent.find((call) => call.method === 'POST' && call.path === '/api/admin/content').body;
+    };
+
+    expect((await save('A piece someone else owns', false)).licensed).toBe(0);
+    expect((await save('A piece we made', true)).licensed).toBe(1);
+  });
+
+  test('editing an item restores the switch it was saved with', async ({ page }) => {
+    await mockAdminApi(page);
+    await signIn(page);
+
+    await page.click('.nav-btn[data-view="content"]');
+    await page.locator('.row', { hasText: 'Press feature kept out of search' }).getByText('Edit').click();
+    await expect(page.locator('input[name="licensed"]'), 'the unticked state survives a round trip')
+      .not.toBeChecked();
+  });
 });
 
 /**
@@ -1291,6 +1395,13 @@ async function mockAdminApi(page, sent = []) {
       path: '/behind-the-scenes/studio-notes/', category: 'Behind the Scenes',
       subcategory: 'Studio Notes', image: '', published: 0, indexable: 1,
       published_at: '2026-04-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
+    },
+    // Published with permission rather than owned, so it claims no licence.
+    {
+      id: 3, type: 'post', kind: 'blog', title: 'Press feature kept out of search',
+      slug: 'press-feature-noindex', path: '/press/press-feature-noindex/', category: 'Press',
+      subcategory: 'Recent Releases', image: '', published: 1, indexable: 0, licensed: 0,
+      published_at: '2026-03-01T00:00:00Z', meta_description: '', keywords: '', sort_order: 0
     }
   ];
   let media = [

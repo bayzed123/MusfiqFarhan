@@ -18,6 +18,7 @@
  * - `duration` must be ISO 8601. Editors type "42:10", which is not.
  */
 
+import { rightsBlock } from './rights.js';
 import {
   PERSON_NAME,
   SITE_ORIGIN,
@@ -26,10 +27,6 @@ import {
   embedUrlFor,
   isDirectVideo
 } from './urls.js';
-
-/** Where the site states who owns its media and how to ask for a copy. */
-export const LICENSE_URL = '/terms-of-service.html#copyright';
-export const ACQUIRE_LICENSE_URL = '/contact.html';
 
 const FALLBACK_THUMBNAIL = '/assets/img/og-card.jpg';
 
@@ -110,10 +107,8 @@ export function videoFacts(item, origin = SITE_ORIGIN) {
 }
 
 /**
- * The VideoObject for an item page. Carries the rights block as well as the
- * required fields: this archive publishes Musfiq R. Farhan's own work, and the
- * markup should say who owns it and where to ask for it rather than leaving a
- * search engine to guess.
+ * The VideoObject for an item page. The rights half of it appears only when
+ * the editor has marked the item original — see shared/rights.js.
  */
 export function videoSchema(item, origin = SITE_ORIGIN) {
   const facts = videoFacts(item, origin);
@@ -130,14 +125,9 @@ export function videoSchema(item, origin = SITE_ORIGIN) {
     inLanguage: 'bn',
     isFamilyFriendly: true,
     isAccessibleForFree: true,
-    creator: { '@id': `${origin}/#person` },
     author: { '@id': `${origin}/#person` },
     publisher: { '@id': `${origin}/#organization` },
-    copyrightHolder: { '@id': `${origin}/#person` },
-    copyrightYear: facts.year ? Number(facts.year) : undefined,
-    creditText: `${PERSON_NAME} Official`,
-    license: `${origin}${LICENSE_URL}`,
-    acquireLicensePage: `${origin}${ACQUIRE_LICENSE_URL}`,
+    ...rightsBlock(item, origin),
     mainEntityOfPage: facts.canonical
   };
 }

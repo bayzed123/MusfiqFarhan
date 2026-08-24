@@ -206,6 +206,8 @@ function galleryPayload(body) {
     subcategory: findSubcategory(category, body.subcategory) || '',
     caption: clean(body.caption, 240),
     published: body.published === 0 || body.published === false ? 0 : 1,
+    // Unticked means "not ours to license" — see shared/rights.js.
+    licensed: body.licensed === 0 || body.licensed === false ? 0 : 1,
     sortOrder: toInt(body.sort_order, 0)
   };
 }
@@ -393,8 +395,8 @@ export default {
         const payload = galleryPayload(await readJson(request));
         if (payload.error) return fail(payload.error, 400, origin);
         const row = await env.DB.prepare(
-          `INSERT INTO gallery(title, slug, image_url, alt_text, category, caption, published, sort_order, updated_at)
-           VALUES (?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *`
+          `INSERT INTO gallery(title, slug, image_url, alt_text, category, caption, published, licensed, sort_order, updated_at)
+           VALUES (?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING *`
         )
           .bind(
             payload.title,
@@ -404,6 +406,7 @@ export default {
             payload.category,
             payload.caption,
             payload.published,
+            payload.licensed,
             payload.sortOrder
           )
           .first();
@@ -422,7 +425,7 @@ export default {
           if (payload.error) return fail(payload.error, 400, origin);
           const row = await env.DB.prepare(
             `UPDATE gallery SET title=?, slug=?, image_url=?, alt_text=?, category=?, caption=?,
-             published=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *`
+             published=?, licensed=?, sort_order=?, updated_at=CURRENT_TIMESTAMP WHERE id=? RETURNING *`
           )
             .bind(
               payload.title,
@@ -432,6 +435,7 @@ export default {
               payload.category,
               payload.caption,
               payload.published,
+              payload.licensed,
               payload.sortOrder,
               id
             )

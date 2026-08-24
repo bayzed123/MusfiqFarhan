@@ -173,6 +173,8 @@ export function composerMarkup() {
           <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin:1.1rem 0">
             <label class="switch"><input type="checkbox" name="published" checked> Published</label>
             <label class="switch"><input type="checkbox" name="indexable" checked> Allow search engines</label>
+            <label class="switch" title="Adds the copyright holder, credit and licence to this page's markup, so search engines treat this site as the source. Untick for anything published here with permission but owned by someone else."><input
+              type="checkbox" name="licensed" checked> Original work &mdash; add licence</label>
           </div>
 
           <div style="display:flex;gap:.6rem;flex-wrap:wrap">
@@ -297,6 +299,7 @@ function readForm(form) {
   const values = Object.fromEntries(new FormData(form));
   values.published = form.published.checked ? 1 : 0;
   values.indexable = form.indexable.checked ? 1 : 0;
+  values.licensed = form.licensed.checked ? 1 : 0;
   values.sort_order = Number(values.sort_order || 0);
   if (values.published_at) values.published_at = new Date(values.published_at).toISOString();
   return values;
@@ -389,6 +392,7 @@ export function fillComposer(root, item = null) {
   form.keywords.value = item.keywords || '';
   form.published.checked = Number(item.published) === 1;
   form.indexable.checked = Number(item.indexable) !== 0;
+  form.licensed.checked = Number(item.licensed ?? 1) !== 0;
   if (item.kind) {
     root.querySelector(`[data-kind="${CSS.escape(item.kind)}"]`)?.classList.add('is-active');
   }
@@ -427,6 +431,7 @@ async function save(root, { asDraft = false } = {}) {
         category: values.category,
         subcategory: values.subcategory,
         published: values.published,
+        licensed: values.licensed,
         sort_order: values.sort_order
       });
       toast(values.published ? 'Added to the gallery.' : 'Saved as a gallery draft.');

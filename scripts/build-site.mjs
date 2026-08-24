@@ -36,6 +36,7 @@ import {
   hasCategoryHub
 } from '../shared/urls.js';
 import { fullSitemap } from '../shared/sitemap.js';
+import { rightsBlock } from '../shared/rights.js';
 import { videoSchema } from '../shared/video.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -193,6 +194,7 @@ function contentSchema({ item, canonical, title, description, image, isVideo }) 
         dateModified: item.modified_at || item.published_at,
         author: { '@id': `${SITE_ORIGIN}/#person` },
         publisher: { '@id': `${SITE_ORIGIN}/#organization` },
+        ...rightsBlock(item, SITE_ORIGIN),
         mainEntityOfPage: canonical,
         inLanguage: 'en'
       };

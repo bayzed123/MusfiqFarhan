@@ -11,7 +11,15 @@ import { expect, test } from '@playwright/test';
 
 import { adminNotes } from '../worker/src/lib/notes.js';
 import { adminReviews } from '../worker/src/lib/reviews.js';
-import { listPublished } from '../worker/src/lib/content.js';
+import {
+  CONTENT_COLUMNS,
+  INSERT_SQL,
+  UPDATE_SQL,
+  bindValues,
+  listPublished,
+  normalizeContent,
+  toPublicItem
+} from '../worker/src/lib/content.js';
 import { canonicalPair, isMirrorPair, itemInCategory, CATEGORIES } from '../shared/taxonomy.js';
 import { fullSitemap } from '../shared/sitemap.js';
 import { categoryUrl } from '../shared/urls.js';
@@ -92,6 +100,43 @@ test.describe('worker api contracts', () => {
     // c.category alone left /c/eid-special/ empty however much was published.
     expect(query.sql).toContain('c.category = ? OR c.subcategory = ?');
     expect(query.bindings.slice(0, 2)).toEqual(['Eid Special', 'Eid Special']);
+  });
+
+  /**
+   * The rights switch is only as good as its round trip. A column left out of
+   * the SELECT list, or a value left out of the bindings, would leave the
+   * dashboard showing a tick that the database never stored.
+   */
+  test('the rights switch survives the trip to the database and back', () => {
+    expect(CONTENT_COLUMNS, 'licensed is selected').toContain('licensed');
+
+    // The bindings are positional: one value per ? in the statement, in order.
+    for (const sql of [INSERT_SQL, UPDATE_SQL]) {
+      const columns = sql.match(/\blicensed\b/g);
+      expect(columns, 'licensed is written').not.toBeNull();
+    }
+
+    const base = {
+      type: 'post',
+      category: 'Blog',
+      image: '/assets/img/og-card.jpg',
+      description: 'Something to publish.'
+    };
+    const owned = normalizeContent({ ...base, title: 'Ours' });
+    const borrowed = normalizeContent({ ...base, title: 'Theirs', licensed: 0 });
+    expect(owned.error, owned.error).toBeUndefined();
+    expect(owned.licensed, 'unset means ours').toBe(1);
+    expect(borrowed.licensed, 'an explicit 0 is respected').toBe(0);
+
+    // One binding per placeholder, and the flag among them.
+    const values = bindValues(borrowed);
+    expect(values.length, 'a binding for every ?').toBe((INSERT_SQL.match(/\?/g) || []).length);
+    expect(values).toContain(0);
+
+    // And it comes back out typed, defaulting to licensed for rows written
+    // before the column existed.
+    expect(toPublicItem({ licensed: 0, published: 1, indexable: 1 }).licensed).toBe(0);
+    expect(toPublicItem({ published: 1, indexable: 1 }).licensed).toBe(1);
   });
 });
 
