@@ -10,9 +10,10 @@
     "serve": "npx --yes http-server . -p 4173 -c-1",
     "test": "playwright test",
     "test:routing": "node scripts/test-routing.mjs",
+    "test:workflows": "node scripts/test-workflows.mjs",
     "test:love-notes": "node scripts/test-love-notes.mjs",
     "test:admin-media": "node scripts/test-admin-media-routing.mjs",
-    "verify": "npm run build:fixture && npm run test:routing && npm run test:love-notes && npm run test:admin-media && playwright test",
+    "verify": "npm run build:fixture && npm run test:workflows && npm run test:routing && npm run test:love-notes && npm run test:admin-media && playwright test",
     "test:live": "PLAYWRIGHT_BASE_URL=https://www.musfiqrfarhan.blog playwright test",
     "deploy:worker": "wrangler deploy --config wrangler.toml",
     "migrate": "wrangler d1 migrations apply MRF-API --remote --config wrangler.toml"

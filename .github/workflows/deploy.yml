@@ -106,6 +106,9 @@ jobs:
 
       # Verify taxonomy routing before the browser suite. A mismatch here
       # must block publication rather than silently misfile an item.
+      - name: Verify the workflow files
+        run: node scripts/test-workflows.mjs
+
       - name: Verify canonical content routing
         run: node scripts/test-routing.mjs
 
