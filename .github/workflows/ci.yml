@@ -37,6 +37,11 @@ jobs:
       # The same checks the deploy runs, in the same order. Without these a
       # pull request went green and the deploy that followed it failed on a
       # routing assertion no PR check covered — twice.
+      # The deploy workflow is only evaluated when it is pushed, so a break in
+      # it passes every check here and lands on main. One did.
+      - name: Verify the workflow files
+        run: node scripts/test-workflows.mjs
+
       - name: Verify canonical content routing
         run: node scripts/test-routing.mjs
 

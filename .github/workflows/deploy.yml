@@ -56,16 +56,30 @@ jobs:
 
       # The service account reads Analytics and Search Console. It lives as a
       # GitHub secret, but the Worker is what calls Google, so it has to be
-      # copied across — a browser can never hold a private key. Skipped
-      # silently when the secret is not set, so the deploy works without it
-      # and the features simply report themselves as not connected.
+      # copied across — a browser can never hold a private key.
+      #
+      # The secret is read through `env` rather than interpolated into the
+      # script, for two reasons. `secrets` is not one of the contexts allowed
+      # in a step's `if`, and using it there is not ignored: it fails the whole
+      # workflow before a single job starts. And the value is a JSON document
+      # with quotes and newlines in it, which pasted straight into a shell
+      # command line would not survive intact.
       - name: Configure Google read-only access
-        if: ${{ secrets.GOOGLE_SERVICE_ACCOUNT != '' }}
         run: |
-          printf '%s' '${{ secrets.GOOGLE_SERVICE_ACCOUNT }}' | npx --yes wrangler@4 secret put GOOGLE_SERVICE_ACCOUNT --config ../wrangler.toml
-          printf '%s' '${{ secrets.GA4_PROPERTY_ID }}' | npx --yes wrangler@4 secret put GA4_PROPERTY_ID --config ../wrangler.toml
+          if [ -z "$GOOGLE_SERVICE_ACCOUNT" ]; then
+            echo "No Google service account set; skipping. Analytics and Search Console will report as not connected."
+            exit 0
+          fi
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT" | npx --yes wrangler@4 secret put GOOGLE_SERVICE_ACCOUNT --config ../wrangler.toml
+          if [ -n "$GA4_PROPERTY_ID" ]; then
+            printf '%s' "$GA4_PROPERTY_ID" | npx --yes wrangler@4 secret put GA4_PROPERTY_ID --config ../wrangler.toml
+          else
+            echo "No GA4 property id set; view counts will stay hidden."
+          fi
         working-directory: worker
         env:
+          GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
@@ -92,6 +106,9 @@ jobs:
 
       # Verify taxonomy routing before the browser suite. A mismatch here
       # must block publication rather than silently misfile an item.
+      - name: Verify the workflow files
+        run: node scripts/test-workflows.mjs
+
       - name: Verify canonical content routing
         run: node scripts/test-routing.mjs
 
