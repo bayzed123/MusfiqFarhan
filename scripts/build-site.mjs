@@ -37,7 +37,7 @@ import {
 } from '../shared/urls.js';
 import { fullSitemap } from '../shared/sitemap.js';
 import { rightsBlock } from '../shared/rights.js';
-import { playerHtml, videoSchema } from '../shared/video.js';
+import { creditHtml, isPlayableVideo, playerHtml, videoSchema } from '../shared/video.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const API_BASE = (process.env.MRF_API_URL || 'https://mrf-api.gadget02030.workers.dev').replace(/\/$/, '');
@@ -352,7 +352,10 @@ async function buildItemPages(items) {
       ? `${SITE_ORIGIN}${item.path}`
       : item.canonical_url || `${SITE_ORIGIN}${contentPath(item)}`;
     const description = item.meta_description || item.description || `${item.title} — ${SITE_NAME}.`;
-    const isVideo = item.type === 'video';
+    // A video with no player is treated as an article throughout — layout,
+    // Open Graph type and schema alike. Claiming to be a video and then
+    // offering nothing to play is the shape Search Console rejects.
+    const isVideo = isPlayableVideo(item, SITE_ORIGIN);
     const poster = item.thumbnail_url || item.image || '/assets/img/hero_red-1280.webp';
 
     const breadcrumb = `      <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -397,9 +400,19 @@ ${breadcrumb}
 ${heading}
     </div>`;
 
+    // creditHtml() is empty for anything we own, so this only speaks up for
+    // media shared from somewhere else — including a video we could not
+    // embed, where the credit line is now the reader's only way to the
+    // original.
+    // The credit goes inside the player host, which is the one element the
+    // browser re-renders, so there is exactly one credit line whether the
+    // page is read as served or after the script has run. It is empty for
+    // anything we own, and speaks up for media shared from somewhere else —
+    // including a video we could not embed, where it is now the reader's
+    // only way to the original.
     const inlineMedia = isVideo
       ? ''
-      : `      <div data-entry-player></div>
+      : `      <div data-entry-player>${creditHtml(item, SITE_ORIGIN)}</div>
       <img src="${esc(poster)}" alt="${esc(item.title)}" width="1280" height="720"
         style="border-radius:18px;margin-bottom:1.5rem" fetchpriority="high" decoding="async">
 `;

@@ -34,6 +34,29 @@ export function isVideoItem(item) {
   return item?.type === 'video';
 }
 
+/**
+ * Whether this video has anywhere to play.
+ *
+ * A VideoObject with neither `contentUrl` nor `embedUrl` is not an incomplete
+ * description, it is an error: Search Console rejects it, and one rejected
+ * video is enough to hold up the page. It happens for real — an editor files
+ * a post as a video and pastes a link from a platform we can credit but not
+ * embed, and nothing in the dashboard stops them.
+ *
+ * So the question is asked once here, and a video with no player is described
+ * as an ordinary article instead: the page still gets indexed, it just does
+ * not claim to be a video.
+ */
+export function hasPlayer(item, origin = SITE_ORIGIN) {
+  const facts = videoFacts(item, origin);
+  return Boolean(facts.contentUrl || facts.embedUrl);
+}
+
+/** A video item we can actually show. The one test worth branching on. */
+export function isPlayableVideo(item, origin = SITE_ORIGIN) {
+  return isVideoItem(item) && hasPlayer(item, origin);
+}
+
 function absolute(url, origin = SITE_ORIGIN) {
   const value = String(url || '').trim();
   if (!value) return '';
@@ -115,6 +138,8 @@ export function videoFacts(item, origin = SITE_ORIGIN) {
  */
 export function videoSchema(item, origin = SITE_ORIGIN) {
   const facts = videoFacts(item, origin);
+  // Nothing to play means no video to declare. Callers fall back to Article.
+  if (!facts.contentUrl && !facts.embedUrl) return null;
   return {
     '@type': 'VideoObject',
     '@id': `${facts.canonical}#video`,

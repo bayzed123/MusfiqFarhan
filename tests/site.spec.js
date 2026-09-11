@@ -1247,11 +1247,26 @@ test.describe('advertising', () => {
     await stubAdHosts(page);
     await page.goto(path, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(600);
+    /*
+     * Scroll to the bottom to mount every lazy slot — but measure the page
+     * once first.
+     *
+     * Re-reading scrollHeight each time around the loop meant chasing a page
+     * that grows as the slots and images it passes come in: the target moved
+     * away faster than the 500px step closed on it, and on a long post the
+     * loop simply never ended. It failed as a 30s test timeout pointing at
+     * page.evaluate, which reads like a slow runner rather than a loop with
+     * no way out. The step count is fixed here, and generous enough for any
+     * real page.
+     */
     await page.evaluate(async () => {
-      for (let y = 0; y < document.body.scrollHeight; y += 500) {
-        window.scrollTo(0, y);
+      const step = 500;
+      const steps = Math.min(Math.ceil(document.body.scrollHeight / step), 400);
+      for (let i = 0; i <= steps; i += 1) {
+        window.scrollTo(0, i * step);
         await new Promise((resolve) => setTimeout(resolve, 40));
       }
+      window.scrollTo(0, document.body.scrollHeight);
     });
     await page.waitForTimeout(600);
     return page.$$eval('.ad-slot', (nodes) => nodes.map((node) => node.dataset.adSlot));
@@ -1388,6 +1403,16 @@ test.describe('advertising', () => {
   test('no ad-filled post page scrolls sideways on a phone', async ({ page, request }) => {
     const posts = itemPathsFrom(await (await request.get('/sitemap.xml')).text());
     test.skip(!posts.length, 'this build has no published posts');
+
+    /*
+     * Every post is worth checking — overflow comes from the content, and a
+     * long URL or a wide table in one post is exactly what this catches. But
+     * each one is loaded and scrolled in full, so the cost grows with the
+     * archive: on the default 30s budget this started failing not because a
+     * page was broken but because the site had more posts than it used to.
+     * The budget scales with the work instead of the count being capped.
+     */
+    test.setTimeout(30_000 + posts.length * 10_000);
 
     await page.setViewportSize({ width: 390, height: 780 });
     for (const post of posts) {

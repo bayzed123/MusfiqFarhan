@@ -8,7 +8,7 @@
  */
 
 import { rightsBlock } from '../../shared/rights.js';
-import { isVideoItem, playerHtml, videoSchema } from '../../shared/video.js';
+import { creditHtml, isPlayableVideo, playerHtml, videoSchema } from '../../shared/video.js';
 import { api } from './api.js';
 import { SITE } from './config.js';
 import { $, addJsonLd, attr, esc, formatDate, mediaUrl, renderBody, setMeta } from './dom.js';
@@ -95,7 +95,7 @@ function structuredData(item) {
     }
   ];
 
-  if (isVideoItem(item)) {
+  if (isPlayableVideo(item, SITE.origin)) {
     // Same helper the build uses, so the pre-rendered markup and the markup
     // this replaces it with cannot disagree about the same video.
     graph.push(videoSchema(item, SITE.origin));
@@ -163,7 +163,10 @@ export async function initEntry() {
 
   const playerHost = $('[data-entry-player]');
   if (playerHost) {
-    playerHost.innerHTML = playerHtml(item, { fallbackPoster: SITE.fallbackImage });
+    // No player does not mean nothing to say: a video shared from a platform
+    // we cannot embed still owes its owner a credit and the reader a link.
+    playerHost.innerHTML =
+      playerHtml(item, { fallbackPoster: SITE.fallbackImage }) || creditHtml(item, SITE.origin);
     initPlayer(playerHost);
   }
 
