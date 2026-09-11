@@ -179,20 +179,67 @@ export function isOwnMedia(rawUrl, origin = SITE_ORIGIN) {
   }
 }
 
-/** Turn any supported media reference into an embeddable player URL. */
+/**
+ * Facebook video links come in more shapes than one.
+ *
+ * The app on a phone — which is where these actually get shared from — hands
+ * out /reel/<id>, /share/v/<id> and fb.watch/<id>. Only the desktop site
+ * produces the /<page>/videos/<digits> form. Matching just that one meant
+ * every link shared from a phone produced no player at all.
+ *
+ * The plugin player takes the whole video URL whatever its shape, so the only
+ * question is whether the link is a video rather than a profile or a post.
+ */
+function facebookVideoUrl(url) {
+  const source = mediaSource(url);
+  if (!source || source.id !== 'facebook') return false;
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  // fb.watch exists only for videos, so the path does not need to say so.
+  if (/(?:^|\.)fb\.watch$/i.test(parsed.hostname)) return true;
+  return /\/(?:videos?|reels?|share\/v|watch)(?:\/|\?|$)/i.test(`${parsed.pathname}${parsed.search}`);
+}
+
+/**
+ * Turn any supported media reference into an embeddable player URL.
+ *
+ * The platforms handled here should track PLATFORMS above: recognising a link
+ * well enough to credit its owner but not well enough to play it leaves a
+ * video post with nothing on it, and a VideoObject with no contentUrl and no
+ * embedUrl is an error in Search Console rather than a missing nicety.
+ */
 export function embedUrlFor(rawUrl) {
   const url = String(rawUrl || '').trim();
   if (!url) return '';
+
   const youtube = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/
   );
   if (youtube) return `https://www.youtube-nocookie.com/embed/${youtube[1]}`;
-  const facebook = url.match(/facebook\.com\/.+\/videos\/(\d+)/);
-  if (facebook) {
+
+  if (facebookVideoUrl(url)) {
     return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=0`;
   }
-  const vimeo = url.match(/vimeo\.com\/(\d+)/);
+
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+
+  const instagram = url.match(/instagram\.com\/(reels?|p|tv)\/([\w-]+)/);
+  if (instagram) {
+    const kind = instagram[1] === 'reels' ? 'reel' : instagram[1];
+    return `https://www.instagram.com/${kind}/${instagram[2]}/embed/`;
+  }
+
+  const tiktok = url.match(/tiktok\.com\/(?:.*\/)?video\/(\d+)/);
+  if (tiktok) return `https://www.tiktok.com/embed/v2/${tiktok[1]}`;
+
+  const dailymotion = url.match(/(?:dailymotion\.com\/video\/|dai\.ly\/)([a-z0-9]+)/i);
+  if (dailymotion) return `https://www.dailymotion.com/embed/video/${dailymotion[1]}`;
+
   return '';
 }
 

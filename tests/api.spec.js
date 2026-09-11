@@ -31,7 +31,8 @@ import {
 import { rightsBlock, rightsFor } from '../shared/rights.js';
 import { canonicalPair, isMirrorPair, itemInCategory, CATEGORIES } from '../shared/taxonomy.js';
 import { fullSitemap } from '../shared/sitemap.js';
-import { SITE_ORIGIN, categoryUrl } from '../shared/urls.js';
+import { SITE_ORIGIN, categoryUrl, embedUrlFor } from '../shared/urls.js';
+import { isPlayableVideo, videoSchema, videoSitemapBlock } from '../shared/video.js';
 
 /** Minimal D1 stand-in: records the SQL and bindings, replays fixed rows. */
 function stubDb(rows, calls = []) {
@@ -275,5 +276,83 @@ test.describe('taxonomy', () => {
         }
       }
     }
+  });
+});
+
+/**
+ * Where a shared link becomes a player.
+ *
+ * This is the seam that broke production: a post filed as a video, linked to
+ * a platform the site could name but not embed, published a VideoObject with
+ * no contentUrl and no embedUrl. Search Console rejects that, and the deploy
+ * caught it only after it was already on main.
+ */
+test.describe('video links', () => {
+  const post = (video_url) => ({
+    type: 'video',
+    title: 'A clip',
+    path: '/short-clips/a-clip/',
+    published_at: '2026-09-02T00:00:00+06:00',
+    video_url
+  });
+
+  test('every platform the site credits is a platform it can play', () => {
+    // Links in the shapes the apps actually hand out, phone and desktop both.
+    const embeddable = [
+      'https://www.youtube.com/watch?v=t8d6rWQQl8g',
+      'https://youtu.be/t8d6rWQQl8g',
+      'https://www.youtube.com/shorts/t8d6rWQQl8g',
+      'https://www.facebook.com/Musfiqrfarhanofficial/videos/1234567890',
+      'https://www.facebook.com/reel/1234567890',
+      'https://www.facebook.com/share/v/aBcDeFgH/',
+      'https://www.facebook.com/watch/?v=1234567890',
+      'https://fb.watch/aBcD1234/',
+      'https://www.instagram.com/reel/CxYz123/',
+      'https://www.tiktok.com/@musfiq/video/7412345678901234567',
+      'https://vimeo.com/123456789',
+      'https://www.dailymotion.com/video/x8abcde'
+    ];
+
+    for (const url of embeddable) {
+      expect(embedUrlFor(url), `${url} has no player`).toMatch(/^https:\/\//);
+      expect(isPlayableVideo(post(url)), `${url} is not playable`).toBe(true);
+      expect(videoSchema(post(url))?.embedUrl, `${url} schema`).toBe(embedUrlFor(url));
+    }
+  });
+
+  test('a link that is not a video does not become one', () => {
+    // A profile page is not a video, and neither is a plain post.
+    for (const url of [
+      'https://www.facebook.com/Musfiqrfarhanofficial/',
+      'https://www.instagram.com/musfiqfarhan',
+      ''
+    ]) {
+      expect(embedUrlFor(url), `${url} should not embed`).toBe('');
+    }
+  });
+
+  /**
+   * The failure this guards: X has no iframe player, so a clip shared from
+   * there has nowhere to play. The page is still worth publishing — it just
+   * must not claim to be a video.
+   */
+  test('a video with nowhere to play is not described as a video', () => {
+    const orphan = post('https://x.com/musfiqrofficial/status/1234567890');
+
+    expect(embedUrlFor(orphan.video_url)).toBe('');
+    expect(isPlayableVideo(orphan), 'not playable').toBe(false);
+    expect(videoSchema(orphan), 'no VideoObject at all').toBeNull();
+    expect(videoSitemapBlock(orphan), 'and no sitemap video entry').toBe('');
+  });
+
+  test('a hosted upload still counts as content, not an embed', () => {
+    const hosted = {
+      ...post(''),
+      attachment_url: 'https://mrf-api.gadget02030.workers.dev/media/2026-05-14/clip.mp4'
+    };
+    const schema = videoSchema(hosted);
+    expect(isPlayableVideo(hosted)).toBe(true);
+    expect(schema.contentUrl, 'a file we host is content').toMatch(/\.mp4$/);
+    expect(schema.embedUrl, 'and never also an embed').toBeUndefined();
   });
 });
