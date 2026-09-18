@@ -1958,6 +1958,106 @@ body.is-sharing {
   color: #6ee7a0;
 }
 
+/*
+ * The invitation to write privately, offered under the public fan wall.
+ *
+ * Gold throughout, so it cannot be mistaken for the red "write a love note"
+ * button sitting a few hundred pixels below it: same shape, different colour,
+ * different destination.
+ */
+.chithi-band {
+  margin: clamp(2rem, 5vw, 3.5rem) var(--gutter) 0;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(240, 180, 41, 0.34);
+  background:
+    radial-gradient(85% 130% at 0% 0%, rgba(240, 180, 41, 0.16), transparent 58%),
+    var(--bg-card);
+  display: grid;
+  gap: 1.1rem;
+  align-items: center;
+  justify-items: start;
+}
+
+@media (min-width: 880px) {
+  .chithi-band {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 1.5rem;
+  }
+}
+
+.chithi-band__mark {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  color: var(--gold);
+  border: 1px solid rgba(240, 180, 41, 0.34);
+  background: rgba(240, 180, 41, 0.1);
+}
+
+.chithi-band__mark svg {
+  width: 28px;
+  height: 28px;
+}
+
+.chithi-band__eyebrow {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.chithi-band h2 {
+  font-size: clamp(1.15rem, 2.6vw, 1.6rem);
+  margin-bottom: 0.5rem;
+}
+
+.chithi-band p:not(.chithi-band__eyebrow) {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 56ch;
+}
+
+/*
+ * The button. Gold fill with dark text — the strongest contrast on this page,
+ * which is the point: it has to be the thing the eye lands on.
+ */
+.button--chithi {
+  background: linear-gradient(135deg, #f7c948, #e8a317);
+  color: #17130d;
+  border: 0;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 10px 26px rgba(240, 180, 41, 0.22);
+}
+
+.button--chithi::before {
+  content: '✉';
+  margin-right: 0.5rem;
+  font-size: 1.05em;
+}
+
+.button--chithi:hover,
+.button--chithi:focus-visible {
+  background: linear-gradient(135deg, #ffd766, #f0b429);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(240, 180, 41, 0.32);
+}
+
+/* On a phone the band stacks, so the button takes the full width. */
+@media (max-width: 879px) {
+  .chithi-band .button--chithi {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .review-list {
   display: grid;
   gap: 0.75rem;
