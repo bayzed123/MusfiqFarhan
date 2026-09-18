@@ -502,6 +502,99 @@ test.describe('public site', () => {
     );
   });
 
+  /*
+   * Chithi — the private letter page.
+   *
+   * The public half of a feature whose whole promise is that what you write
+   * does not come back out. These check the form works; the guarantee itself
+   * is pinned in tests/api.spec.js, where the routes live.
+   */
+  test('the chithi page asks for what the letter needs and nothing more', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/chithi/');
+
+    const form = page.locator('[data-chithi-form]');
+    await expect(form).toBeVisible();
+
+    // Required where the form says required, optional where it says optional.
+    for (const name of ['name', 'email', 'zila', 'message']) {
+      await expect(form.locator(`[name="${name}"]`), `${name} is required`).toHaveAttribute(
+        'required',
+        ''
+      );
+    }
+    for (const name of ['whatsapp', 'upazila']) {
+      await expect(form.locator(`[name="${name}"]`)).not.toHaveAttribute('required', '');
+    }
+
+    // Every district, in the served HTML rather than built by script.
+    await expect(form.locator('[name="zila"] option')).toHaveCount(65); // 64 + the prompt
+    await expect(form.locator('[name="zila"] option[value="Tangail"]')).toHaveCount(1);
+
+    // The page says what it is, and offers the public wall as the alternative.
+    await expect(page.locator('.chithi-shield')).toContainText(
+      'Nothing you write here appears anywhere on the site'
+    );
+    await expect(page.locator('.chithi-shield a[href="/love-notes/"]')).toBeVisible();
+  });
+
+  test('a letter is sent to the write-only endpoint, and nothing is shown back', async ({ page }) => {
+    await mockPublicApi(page);
+
+    const posted = [];
+    await page.route('**/api/public/chithi', async (route) => {
+      posted.push({ method: route.request().method(), body: route.request().postDataJSON() });
+      return route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, message: 'Your letter has been sent.' })
+      });
+    });
+
+    await page.goto('/chithi/');
+    await page.fill('[name="name"]', 'Rumana Akter');
+    await page.fill('[name="email"]', 'rumana@example.com');
+    await page.fill('[name="whatsapp"]', '01712-345678');
+    await page.selectOption('[name="zila"]', 'Tangail');
+    await page.fill('[name="upazila"]', 'Kalihati');
+    await page.fill('[name="message"]', 'I have watched every natok since 2019. Thank you.');
+    await page.click('[data-chithi-form] button[type="submit"]');
+
+    await expect(page.locator('[data-chithi-status]')).toHaveAttribute('data-state', 'success');
+    expect(posted).toHaveLength(1);
+    expect(posted[0].method, 'write-only').toBe('POST');
+    expect(posted[0].body).toMatchObject({
+      name: 'Rumana Akter',
+      email: 'rumana@example.com',
+      whatsapp: '01712-345678',
+      zila: 'Tangail',
+      upazila: 'Kalihati'
+    });
+
+    // The form empties, and the letter is not echoed anywhere on the page.
+    await expect(page.locator('[name="message"]')).toHaveValue('');
+    expect(await page.locator('main').innerText()).not.toContain('watched every natok');
+  });
+
+  test('a bad address is caught before the request leaves', async ({ page }) => {
+    await mockPublicApi(page);
+    let requests = 0;
+    await page.route('**/api/public/chithi', (route) => {
+      requests += 1;
+      return route.fulfill({ status: 201, contentType: 'application/json', body: '{"ok":true}' });
+    });
+
+    await page.goto('/chithi/');
+    await page.fill('[name="name"]', 'Rumana');
+    await page.fill('[name="email"]', 'rumana-at-example');
+    await page.selectOption('[name="zila"]', 'Dhaka');
+    await page.fill('[name="message"]', 'A long enough message to pass the length check.');
+    await page.click('[data-chithi-form] button[type="submit"]');
+
+    await expect(page.locator('[data-chithi-status]')).toHaveAttribute('data-state', 'error');
+    expect(requests, 'nothing was sent').toBe(0);
+  });
+
   /**
    * Analytics has to be on every public page or the numbers are wrong, and on
    * each of them exactly once — a second GA4 tag would count every visit twice
@@ -1443,10 +1536,52 @@ test.describe('dashboard', () => {
   test('signs in and renders every section', async ({ page }) => {
     await mockAdminApi(page);
     await signIn(page);
-    for (const view of ['content', 'media', 'gallery', 'notes', 'reviews', 'seo', 'compose']) {
+    for (const view of ['content', 'media', 'gallery', 'chithi', 'notes', 'reviews', 'seo', 'compose']) {
       await page.click(`.nav-btn[data-view="${view}"]`);
       await expect(page.locator(`[data-panel="${view}"]`)).toBeVisible();
     }
+  });
+
+  /**
+   * The private inbox. This is the only screen anywhere that can show a
+   * letter, so it has to actually show one — with the time it arrived, which
+   * is the first thing you want when a stranger writes to you.
+   */
+  test('private letters are readable only in the dashboard, with their arrival time', async ({
+    page
+  }) => {
+    const sent = [];
+    await mockAdminApi(page, sent);
+    await signIn(page);
+    await page.click('.nav-btn[data-view="chithi"]');
+
+    const card = page.locator('[data-chithi-rows] .note-card').first();
+    await expect(card).toContainText('Rumana Akter');
+    await expect(card).toContainText('I have watched every natok since 2019.');
+    await expect(card).toContainText('Tangail');
+
+    /*
+     * Stored UTC, read in Dhaka: 06:15Z is 12:15 pm here, not 6 am. The time
+     * is what this asserts — the month's spelling is the ICU build's business
+     * ("Sep" or "Sept" depending on the runner), so it is matched loosely.
+     */
+    await expect(card).toContainText(/18 Sept? 2026/);
+    await expect(card, 'the Dhaka time, not the stored UTC one').toContainText('12:15 pm');
+
+    // Both ways to reach them are one tap.
+    await expect(card.locator('a[href="mailto:rumana@example.com"]')).toBeVisible();
+    await expect(card.locator('a[href="https://wa.me/8801712345678"]')).toBeVisible();
+
+    // Unread until opened, and marking it read sticks.
+    await expect(card).toContainText('Unread');
+    await card.locator('[data-chithi-read]').click();
+    await expect(page.locator('[data-chithi-rows] .note-card').first()).toContainText('Read');
+
+    const patch = sent.find((call) => call.method === 'PATCH' && call.path.includes('/chithi/'));
+    expect(patch?.body).toEqual({ read: true });
+
+    // No approve button, because there is nowhere for a letter to be published to.
+    await expect(page.locator('[data-chithi-rows]')).not.toContainText('Approve');
   });
 
   test('content can be created, edited, hidden and deleted', async ({ page }) => {
@@ -1801,6 +1936,11 @@ async function mockAdminApi(page, sent = []) {
     { id: 1, name: 'Sadia', rating: 5, body: 'Best natok of the year.',
       content_slug: 'tor-preme-pagol', approved: 0, created_at: '2026-08-11T00:00:00Z' }
   ];
+  let letters = [
+    { id: 1, name: 'Rumana Akter', email: 'rumana@example.com', whatsapp: '01712-345678',
+      zila: 'Tangail', upazila: 'Kalihati', message: 'I have watched every natok since 2019.',
+      created_at: '2026-09-18 06:15:00', read_at: null, archived: 0 }
+  ];
 
   await page.route('**/api/admin/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
@@ -1827,9 +1967,39 @@ async function mockAdminApi(page, sent = []) {
         reviews_pending: reviews.filter((review) => !review.approved).length,
         notes_pending: notes.filter((note) => !note.approved).length,
         notes_live: notes.filter((note) => note.approved).length,
+        chithi_unread: letters.filter((letter) => !letter.read_at).length,
+        chithi_total: letters.length,
         rating_average: 4.6,
         seo_incomplete: 1
       });
+    }
+
+    if (path === '/api/admin/chithi' && method === 'GET') {
+      const archived = new URL(route.request().url()).searchParams.get('archived') === '1';
+      const visible = letters.filter((letter) => Boolean(letter.archived) === archived);
+      return reply({
+        messages: visible,
+        total: letters.length,
+        unread: letters.filter((letter) => !letter.read_at).length
+      });
+    }
+    const letterId = path.match(/\/chithi\/(\d+)$/);
+    if (letterId) {
+      const id = Number(letterId[1]);
+      if (method === 'DELETE') {
+        letters = letters.filter((letter) => letter.id !== id);
+        return reply({ ok: true });
+      }
+      letters = letters.map((letter) =>
+        letter.id === id
+          ? {
+              ...letter,
+              ...('read' in (body || {}) ? { read_at: body.read ? '2026-09-18 07:00:00' : null } : {}),
+              ...('archived' in (body || {}) ? { archived: body.archived ? 1 : 0 } : {})
+            }
+          : letter
+      );
+      return reply(letters.find((letter) => letter.id === id));
     }
 
     if (path === '/api/admin/content' && method === 'GET') return reply({ items: content });

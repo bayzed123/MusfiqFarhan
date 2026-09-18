@@ -1916,6 +1916,48 @@ body.is-sharing {
   color: #6ee7a0;
 }
 
+/* ----------------------------------------------------------------- chithi */
+
+/* The required marker, so the asterisks read as a set rather than as typos. */
+.field__req {
+  color: var(--accent, #e5384f);
+  font-weight: 800;
+}
+
+/*
+ * District and upazila belong together, so they sit on one line where there
+ * is room and stack on a phone. `minmax(0, 1fr)` rather than `1fr`: a select
+ * with a long option name has a wide minimum content size and would otherwise
+ * push the row past the screen.
+ */
+.field-row {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+/*
+ * The promise the page is making, said once at the top of the form where
+ * someone deciding whether to trust it will actually read it.
+ */
+.chithi-shield {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(110, 231, 160, 0.28);
+  border-radius: 14px;
+  background: rgba(110, 231, 160, 0.07);
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.chithi-shield strong {
+  color: #6ee7a0;
+}
+
 .review-list {
   display: grid;
   gap: 0.75rem;

@@ -19,6 +19,7 @@ import {
   mediaMarkup
 } from './library.js';
 import { initNotes, initReviews, notesMarkup, reviewsMarkup } from './community.js';
+import { chithiMarkup, initChithi } from './chithi.js';
 
 const ICONS = {
   dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
@@ -28,7 +29,9 @@ const ICONS = {
   gallery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>',
   notes: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.6 4.2 13a4.6 4.6 0 0 1 6.5-6.5l1.3 1.3 1.3-1.3A4.6 4.6 0 1 1 19.8 13z"/></svg>',
   reviews: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z"/></svg>',
-  seo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
+  seo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  // A sealed envelope — the private inbox, distinct from the love-note heart.
+  chithi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/></svg>'
 };
 
 const VIEWS = [
@@ -37,6 +40,7 @@ const VIEWS = [
   { id: 'content', label: 'All content', icon: 'content', group: 'Create' },
   { id: 'media', label: 'Media library', icon: 'media', group: 'Create' },
   { id: 'gallery', label: 'Gallery', icon: 'gallery', group: 'Create' },
+  { id: 'chithi', label: 'Chithi', icon: 'chithi', group: 'Community', badge: 'chithi_unread' },
   { id: 'notes', label: 'Love notes', icon: 'notes', group: 'Community', badge: 'notes_pending' },
   { id: 'reviews', label: 'Ratings', icon: 'reviews', group: 'Community', badge: 'reviews_pending' },
   { id: 'seo', label: 'SEO health', icon: 'seo', group: 'Community' }
@@ -48,6 +52,7 @@ const TITLES = {
   content: ['All content', 'Search, edit, hide or delete anything on the site.'],
   media: ['Media library', 'Every uploaded video and image, with its public URL.'],
   gallery: ['Gallery', 'The image grid shown on the gallery page.'],
+  chithi: ['Chithi', 'Private letters sent to you. Nobody else can read these.'],
   notes: ['Love notes', 'Approve the messages fans send.'],
   reviews: ['Ratings', 'Approve the star ratings left on each page.'],
   seo: ['SEO health', 'What still needs attention before it ranks.']
@@ -161,6 +166,7 @@ function dashboardMarkup(metrics) {
       ${stat(metrics.rating_average ?? 0, 'Average rating')}
     </div>
     <div class="stat-grid">
+      ${stat(metrics.chithi_unread ?? 0, 'Letters unread', true)}
       ${stat(metrics.notes_pending ?? 0, 'Notes waiting', true)}
       ${stat(metrics.reviews_pending ?? 0, 'Ratings waiting', true)}
       ${stat(metrics.seo_incomplete ?? 0, 'Published items missing SEO', true)}
@@ -170,6 +176,7 @@ function dashboardMarkup(metrics) {
       <div style="display:flex;gap:.6rem;flex-wrap:wrap">
         <button class="btn btn--primary btn--sm" type="button" data-view="compose">Publish something</button>
         <button class="btn btn--ghost btn--sm" type="button" data-view="media">Upload a video</button>
+        <button class="btn btn--ghost btn--sm" type="button" data-view="chithi">Read private letters</button>
         <button class="btn btn--ghost btn--sm" type="button" data-view="notes">Review love notes</button>
         <button class="btn btn--ghost btn--sm" type="button" data-view="reviews">Review ratings</button>
       </div>
@@ -390,6 +397,10 @@ function mount(id) {
       panel.innerHTML = galleryMarkup();
       controllers.gallery = initGallery(panel);
       break;
+    case 'chithi':
+      panel.innerHTML = chithiMarkup();
+      controllers.chithi = initChithi(panel, { onChange: refreshMetrics });
+      break;
     case 'notes':
       panel.innerHTML = notesMarkup();
       controllers.notes = initNotes(panel, { onChange: refreshMetrics });
@@ -427,6 +438,7 @@ function show(id) {
 
   // Views that show moderation queues should be current when reopened.
   if (view === 'content') controllers.content?.reload();
+  if (view === 'chithi') controllers.chithi?.reload();
   if (view === 'notes') controllers.notes?.reload();
   if (view === 'reviews') controllers.reviews?.reload();
 

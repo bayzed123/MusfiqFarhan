@@ -8,6 +8,7 @@
  */
 
 import { CATEGORIES, NAV_GROUPS, findCategory } from '../../shared/taxonomy.js';
+import { districtOptionsHtml } from '../../shared/bangladesh.js';
 import { PERSON_NAME, SITE_NAME, WHATSAPP_CHANNEL, X_PROFILE, categoryPath, STATIC_PATHS } from '../../shared/urls.js';
 
 const esc = (value) =>
@@ -254,6 +255,19 @@ export function ctaHtml() {
 </section>`;
 }
 
+/**
+ * The 64 districts, written into the page that asks for one.
+ *
+ * A region rather than a literal block of markup so the list has one home:
+ * shared/bangladesh.js feeds the form, the validation and the tests alike,
+ * and there is no second copy in an HTML file to drift out of step. The
+ * options land in the served source, so the picker is complete before any
+ * script runs.
+ */
+function districtOptionsRegion() {
+  return districtOptionsHtml();
+}
+
 export function footerHtml() {
   const columns = NAV_GROUPS.map(
     (group) => `<div>
@@ -286,6 +300,7 @@ export function footerHtml() {
         <li><a href="${STATIC_PATHS.blog}">Blog</a></li>
         <li><a href="${STATIC_PATHS.gallery}">Gallery</a></li>
         <li><a href="${STATIC_PATHS.loveNotes}">Love notes</a></li>
+        <li><a href="${STATIC_PATHS.chithi}">Write privately</a></li>
         <li><a href="${STATIC_PATHS.contact}">Contact &amp; press</a></li>
         <li><a href="${STATIC_PATHS.editorial}">Editorial standards</a></li>
         <li><a href="${STATIC_PATHS.privacy}">Privacy policy</a></li>
@@ -442,6 +457,7 @@ export const SHELL_REGIONS = {
   lovestrip: loveStripHtml,
   header: headerHtml,
   social: socialFollowHtml,
+  districts: districtOptionsRegion,
   cta: ctaHtml,
   footer: footerHtml
 };

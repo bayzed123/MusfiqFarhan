@@ -55,6 +55,11 @@ export const api = {
     request(`/api/public/love-notes?limit=${limit}&offset=${offset}`),
   loveMarquee: () => cachedGet('/api/public/love-notes/marquee'),
   submitLoveNote: (payload) => request('/api/public/love-notes', { method: 'POST', body: payload }),
+  /*
+   * Write-only on purpose. A chithi is a private letter, so there is no
+   * `chithi()` reader beside this: the only way to read one is the dashboard.
+   */
+  submitChithi: (payload) => request('/api/public/chithi', { method: 'POST', body: payload }),
   uploadLoveNoteAvatar: (file) => {
     const body = new FormData();
     body.append('file', file);

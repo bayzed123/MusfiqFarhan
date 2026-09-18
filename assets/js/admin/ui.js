@@ -20,11 +20,72 @@ export function confirmAction(message) {
   return window.confirm(message);
 }
 
+/**
+ * D1's CURRENT_TIMESTAMP writes "YYYY-MM-DD HH:MM:SS" — UTC, but with nothing
+ * in the string that says so. JavaScript reads a bare timestamp like that as
+ * *local* time, which silently shifts every stored time by the reader's
+ * offset. Marking it as UTC is what makes the conversion below honest.
+ */
+function asDate(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return null;
+  const utc = /\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/.test(raw) && !/[Zz]|[+-]\d{2}:?\d{2}$/.test(raw);
+  const date = new Date(utc ? `${raw.replace(' ', 'T')}Z` : raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/** Dhaka time: the dashboard is read from Bangladesh, so it reads in its clock. */
+const DHAKA = 'Asia/Dhaka';
+
 export function formatDate(value) {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return String(value);
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+  const date = asDate(value);
+  if (!date) return value ? String(value) : '—';
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    timeZone: DHAKA
+  }).format(date);
+}
+
+/** Date and time — for anything where "when did this arrive?" is the question. */
+export function formatDateTime(value) {
+  const date = asDate(value);
+  if (!date) return value ? String(value) : '—';
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: DHAKA
+  }).format(date);
+}
+
+/** "3 hours ago" — the fast read, with the exact time still beside it. */
+export function timeAgo(value) {
+  const date = asDate(value);
+  if (!date) return '';
+  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const units = [
+    ['minute', 60],
+    ['hour', 60],
+    ['day', 24],
+    ['week', 7],
+    ['month', 4.345],
+    ['year', 12]
+  ];
+  let amount = seconds;
+  let label = 'second';
+  for (const [name, size] of units) {
+    if (amount < size) break;
+    amount /= size;
+    label = name;
+  }
+  const rounded = Math.floor(amount);
+  return `${rounded} ${label}${rounded === 1 ? '' : 's'} ago`;
 }
 
 export function formatBytes(bytes) {
