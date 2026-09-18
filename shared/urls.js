@@ -115,6 +115,7 @@ export const STATIC_PATHS = {
   blog: '/blog/',
   gallery: '/gallery/',
   loveNotes: '/love-notes/',
+  chithi: '/chithi/',
   wiki: '/wikipedia/',
   about: '/about.html',
   contact: '/contact.html',

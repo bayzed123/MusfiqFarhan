@@ -1157,6 +1157,39 @@ h3 {
   background: var(--bg-input);
 }
 
+/* An unread letter is marked down the edge, so the inbox reads at a glance. */
+.note-card--unread {
+  border-left: 3px solid var(--accent, #e5384f);
+}
+
+.note-card__contacts {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.4rem;
+  align-items: baseline;
+}
+
+.note-card__contacts a {
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+
+/*
+ * A letter can be long and can carry the writer's own line breaks, so it is
+ * shown as written. `pre-wrap` keeps those breaks; `overflow-wrap` stops one
+ * unbroken string — a pasted link, usually — from widening the whole card.
+ */
+.note-card__letter {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .mobile-nav {
   display: none;
   align-items: center;

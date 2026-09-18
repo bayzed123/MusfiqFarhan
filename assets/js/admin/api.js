@@ -149,6 +149,10 @@ export const adminApi = {
     request(`/api/admin/reviews/${id}`, { method: 'PATCH', body: { approved } }),
   deleteReview: (id) => request(`/api/admin/reviews/${id}`, { method: 'DELETE' }),
 
+  listChithi: (archived = false) => request(`/api/admin/chithi${archived ? '?archived=1' : ''}`),
+  updateChithi: (id, payload) => request(`/api/admin/chithi/${id}`, { method: 'PATCH', body: payload }),
+  deleteChithi: (id) => request(`/api/admin/chithi/${id}`, { method: 'DELETE' }),
+
   listNotes: () => request('/api/admin/love-notes'),
   updateNote: (id, payload) => request(`/api/admin/love-notes/${id}`, { method: 'PATCH', body: payload }),
   deleteNote: (id) => request(`/api/admin/love-notes/${id}`, { method: 'DELETE' })

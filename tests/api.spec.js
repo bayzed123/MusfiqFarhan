@@ -7,9 +7,13 @@
  * once and were invisible to the page-level suite for exactly that reason.
  */
 
+import { readFileSync } from 'node:fs';
+
 import { expect, test } from '@playwright/test';
 
 import { adminNotes } from '../worker/src/lib/notes.js';
+import { adminChithi, submitChithi } from '../worker/src/lib/chithi.js';
+import { DISTRICTS, districtOptionsHtml } from '../shared/bangladesh.js';
 import { adminReviews } from '../worker/src/lib/reviews.js';
 import {
   CONTENT_COLUMNS,
@@ -34,8 +38,15 @@ import { fullSitemap } from '../shared/sitemap.js';
 import { SITE_ORIGIN, categoryUrl, embedUrlFor } from '../shared/urls.js';
 import { isPlayableVideo, videoSchema, videoSitemapBlock } from '../shared/video.js';
 
-/** Minimal D1 stand-in: records the SQL and bindings, replays fixed rows. */
+/**
+ * Minimal D1 stand-in: records the SQL and bindings, replays fixed rows.
+ *
+ * `rows` is either one array replayed for every query, or a function of the
+ * SQL — which a caller needs when one code path runs two different queries
+ * and the second must not be answered with the first one's rows.
+ */
 function stubDb(rows, calls = []) {
+  const rowsFor = typeof rows === 'function' ? rows : () => rows;
   return {
     prepare(sql) {
       // One record per prepared statement; bind() fills its bindings in, so a
@@ -47,8 +58,9 @@ function stubDb(rows, calls = []) {
           call.bindings = bindings;
           return statement;
         },
-        all: async () => ({ results: rows }),
-        first: async () => rows[0] ?? null
+        all: async () => ({ results: rowsFor(sql) }),
+        first: async () => rowsFor(sql)[0] ?? null,
+        run: async () => ({ success: true, meta: { changes: 1 } })
       };
       return statement;
     }
@@ -354,5 +366,163 @@ test.describe('video links', () => {
     expect(isPlayableVideo(hosted)).toBe(true);
     expect(schema.contentUrl, 'a file we host is content').toMatch(/\.mp4$/);
     expect(schema.embedUrl, 'and never also an embed').toBeUndefined();
+  });
+});
+
+/**
+ * Chithi — the private inbox.
+ *
+ * Everything here is one assertion wearing different clothes: a letter sent
+ * through this feature must not become public. It carries an email address, a
+ * phone number and a district, and it sits one careless route away from the
+ * love-note machinery that exists to publish things. So the boundary is
+ * tested structurally — not "does the page happen to hide it", but "is there
+ * any way out at all".
+ */
+test.describe('chithi', () => {
+  const letter = {
+    name: 'Nusrat Jahan',
+    email: 'nusrat@example.com',
+    whatsapp: '01712-345678',
+    zila: 'Tangail',
+    upazila: 'Kalihati',
+    message: 'I watched Bekheyali three times. Thank you for that ending.'
+  };
+
+  test('a complete letter is stored with its contact details', async () => {
+    const calls = [];
+    const env = { DB: stubDb([], calls) };
+    const response = await submitChithi(env, SITE_ORIGIN, letter);
+
+    expect(response.status).toBe(201);
+    const insert = calls.find((call) => call.sql.includes('INSERT INTO chithi'));
+    expect(insert, 'the letter is written').toBeTruthy();
+    expect(insert.bindings).toEqual([
+      letter.name,
+      letter.email,
+      letter.whatsapp,
+      letter.zila,
+      letter.upazila,
+      letter.message
+    ]);
+
+    // No approval column to set: there is no published state to approve into.
+    expect(insert.sql).not.toContain('approved');
+  });
+
+  test('the fields the form marks required are required', async () => {
+    const cases = [
+      [{ ...letter, name: '' }, 'name'],
+      [{ ...letter, email: '' }, 'email'],
+      [{ ...letter, email: 'not-an-address' }, 'email'],
+      [{ ...letter, zila: '' }, 'district'],
+      [{ ...letter, message: '' }, 'message'],
+      [{ ...letter, message: 'hi' }, 'short'],
+      [{ ...letter, whatsapp: 'call me maybe' }, 'WhatsApp']
+    ];
+
+    for (const [body, expected] of cases) {
+      const calls = [];
+      const response = await submitChithi({ DB: stubDb([], calls) }, SITE_ORIGIN, body);
+      expect(response.status, `${expected} should be rejected`).toBe(400);
+      expect((await response.json()).error).toContain(expected);
+      expect(calls.some((call) => call.sql.includes('INSERT')), 'nothing written').toBe(false);
+    }
+  });
+
+  test('the optional fields really are optional', async () => {
+    const calls = [];
+    const response = await submitChithi(
+      { DB: stubDb([], calls) },
+      SITE_ORIGIN,
+      { ...letter, whatsapp: '', upazila: '' }
+    );
+    expect(response.status).toBe(201);
+    expect(calls.some((call) => call.sql.includes('INSERT INTO chithi'))).toBe(true);
+  });
+
+  test('a filled honeypot is accepted and dropped', async () => {
+    const calls = [];
+    const response = await submitChithi({ DB: stubDb([], calls) }, SITE_ORIGIN, {
+      ...letter,
+      website: 'http://spam.example'
+    });
+    // 201 rather than an error: a bot told it failed learns how to pass.
+    expect(response.status).toBe(201);
+    expect(calls.some((call) => call.sql.includes('INSERT')), 'nothing written').toBe(false);
+  });
+
+  test('the inbox reads letters back with their arrival time and unread count', async () => {
+    const row = {
+      id: 7,
+      ...letter,
+      created_at: '2026-09-18 06:15:00',
+      read_at: null,
+      archived: 0
+    };
+    // Two queries run here — the page of letters, then the counts — so the
+    // stub answers by SQL rather than handing both the same rows.
+    const env = {
+      DB: stubDb((sql) => (sql.includes('COUNT(*)') ? [{ total: 1, unread: 1 }] : [row]))
+    };
+    const payload = await (
+      await adminChithi(env, SITE_ORIGIN, new URL('https://x.test/api/admin/chithi'))
+    ).json();
+
+    expect(payload.messages).toHaveLength(1);
+    expect(payload.messages[0]).toMatchObject({
+      name: letter.name,
+      email: letter.email,
+      whatsapp: letter.whatsapp,
+      zila: 'Tangail',
+      upazila: 'Kalihati',
+      created_at: '2026-09-18 06:15:00',
+      read_at: null
+    });
+  });
+
+  /**
+   * The structural guard. A page test can only prove that today's pages do
+   * not leak a letter; this proves there is no route to leak one through,
+   * which is the property that has to survive the next feature.
+   */
+  test('no public route can read a letter', async () => {
+    const source = readFileSync(new URL('../worker/src/index.js', import.meta.url), 'utf8');
+
+    const publicRoutes = [...source.matchAll(/path === '(\/api\/public\/[^']*)'[^\n]*method === '(\w+)'/g)]
+      .map((match) => ({ path: match[1], method: match[2] }));
+    const chithiRoutes = publicRoutes.filter((route) => route.path.includes('chithi'));
+
+    expect(chithiRoutes, 'the public API exposes chithi at all').toHaveLength(1);
+    expect(chithiRoutes[0].method, 'and only to write').toBe('POST');
+
+    // The export feeds the static build and the sitemap. A letter reaching it
+    // would be published as HTML, which is the worst version of this bug.
+    const exportBody = source.slice(
+      source.indexOf('async function exportAll'),
+      source.indexOf('const VIEWS_CACHE_KEY')
+    );
+    expect(exportBody, 'the public export never touches the table').not.toContain('chithi');
+  });
+
+  test('the sender is never told about anyone else', async () => {
+    // The acknowledgement carries no id, no count, no other letter — nothing
+    // that would let one visitor learn anything about another.
+    const response = await submitChithi({ DB: stubDb([]) }, SITE_ORIGIN, letter);
+    const body = await response.json();
+    expect(Object.keys(body).sort()).toEqual(['message', 'ok']);
+  });
+
+  test('the district list covers Bangladesh once', () => {
+    expect(DISTRICTS).toHaveLength(64);
+    expect(new Set(DISTRICTS).size, 'no district listed twice').toBe(64);
+    for (const district of ['Dhaka', 'Tangail', 'Cumilla', "Cox's Bazar", 'Sylhet', 'Rangpur']) {
+      expect(DISTRICTS).toContain(district);
+    }
+
+    // The picker is generated from that same list, so the two cannot drift.
+    const options = districtOptionsHtml();
+    expect([...options.matchAll(/<option /g)]).toHaveLength(64);
+    expect(options).toContain('<optgroup label="Dhaka Division">');
   });
 });

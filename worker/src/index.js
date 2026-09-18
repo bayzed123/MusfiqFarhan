@@ -34,6 +34,7 @@ import {
   uploadLoveNoteAvatar
 } from './lib/media.js';
 import { adminNotes, deleteNote, heartNote, marqueeNotes, publicNotes, submitNote, updateNote } from './lib/notes.js';
+import { adminChithi, deleteChithi, submitChithi, updateChithi } from './lib/chithi.js';
 import { adminReviews, deleteReview, publicReviews, submitReview, updateReview } from './lib/reviews.js';
 import { CATEGORIES, HOME_RAILS, KINDS, findCategory, findSubcategory } from '../../shared/taxonomy.js';
 import { fullSitemap } from '../../shared/sitemap.js';
@@ -173,6 +174,8 @@ async function adminMetrics(env) {
        (SELECT COUNT(*) FROM reviews WHERE approved=0) AS reviews_pending,
        (SELECT COUNT(*) FROM love_notes WHERE approved=0) AS notes_pending,
        (SELECT COUNT(*) FROM love_notes WHERE approved=1) AS notes_live,
+       (SELECT COUNT(*) FROM chithi WHERE archived=0 AND read_at IS NULL) AS chithi_unread,
+       (SELECT COUNT(*) FROM chithi WHERE archived=0) AS chithi_total,
        (SELECT AVG(rating) FROM reviews WHERE approved=1) AS rating_average`
   ).first();
 
@@ -190,6 +193,8 @@ async function adminMetrics(env) {
     reviews_pending: Number(row?.reviews_pending || 0),
     notes_pending: Number(row?.notes_pending || 0),
     notes_live: Number(row?.notes_live || 0),
+    chithi_unread: Number(row?.chithi_unread || 0),
+    chithi_total: Number(row?.chithi_total || 0),
     rating_average: Number(Number(row?.rating_average || 0).toFixed(1)),
     seo_incomplete: Number(missingSeo?.count || 0)
   };
@@ -355,6 +360,19 @@ export default {
         return uploadLoveNoteAvatar(request, env, origin);
       }
       if (path === '/api/public/love-notes/marquee' && method === 'GET') return marqueeNotes(env, origin);
+
+      /*
+       * Chithi — a private letter to Musfiq.
+       *
+       * POST only, and that is the whole design. A love note has a public
+       * GET because it is written to be read by everyone; a chithi carries
+       * the sender's email, WhatsApp number and district, and is read by one
+       * person in the dashboard. There is no public route that returns one,
+       * and adding a GET here would be the bug.
+       */
+      if (path === '/api/public/chithi' && method === 'POST') {
+        return submitChithi(env, origin, await readJson(request));
+      }
 
       const heartMatch = path.match(/^\/api\/public\/love-notes\/(\d+)\/heart$/);
       if (heartMatch && method === 'POST') return heartNote(env, origin, Number(heartMatch[1]));
@@ -565,6 +583,13 @@ export default {
         return updateReview(env, origin, Number(reviewId[1]), await readJson(request));
       }
       if (reviewId && method === 'DELETE') return deleteReview(env, origin, Number(reviewId[1]));
+
+      if (path === '/api/admin/chithi' && method === 'GET') return adminChithi(env, origin, url);
+      const chithiId = path.match(/^\/api\/admin\/chithi\/(\d+)$/);
+      if (chithiId && method === 'PATCH') {
+        return updateChithi(env, origin, Number(chithiId[1]), await readJson(request));
+      }
+      if (chithiId && method === 'DELETE') return deleteChithi(env, origin, Number(chithiId[1]));
 
       if (path === '/api/admin/love-notes' && method === 'GET') return adminNotes(env, origin);
       const noteId = path.match(/^\/api\/admin\/love-notes\/(\d+)$/);
