@@ -538,6 +538,52 @@ test.describe('public site', () => {
     await expect(page.locator('.chithi-shield a[href="/love-notes/"]')).toBeVisible();
   });
 
+  /**
+   * A page nobody can find is a page nobody uses. The footer link alone was
+   * not going to introduce a fan to something they had never heard of, so the
+   * invitation sits under the public fan wall — where the contrast with the
+   * love notes they have just read does the explaining.
+   */
+  test('the home page invites fans to write privately, where they will see it', async ({ page }) => {
+    await mockPublicApi(page);
+    await page.goto('/');
+
+    const band = page.locator('.chithi-band');
+    await expect(band).toBeVisible();
+    await expect(band).toContainText('never published');
+
+    const button = band.locator('a.button--chithi');
+    await expect(button).toBeVisible();
+    await expect(button).toHaveAttribute('href', '/chithi/');
+
+    // Above the fold is not the claim; being in the page body is. What matters
+    // is that it is a real, visible target rather than a footer link.
+    const box = await button.boundingBox();
+    expect(box.height, 'a proper tap target').toBeGreaterThan(36);
+
+    // Not the same colour as "Write a love note" a few hundred pixels below —
+    // two identical buttons going to different places is how people misclick.
+    const [letter, love] = await Promise.all([
+      button.evaluate((el) => getComputedStyle(el).backgroundImage),
+      page.locator('.cta-band a[href="/love-notes/"]').evaluate((el) => getComputedStyle(el).backgroundColor)
+    ]);
+    expect(letter, 'the private button has its own gold fill').toContain('gradient');
+    expect(letter).not.toBe(love);
+  });
+
+  test('the same invitation sits under the public wall, and nowhere it would not make sense', async ({
+    request
+  }) => {
+    // Where the contrast explains itself.
+    for (const path of ['/', '/love-notes/']) {
+      expect(await (await request.get(path)).text(), `${path} offers it`).toContain('chithi-band');
+    }
+    // And not bolted onto every page — the footer link covers the rest.
+    for (const path of ['/about.html', '/watch/', '/gallery/', '/contact.html']) {
+      expect(await (await request.get(path)).text(), `${path} stays clean`).not.toContain('chithi-band');
+    }
+  });
+
   test('a letter is sent to the write-only endpoint, and nothing is shown back', async ({ page }) => {
     await mockPublicApi(page);
 

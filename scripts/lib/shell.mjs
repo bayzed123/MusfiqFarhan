@@ -256,6 +256,36 @@ export function ctaHtml() {
 }
 
 /**
+ * The invitation to write privately.
+ *
+ * Buried in the footer, the Chithi page may as well not exist — a fan has no
+ * reason to go looking for a thing they have never heard of. So it is offered
+ * where the idea makes sense on its own: directly under the public fan wall,
+ * on the home page and on the love-notes page. Having just read messages
+ * written for everyone, "and if it is only for him?" needs no explaining.
+ *
+ * Gold rather than the site's red, because the red button beside it already
+ * means "write a love note" and two identical buttons doing different things
+ * is how people end up on the wrong page.
+ */
+export function chithiCtaHtml() {
+  return `<section class="chithi-band" aria-labelledby="chithi-band-title">
+  <span class="chithi-band__mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+      <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 7 9 6.2L21 7"/>
+    </svg>
+  </span>
+  <div class="chithi-band__copy">
+    <p class="chithi-band__eyebrow">Private &middot; he is the only reader</p>
+    <h2 id="chithi-band-title">Something you would rather not say on the wall?</h2>
+    <p>Send ${esc(PERSON_NAME)} a chithi &mdash; a letter that goes straight to him.
+    It is never published, never shown to other fans, and never appears anywhere on this site.</p>
+  </div>
+  <a class="button button--chithi" href="${STATIC_PATHS.chithi}">Write a private letter</a>
+</section>`;
+}
+
+/**
  * The 64 districts, written into the page that asks for one.
  *
  * A region rather than a literal block of markup so the list has one home:
@@ -457,6 +487,7 @@ export const SHELL_REGIONS = {
   lovestrip: loveStripHtml,
   header: headerHtml,
   social: socialFollowHtml,
+  chithicta: chithiCtaHtml,
   districts: districtOptionsRegion,
   cta: ctaHtml,
   footer: footerHtml
