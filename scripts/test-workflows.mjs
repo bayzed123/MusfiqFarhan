@@ -31,6 +31,81 @@ const FORBIDDEN_IN_IF = ['secrets.'];
 
 const problems = [];
 
+/**
+ * Jobs, with what each one needs and whether it carries its own `if:`.
+ *
+ * Indentation is the parse: a job is a two-space key under `jobs:`, and its
+ * own keys sit four spaces in. Enough for the one question below.
+ */
+function readJobs(source) {
+  const lines = source.split('\n');
+  const start = lines.findIndex((line) => /^jobs:\s*$/.test(line));
+  if (start === -1) return [];
+
+  const jobs = [];
+  let current = null;
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (!line.trim() || /^\s*#/.test(line)) continue;
+    if (/^\S/.test(line)) break; // back to a top-level key: jobs are done
+
+    const job = line.match(/^ {2}([A-Za-z0-9_-]+):\s*$/);
+    if (job) {
+      current = { name: job[1], line: index + 1, needs: [], hasIf: false };
+      jobs.push(current);
+      continue;
+    }
+    if (!current) continue;
+
+    if (/^ {4}if:/.test(line)) current.hasIf = true;
+    const needs = line.match(/^ {4}needs:\s*(.+)$/);
+    if (needs) {
+      current.needs = needs[1]
+        .replace(/[[\]]/g, '')
+        .split(',')
+        .map((name) => name.trim())
+        .filter(Boolean);
+    }
+  }
+  return jobs;
+}
+
+/**
+ * A job with no `if:` defaults to success(), which GitHub evaluates over every
+ * ancestor in the needs graph rather than the direct dependency alone. So one
+ * conditional job upstream — skipped rather than failed — silently skips
+ * everything downstream of it, while the run still reports green.
+ *
+ * That shipped: `deploy-api` is skipped on a scheduled run by design, and it
+ * took the publish step with it. The site was rebuilt and verified every six
+ * hours and never published, so everything posted from the dashboard waited
+ * for the next code push instead.
+ */
+function checkSkipPropagation(file, jobs) {
+  const byName = new Map(jobs.map((job) => [job.name, job]));
+
+  const reachesConditional = (job, seen = new Set()) =>
+    job.needs.some((name) => {
+      if (seen.has(name)) return false;
+      seen.add(name);
+      const parent = byName.get(name);
+      if (!parent) return false;
+      return parent.hasIf || reachesConditional(parent, seen);
+    });
+
+  for (const job of jobs) {
+    if (job.hasIf || !job.needs.length) continue;
+    if (!reachesConditional(job)) continue;
+    problems.push(
+      `${file}:${job.line}: job "${job.name}" has no if:, but a job it depends on does.\n` +
+        '    A bare job defaults to success(), which covers every ancestor — so when\n' +
+        '    that upstream job is skipped this one is skipped too, and the run still\n' +
+        '    reports green. Give it an explicit condition on what it actually needs,\n' +
+        `    e.g. if: needs.${job.needs[0]}.result == 'success'`
+    );
+  }
+}
+
 function check(file, source) {
   const lines = source.split('\n');
 
@@ -61,6 +136,8 @@ function check(file, source) {
   lines.forEach((line, index) => {
     if (line.includes('\t')) problems.push(`${file}:${index + 1}: tab character in YAML`);
   });
+
+  checkSkipPropagation(file, readJobs(source));
 }
 
 const files = (await readdir(WORKFLOWS)).filter((name) => /\.ya?ml$/.test(name));
